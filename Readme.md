@@ -42,3 +42,8 @@ node_project/ </br>
 ├── .env.local </br>
 ├── package.json </br>
 └── README.md </br>
+
+3- Instalar moongose y express
+> npm install express mongoose
+
+4- 
