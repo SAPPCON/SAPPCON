@@ -1,0 +1,66 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+      backgroundColor: {
+        blue1: "#e3ffff",
+        blue2: "#c9f1fd",
+        blue3: "#aee2fc",
+        blue4: "#94d4fa",
+        blue5: "#79c5f8",
+        red1: "#ff9c6e",
+        red2: "#fe7c55",
+        red3: "#fd5c3c",
+        red4: "#fc3c23",
+        red5: "#fb1c0a",
+      },
+      borderColor: {
+        blue1: "#e3ffff",
+        blue2: "#c9f1fd",
+        blue3: "#aee2fc",
+        blue4: "#94d4fa",
+        blue5: "#79c5f8",
+        red1: "#ff9c6e",
+        red2: "#fe7c55",
+        red3: "#fd5c3c",
+        red4: "#fc3c23",
+        red5: "#fb1c0a",
+      },
+      ringColor: {
+        blue1: "#e3ffff",
+        blue2: "#c9f1fd",
+        blue3: "#aee2fc",
+        blue4: "#94d4fa",
+        blue5: "#79c5f8",
+        red1: "#ff9c6e",
+        red2: "#fe7c55",
+        red3: "#fd5c3c",
+        red4: "#fc3c23",
+        red5: "#fb1c0a",
+      },
+      textColor: {
+        blue1: "#e3ffff",
+        blue2: "#c9f1fd",
+        blue3: "#aee2fc",
+        blue4: "#94d4fa",
+        blue5: "#79c5f8",
+        red1: "#ff9c6e",
+        red2: "#fe7c55",
+        red3: "#fd5c3c",
+        red4: "#fc3c23",
+        red5: "#fb1c0a",
+      },
+    },
+  },
+  plugins: [],
+};
