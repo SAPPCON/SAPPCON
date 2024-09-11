@@ -36,7 +36,7 @@ const LogInForm = (props) => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-white text-black font-sans min-w-96  ">
+    <div className="flex min-h-screen flex-col items-center bg-white text-black font-sans min-w-[1200px] ">
       <h1 className="text-2xl font-bold mt-10 mb-4">SAPPCON</h1>
       <section className="mx-auto border p-7 rounded-md border-gray-300 max-w-96  ">
         <h1 className="font-medium text-xl mb-6 w-full">Iniciar Sesión</h1>
