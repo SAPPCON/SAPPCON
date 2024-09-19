@@ -53,8 +53,7 @@ const LogInForm = (props) => {
               type="email"
               id="email"
               ref={emailRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue2 	
-              focus:border-blue5 focus:bg-blue1  focus:bg-opacity-20 focus:outline-none    ${
+              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
                 emailError !== ""
                   ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
                   : ""
@@ -73,12 +72,11 @@ const LogInForm = (props) => {
               type="password"
               id="password"
               ref={passwordRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue2 	
-                focus:border-blue5 focus:bg-blue1  focus:bg-opacity-20 focus:outline-none    ${
-                  passwordError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
+              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
+                passwordError !== ""
+                  ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
+                  : ""
+              }`}
             />
             {passwordError !== "" && (
               <p className="mr-2  text-xs text-red5">{passwordError}</p>
@@ -86,7 +84,7 @@ const LogInForm = (props) => {
           </div>
 
           <button
-            className="w-full mt-7 text-sm text-white font-bold p-2 rounded-md bg-blue5 hover:bg-white border border-white hover:border hover:text-blue5 hover:border-blue5 active:ring ring-blue2  transition  hover:duration-150"
+            className="w-full mt-7 p-2 text-sm font-bold rounded-md   text-white   border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring  transition  hover:duration-150"
             //onClick={props.onButtonClick}
             //onClick={submitHandler}
           >

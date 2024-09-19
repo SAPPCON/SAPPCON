@@ -22,7 +22,7 @@ const Profile = (props) => {
 
             <div
               className=" rounded-md px-2 py-1   border-2 
-              bg-bluefondooscuro border-white text-white cursor-default  "
+              bg-darkblue border-white text-white cursor-default  "
             >
               Perfil
             </div>
@@ -49,7 +49,7 @@ const Profile = (props) => {
                       Nombre
                     </h1>
                   </div>
-                  <Link href="/profile/update/name" className="grow">
+                  <Link href="/profile/name" className="grow">
                     <button className="mb-[12px] h-[29px] w-full cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                       Editar
                     </button>
@@ -68,7 +68,7 @@ const Profile = (props) => {
                       Apellido
                     </h1>
                   </div>
-                  <Link href="/profile/update/name" className="grow">
+                  <Link href="/profile/lastname" className="grow">
                     <button className="mb-[12px] h-[29px] w-full cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                       Editar
                     </button>
@@ -87,7 +87,7 @@ const Profile = (props) => {
                       Nombre de Usuario
                     </h1>
                   </div>
-                  <Link href="/profile/update/name" className="grow">
+                  <Link href="/profile/username" className="grow">
                     <button className="mb-[12px] h-[29px] w-full cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                       Editar
                     </button>
@@ -106,7 +106,7 @@ const Profile = (props) => {
                       **********
                     </h1>
                   </div>
-                  <Link href="/profile/update/name" className="grow">
+                  <Link href="/profile/password" className="grow">
                     <button className="mb-[12px] h-[29px] w-full cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                       Editar
                     </button>
@@ -125,7 +125,7 @@ const Profile = (props) => {
                       Dirección
                     </h1>
                   </div>
-                  <Link href="/profile/update/name" className="grow">
+                  <Link href="/profile/address" className="grow">
                     <button className="mb-[12px] h-[29px] w-full cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                       Editar
                     </button>
@@ -133,7 +133,7 @@ const Profile = (props) => {
                 </div>
               </li>
 
-              <li className=" px-[18px] py-[14px]">
+              <li className="border-b border-b-grayBorder px-[18px] py-[14px]">
                 <div className="flex ">
                   <div className=" mb-[12px] mr-[25px] flex w-[64%] shrink-0 flex-col xl-[1240px]:w-[75%]">
                     <h1 className="mb-[4px] w-full truncate font-sans text-[14px] font-bold text-blackText">
@@ -144,9 +144,30 @@ const Profile = (props) => {
                       Correo electrónico
                     </h1>
                   </div>
-                  <Link href="/profile/update/name" className="grow">
+                  <Link href="/profile/email" className="grow">
                     <button className="mb-[12px] h-[29px] w-full cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                       Editar
+                    </button>
+                  </Link>
+                </div>
+              </li>
+
+              <li className=" px-[18px] py-[14px]">
+                <div className="flex items-center justify-between ">
+                  <Link href="/auth" className="">
+                    <button
+                      className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
+                      //onClick={submitHandler}
+                    >
+                      Cerrar sesión
+                    </button>
+                  </Link>
+                  <Link href="/" className="">
+                    <button
+                      className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                      //onClick={submitHandler}
+                    >
+                      Atras
                     </button>
                   </Link>
                 </div>

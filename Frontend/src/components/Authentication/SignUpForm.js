@@ -76,12 +76,11 @@ const SignUpForm = (props) => {
               type="name"
               id="name"
               ref={nameRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue2 	
-                focus:border-blue5 focus:bg-blue1  focus:bg-opacity-20 focus:outline-none    ${
-                  nameError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
+              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
+                nameError !== ""
+                  ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
+                  : ""
+              }`}
             />
             {nameError !== "" && (
               <p className="mr-2  text-xs text-red5">{nameError}</p>
@@ -96,12 +95,11 @@ const SignUpForm = (props) => {
               type="lastName"
               id="lastName"
               ref={lastNameRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue2 	
-                focus:border-blue5 focus:bg-blue1  focus:bg-opacity-20 focus:outline-none    ${
-                  lastNameError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
+              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
+                lastNameError !== ""
+                  ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
+                  : ""
+              }`}
             />
             {lastNameError !== "" && (
               <p className="mr-2  text-xs text-red5">{lastNameError}</p>
@@ -116,12 +114,11 @@ const SignUpForm = (props) => {
               type="userName"
               id="userName"
               ref={userNameRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue2 	
-                focus:border-blue5 focus:bg-blue1  focus:bg-opacity-20 focus:outline-none    ${
-                  userNameError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
+              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
+                userNameError !== ""
+                  ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
+                  : ""
+              }`}
             />
             {userNameError !== "" && (
               <p className="mr-2  text-xs text-red5">{userNameError}</p>
@@ -136,12 +133,11 @@ const SignUpForm = (props) => {
               type="password"
               id="password"
               ref={password2Ref}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue2 	
-                focus:border-blue5 focus:bg-blue1  focus:bg-opacity-20 focus:outline-none    ${
-                  password2Error !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
+              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
+                password2Error !== ""
+                  ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
+                  : ""
+              }`}
             />
             {password2Error !== "" && (
               <p className="mr-2  text-xs text-red5">{password2Error}</p>
@@ -156,12 +152,11 @@ const SignUpForm = (props) => {
               type="address"
               id="address"
               ref={addressRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue2 	
-                focus:border-blue5 focus:bg-blue1  focus:bg-opacity-20 focus:outline-none    ${
-                  addressError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
+              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
+                addressError !== ""
+                  ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
+                  : ""
+              }`}
             />
             {addressError !== "" && (
               <p className="mr-2  text-xs text-red5">{addressError}</p>
@@ -169,7 +164,7 @@ const SignUpForm = (props) => {
           </div>
 
           <button
-            className="w-full mt-7 text-sm text-white font-bold p-2 rounded-md bg-blue5 hover:bg-white border border-white hover:border hover:text-blue5 hover:border-blue5 active:ring ring-blue2  transition  hover:duration-150"
+            className="w-full mt-7 p-2 text-sm font-bold rounded-md   text-white   border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring  transition  hover:duration-150"
             //onClick={props.onButtonClick}
           >
             Registrarse

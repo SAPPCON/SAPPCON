@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import Head from "next/head";
-import CustomerNav from "@/components/Navigation/CustomerNav";
+import Customer from "@/components/Customer/Customer";
 
 function CustomerPage() {
   return (
@@ -12,7 +12,7 @@ function CustomerPage() {
           content="List of all the customers you have. Add, modify, delete as needed."
         />
       </Head>
-      <CustomerNav />
+      <Customer />
     </Fragment>
   );
 }
