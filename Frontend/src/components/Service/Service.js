@@ -6,14 +6,15 @@ import ServiceNav from "../Navigation/ServiceNav";
 import Link from "next/link";
 import ProfileNav from "../Navigation/ProfileNav";
 import { IoIosArrowForward } from "react-icons/io";
-import CustomerList from "./CustomerList";
-import NewCustomer from "./NewCustomer";
 import { useState } from "react";
+import CustomerNav from "../Navigation/CustomerNav";
+import ServiceList from "./ServiceList";
+import NewService from "./NewService";
 
-const Customer = (props) => {
-  const [showNewClient, setShowNewClient] = useState(false);
+const Service = (props) => {
+  const [showNewService, setShowNewService] = useState(false);
   const handleClick = () => {
-    setShowNewClient(!showNewClient);
+    setShowNewService(!showNewService);
   };
 
   return (
@@ -24,13 +25,13 @@ const Customer = (props) => {
           <div className="flex items-center space-x-4 ">
             <BudgetNav></BudgetNav>
             <BuildingNav></BuildingNav>
-            <ServiceNav></ServiceNav>
             <div
               className=" rounded-md px-2 py-1   border-2 
                 bg-darkblue border-white text-white cursor-default  "
             >
-              Clientes
+              Servicios
             </div>
+            <CustomerNav></CustomerNav>
             <StatsNav></StatsNav>
             <ProfileNav></ProfileNav>
           </div>
@@ -38,10 +39,9 @@ const Customer = (props) => {
       </div>
 
       <div className=" pt-[14px]">
-        {/* El max es porque por defecto el div ocupara todo el w del div padre, no lo hago max fit porque sino queda todo muy apretado. Si lo hago asi, deberia a los bototnes y texto ponerle margenes asi se separan */}
         <div className="flex flex-col mx-auto max-w-[90%] relative ">
           <h1 className="mb-[8px] font-sans text-[28px] font-normal text-blackText mx-auto">
-            Clientes
+            Servicios
           </h1>
           <div className="rounded-[8px] border border-solid border-grayBorder flex flex-col  ">
             <div className="border-b border-b-grayBorder px-[18px] py-[14px]">
@@ -58,17 +58,15 @@ const Customer = (props) => {
                 </button>
               </div>
             </div>
-            {/*CustomerList es un DIV que tiene la lista, la planilla y el fondo negro. La planilla quiero que se posicione de manera absoluta al mismo div relativo que newCustomer, y para hacer esto solamente a la planilla la hago absoluta y entonces en lugar de posicionarse respecto al DIV que la contiene lo hara respecto al primer padre que tenga que sea diferente a estatico, en este caso es el div de aca relative y asi se posiciona de la misma manera que la planilla de newCustomer */}
-            <CustomerList></CustomerList>
+            <ServiceList></ServiceList>
           </div>
-          {/**NewCustomer es absoluto, y el padre es relativo, entonces se posiciona respecto al div padre que es relativo porque es el primer padre no estatico que tiene */}
-          {showNewClient && (
-            <NewCustomer hideNewClientFunction={handleClick}></NewCustomer>
+          {showNewService && (
+            <NewService hideNewServiceFunction={handleClick}></NewService>
           )}
         </div>
       </div>
 
-      {showNewClient && (
+      {showNewService && (
         <div
           onClick={handleClick}
           className=" fixed top-0 z-30  h-full  w-full  bg-black opacity-80  transition-opacity duration-1000"
@@ -78,4 +76,4 @@ const Customer = (props) => {
   );
 };
 
-export default Customer;
+export default Service;

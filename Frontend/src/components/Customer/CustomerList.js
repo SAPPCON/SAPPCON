@@ -20,7 +20,7 @@ const CustomerList = (props) => {
       name: "Juan",
       apellido: "Pérez",
       email: "juan.perez@example.com",
-      username: "juanperez",
+      alias: "juanperez",
       direccion: "Calle Falsa 123, Buenos Aires",
     },
     {
@@ -28,7 +28,7 @@ const CustomerList = (props) => {
       name: "Ana",
       apellido: "Gómez",
       email: "ana.gomez@example.com",
-      username: "anagomez",
+      alias: "anagomez",
       direccion: "Av. Siempre Viva 456, Córdoba",
     },
     {
@@ -36,7 +36,7 @@ const CustomerList = (props) => {
       name: "Carlos",
       apellido: "Díaz",
       email: "carlos.diaz@example.com",
-      username: "carlosdiaz",
+      alias: "carlosdiaz",
       direccion: "Calle del Sol 789, Rosario",
     },
     {
@@ -44,7 +44,7 @@ const CustomerList = (props) => {
       name: "Daenerys",
       apellido: "Targaryen",
       email: "daenerys.targaryen@example.com",
-      username: "daeneryst",
+      alias: "daeneryst",
       direccion: "Dragons Lane 1, Meereen",
     },
     {
@@ -52,7 +52,7 @@ const CustomerList = (props) => {
       name: "Rhaegal",
       apellido: "Targaryen",
       email: "rhaegal@example.com",
-      username: "rhaegalt",
+      alias: "rhaegalt",
       direccion: "Sky Castle 101, Valyria",
     },
     {
@@ -60,7 +60,7 @@ const CustomerList = (props) => {
       name: "Viserion",
       apellido: "Díaz",
       email: "viserion.diaz@example.com",
-      username: "viseriond",
+      alias: "viseriond",
       direccion: "Calle del Dragón 202, Volantis",
     },
     {
@@ -68,7 +68,7 @@ const CustomerList = (props) => {
       name: "Syrax",
       apellido: "Velaryon",
       email: "syrax@example.com",
-      username: "syraxv",
+      alias: "syraxv",
       direccion: "Sea Tower 303, Driftmark",
     },
     {
@@ -76,7 +76,7 @@ const CustomerList = (props) => {
       name: "Meleys",
       apellido: "Velaryon",
       email: "meleys@example.com",
-      username: "meleysv",
+      alias: "meleysv",
       direccion: "Wave Road 404, Driftmark",
     },
     {
@@ -84,7 +84,7 @@ const CustomerList = (props) => {
       name: "Caraxes",
       apellido: "Targaryen",
       email: "caraxes@example.com",
-      username: "caraxest",
+      alias: "caraxest",
       direccion: "Fire Hill 505, Dragonstone",
     },
     {
@@ -92,7 +92,7 @@ const CustomerList = (props) => {
       name: "Sunfyre",
       apellido: "Targaryen",
       email: "sunfyre@example.com",
-      username: "sunfyret",
+      alias: "sunfyret",
       direccion: "Golden Way 606, Dragonstone",
     },
     {
@@ -100,7 +100,7 @@ const CustomerList = (props) => {
       name: "Arrax",
       apellido: "Velaryon",
       email: "arrax@example.com",
-      username: "arraxv",
+      alias: "arraxv",
       direccion: "Blue Mountain 707, Driftmark",
     },
     {
@@ -108,7 +108,7 @@ const CustomerList = (props) => {
       name: "Vermax",
       apellido: "Targaryen",
       email: "vermax@example.com",
-      username: "vermaxt",
+      alias: "vermaxt",
       direccion: "Rock Road 808, Dragonstone",
     },
     {
@@ -116,7 +116,7 @@ const CustomerList = (props) => {
       name: "Moondancer",
       apellido: "Targaryen",
       email: "moondancer@example.com",
-      username: "moondancert",
+      alias: "moondancert",
       direccion: "Lunar Valley 909, Dragonstone",
     },
   ];

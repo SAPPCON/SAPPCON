@@ -11,8 +11,8 @@ const NewCustomer = (props) => {
   const nameRef = useRef();
   const [lastNameError, setlastNameError] = useState("");
   const lastNameRef = useRef();
-  const [userNameError, setuserNameError] = useState("");
-  const userNameRef = useRef();
+  const [aliasError, setAliasError] = useState("");
+  const aliasRef = useRef();
   const [addressError, setaddressError] = useState("");
   const addressRef = useRef();
   const [emailError, setEmailError] = useState("");
@@ -23,9 +23,9 @@ const NewCustomer = (props) => {
     return basicPattern.test(word);
   };
 
-  const noEmptyValidate = (word) => {
-    const noEmptyPattern = /^[^\s]+$/;
-    return noEmptyPattern.test(word);
+  const alphanumericWithSpacesValidate = (word) => {
+    const basicPattern = /^[a-zA-Z0-9\s]+$/; // Letras, números y espacios
+    return word !== null && word.trim() !== "" && basicPattern.test(word);
   };
 
   const validateEmail = (email) => {
@@ -37,7 +37,7 @@ const NewCustomer = (props) => {
     event.preventDefault();
     const enteredName = nameRef.current.value;
     const enteredLastName = lastNameRef.current.value;
-    const enteredUserName = userNameRef.current.value;
+    const enteredAlias = aliasRef.current.value;
     const enteredAddress = addressRef.current.value;
     const enteredEmail = emailRef.current.value;
 
@@ -53,14 +53,14 @@ const NewCustomer = (props) => {
       setlastNameError("");
     }
 
-    if (!basicValidate(enteredUserName)) {
-      setuserNameError("Mínimo 1 carácter y sin espacios en blanco.");
+    if (!basicValidate(enteredAlias)) {
+      setAliasError("Mínimo 1 carácter y sin espacios en blanco.");
     } else {
-      setuserNameError("");
+      setAliasError("");
     }
 
-    if (!noEmptyValidate(enteredAddress)) {
-      setaddressError("Mínimo 1 carácter.");
+    if (!alphanumericWithSpacesValidate(enteredAddress)) {
+      setaddressError("Solo letras y numeros, no nulo.");
     } else {
       setaddressError("");
     }
@@ -98,6 +98,7 @@ const NewCustomer = (props) => {
             type="name"
             id="name"
             ref={nameRef}
+            placeholder="Juan"
             className={`w-full p-1 border   border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
               nameError !== ""
                 ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
@@ -117,6 +118,7 @@ const NewCustomer = (props) => {
             type="lastName"
             id="lastName"
             ref={lastNameRef}
+            placeholder="Pérez"
             className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
               lastNameError !== ""
                 ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
@@ -129,32 +131,34 @@ const NewCustomer = (props) => {
         </div>
 
         <div className="mb-4 max-w-[50%]">
-          <label htmlFor="lastName" className="text-sm font-semibold block">
-            Nombre de Usuario
+          <label htmlFor="alias" className="text-sm font-semibold block">
+            Alias
           </label>
           <input
-            type="lastName"
-            id="lastName"
-            ref={userNameRef}
+            type="alias"
+            id="alias"
+            ref={aliasRef}
+            placeholder="JPerez22"
             className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
-              userNameError !== ""
+              aliasError !== ""
                 ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
                 : ""
             }`}
           />
-          {userNameError !== "" && (
-            <p className="mr-2  text-xs text-red5">{userNameError}</p>
+          {aliasError !== "" && (
+            <p className="mr-2  text-xs text-red5">{aliasError}</p>
           )}
         </div>
 
         <div className="mb-4 max-w-[50%]">
-          <label htmlFor="lastName" className="text-sm font-semibold block">
+          <label htmlFor="address" className="text-sm font-semibold block">
             Dirección
           </label>
           <input
-            type="lastName"
-            id="lastName"
+            type="address"
+            id="address"
             ref={addressRef}
+            placeholder="Las Heras 2029"
             className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
               addressError !== ""
                 ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
@@ -167,13 +171,14 @@ const NewCustomer = (props) => {
         </div>
 
         <div className="mb-4 max-w-[50%]">
-          <label htmlFor="lastName" className="text-sm font-semibold block">
+          <label htmlFor="email" className="text-sm font-semibold block">
             Correo Electrónico
           </label>
           <input
-            type="lastName"
-            id="lastName"
+            type="email"
+            id="email"
             ref={emailRef}
+            placeholder="juanperez@example.com"
             className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
               emailError !== ""
                 ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
@@ -187,10 +192,10 @@ const NewCustomer = (props) => {
 
         <div className="flex items-center justify-end ">
           <button
-            className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center mr-2 "
+            className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
             onClick={props.hideNewClientFunction}
           >
-            Atras
+            Atrás
           </button>
 
           <button

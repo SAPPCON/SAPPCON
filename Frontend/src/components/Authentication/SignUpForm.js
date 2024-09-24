@@ -22,6 +22,11 @@ const SignUpForm = (props) => {
     return noEmptyPattern.test(word);
   };
 
+  const alphanumericWithSpacesValidate = (word) => {
+    const basicPattern = /^[a-zA-Z0-9\s]+$/; // Letras, números y espacios
+    return word !== null && word.trim() !== "" && basicPattern.test(word);
+  };
+
   const submitHandler = (event) => {
     event.preventDefault();
     const enteredName = nameRef.current.value;
@@ -48,8 +53,8 @@ const SignUpForm = (props) => {
       setuserNameError("");
     }
 
-    if (!noEmptyValidate(enteredAddress)) {
-      setaddressError("Mínimo 1 carácter.");
+    if (!alphanumericWithSpacesValidate(enteredAddress)) {
+      setaddressError("Solo letras y numeros, no nulo.");
     } else {
       setaddressError("");
     }
