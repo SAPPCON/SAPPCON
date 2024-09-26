@@ -1,0 +1,71 @@
+import mongoose from "mongoose";
+import bcrypt from "bcrypt"; 
+
+const { Schema } = mongoose; 
+
+const userSchema = new Schema({
+    username: {
+        type: String,
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
+        minlength: 8,
+        maxlength: 100,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    surname: {
+        type: String,
+        required: true,
+    },
+    alias: {
+        type: String,
+        default: null,
+    },
+    address: {
+        type: String,
+        default: null,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        validate: {
+            validator: function (v) {
+                return /^\S+@\S+\.\S+$/.test(v); // Validación de email con regex
+            },
+            message: (props) => `${props.value} no es un email válido.`,
+        },
+    }
+});
+
+// Encriptar la contraseña antes de guardar
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) {
+        return next();
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+});
+
+// Crear las categorias predefinidas
+userSchema.statics.createDefaultCategories = async function (userId) {
+    const Category = mongoose.model("Category");
+    const categories = [
+      { name: "Diseño", user_id: userId }, 
+      { name: "Tareas de preparación", user_id: userId }, 
+      { name: "General", user_id: userId }, 
+      { name: "Instalaciones eléctricas", user_id: userId }, 
+      { name: "Instalaciones pluviales", user_id: userId }, 
+      { name: "Instalaciones de gas", user_id: userId }, 
+      { name: "Acabados", user_id: userId }, 
+    ];
+    await Category.insertMany(categories);
+};
+
+export default mongoose.model("User", userSchema);
