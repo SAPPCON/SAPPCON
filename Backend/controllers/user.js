@@ -54,7 +54,7 @@ export const login = async (req, res) => {
         // User exists
         let user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json(
+            return res.status(404).json(
                 { 
                     error: "El usuario no existe.",
                     errorinfo: "El email proporcionado no está registrado."}
@@ -64,7 +64,7 @@ export const login = async (req, res) => {
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json(
+            return res.status(403).json(
                 { 
                     error: "Contraseña incorrecta.",
                     errorinfo: "La contraseña proporcionada no es correcta."}
