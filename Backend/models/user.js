@@ -68,4 +68,21 @@ userSchema.statics.createDefaultCategories = async function (userId) {
     await Category.insertMany(categories);
 };
 
+// Crear las unidades de medida predefinidas
+userSchema.statics.createDefaultMeasureUnits = async function (userId) {
+    const MeasureUnit = mongoose.model("MeasureUnit");
+    const measureUnits = [
+      { name: "Unidad", user_id: userId }, 
+      { name: "Metro", user_id: userId }, 
+      { name: "Metro Cuadrados", user_id: userId }, 
+      { name: "Metro Cúbicos", user_id: userId }, 
+      { name: "Kilogramo", user_id: userId }, 
+      { name: "Litro", user_id: userId }, 
+      { name: "Hora", user_id: userId }, 
+      { name: "Día", user_id: userId }, 
+      { name: "Mes", user_id: userId }, 
+    ];
+    await MeasureUnit.insertMany(measureUnits);
+};
+
 export default mongoose.model("User", userSchema);

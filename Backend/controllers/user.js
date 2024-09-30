@@ -1,4 +1,5 @@
 import User from '../models/user.js';
+import TokenBlacklist from '../models/tokenBlacklist.js';
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -19,6 +20,9 @@ export const newUser = async (req, res) => {
 
         // Crear las categorias predefinidas
         await User.createDefaultCategories(user.id);
+
+        // Crear las unidades de medida predefinidas
+        await User.createDefaultMeasureUnits(user.id);
 
         // Crear y firmar el token JWT
         const payload = {
@@ -96,4 +100,47 @@ export const login = async (req, res) => {
             }
         );
     }
+}
+
+export const logout = async (req, res) => {
+    const token = req.header("Authorization").split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "No hay token." });
+    }
+
+    try{
+      // Verificar si el token es válido
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const blacklistedToken = new TokenBlacklist({
+        token,
+        user: decoded.user.id,
+        expiresAt: new Date(decoded.exp * 1000),
+      });
+
+      await blacklistedToken
+        .save()
+        .then(() =>
+          res.status(200).json({
+            message: "Logout exitoso.",
+            messageinfo: "Token añadido a la lista negra.",
+          })
+        )
+        .catch((err) =>
+          res.status(500).json({
+            error: "Error en el logout.",
+            errorinfo: err.message,
+          })
+        );
+        
+    }catch (error) {
+        console.error(error.message);
+        res.status(500).json(
+            {
+                error: "Error en el servidor.",
+                errorinfo: error.message
+            }
+        );
+    }   
 }

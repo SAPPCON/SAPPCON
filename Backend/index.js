@@ -7,6 +7,7 @@ import userRoutes from './routes/user.js'
 import categoryRoutes from './routes/category.js'
 import measureUnitRoutes from './routes/measureUnit.js'
 import customerRoutes from './routes/customer.js'
+import serviceRoutes from './routes/service.js'
 import helmet from 'helmet';
 import cors from 'cors'
 
@@ -26,6 +27,8 @@ app.use('/user', userRoutes)
 app.use('/category', categoryRoutes)
 app.use('/measureUnit', measureUnitRoutes)
 app.use('/customer', customerRoutes)
+app.use('/service', serviceRoutes)
+
 
 /* ---- INITIALIZATION ---- */
 init(process.env.APP_PORT, process.env.DEV_DB_HOST, process.env.DEV_DB_PORT, process.env.DEV_DB_NAME)
