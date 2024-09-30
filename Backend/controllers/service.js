@@ -15,7 +15,7 @@ export const NewService = async (req, res) => {
         );
     } catch (error) {
         console.error(error.message);
-        res.status(400).json(
+        res.status(500).json(
             { 
                 error : "Error en el servidor.",
                 errorinfo: error.message
@@ -27,7 +27,7 @@ export const NewService = async (req, res) => {
 export const GetServices = async (req, res) => {
     try {
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
             });
@@ -50,7 +50,7 @@ export const GetService = async (req, res) => {
     try {
         // User exists
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
             });
@@ -82,7 +82,7 @@ export const UpdateService = async (req, res) => {
     try {
       // User exists
       if (!req.user || !req.user.id) {
-        return res.status(400).json({
+        return res.status(401).json({
           message: "Usuario no autorizado.",
           messageinfo:
             "No se ha proporcionado un token válido para un usuario.",
@@ -131,7 +131,7 @@ export const DeleteService = async (req, res) => {
     try {
         // User exists
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
             });

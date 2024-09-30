@@ -6,7 +6,7 @@ export const NewMeasureUnit = async (req, res) => {
 
         // User exists
         if (!req.user || !req.user.id) {
-          return res.status(400).json({
+          return res.status(401).json({
             message: "Usuario no autorizado.",
             messageinfo:
               "No se ha proporcionado un token válido para un usuario.",
@@ -40,7 +40,7 @@ export const NewMeasureUnit = async (req, res) => {
 export const GetMeasureUnits = async (req, res) => {  
     try {
         if (!req.user || !req.user.id) {
-          return res.status(400).json({ 
+          return res.status(401).json({ 
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
            });
@@ -62,7 +62,7 @@ export const GetMeasureUnits = async (req, res) => {
 export const GetMeasureUnit = async (req, res) => {
     try {
       if (!req.user || !req.user.id) {
-        return res.status(400).json({
+        return res.status(401).json({
           message: "Usuario no autorizado.",
           messageinfo:
             "No se ha proporcionado un token válido para un usuario.",
@@ -96,7 +96,7 @@ export const GetMeasureUnit = async (req, res) => {
 export const UpdateMeasureUnit = async (req, res) => {
     try {
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario.",
             });
@@ -117,7 +117,7 @@ export const UpdateMeasureUnit = async (req, res) => {
         );
     } catch (error) {
         console.error(error.message);
-        res.status(400).json({
+        res.status(500).json({
             message: "Error en el servidor.",
             messageinfo: error.message,
         });
@@ -127,7 +127,7 @@ export const UpdateMeasureUnit = async (req, res) => {
 export const DeleteMeasureUnit = async (req, res) => {
     try {
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario.",
             });

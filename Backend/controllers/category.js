@@ -7,7 +7,7 @@ export const NewCategory = async (req, res) => {
 
         // User exists
         if (!req.user || !req.user.id) {
-          return res.status(400).json({
+          return res.status(401).json({
             message: "Usuario no autorizado.",
             messageinfo:
               "No se ha proporcionado un token válido para un usuario.",
@@ -41,7 +41,7 @@ export const NewCategory = async (req, res) => {
 export const GetCategories = async (req, res) => {  
     try {
         if (!req.user || !req.user.id) {
-          return res.status(400).json({ 
+          return res.status(401).json({ 
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
            });
@@ -64,7 +64,7 @@ export const GetCategory = async (req, res) => {
   try {
     // User exists
     if (!req.user || !req.user.id) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Usuario no autorizado.",
         messageinfo: "No se ha proporcionado un token válido para un usuario.",
       });
@@ -96,7 +96,7 @@ export const UpdateCategory = async (req, res) => {
     try {
       // User exists
       if (!req.user || !req.user.id) {
-        return res.status(400).json({
+        return res.status(401).json({
           message: "Usuario no autorizado.",
           messageinfo:
             "No se ha proporcionado un token válido para un usuario.",
@@ -139,7 +139,7 @@ export const DeleteCategory = async (req, res) => {
     try {
       // User exists
       if (!req.user || !req.user.id) {
-        return res.status(400).json({
+        return res.status(401).json({
           message: "Usuario no autorizado.",
           messageinfo:
             "No se ha proporcionado un token válido para un usuario.",

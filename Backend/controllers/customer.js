@@ -6,7 +6,7 @@ export const NewCustomer = async (req, res) => {
     try {
         // User exists
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
             });
@@ -39,7 +39,7 @@ export const GetCustomers = async (req, res) => {
   try {
     // User exists
     if (!req.user || !req.user.id) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Usuario no autorizado.",
         messageinfo: "No se ha proporcionado un token válido para un usuario.",
       });
@@ -61,7 +61,7 @@ export const GetCustomer = async (req, res) => {
     try {
         // User exists
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
             });
@@ -95,7 +95,7 @@ export const UpdateCustomer = async (req, res) => {
     try {
         // User exists
         if (!req.user || !req.user.id) {
-            return res.status(400).json({
+            return res.status(401).json({
                 message: "Usuario no autorizado.",
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
             });
@@ -142,7 +142,7 @@ export const DeleteCustomer = async (req, res) => {
     try {
       // User exists
       if (!req.user || !req.user.id) {
-        return res.status(400).json({
+        return res.status(401).json({
           message: "Usuario no autorizado.",
           messageinfo:
             "No se ha proporcionado un token válido para un usuario.",
