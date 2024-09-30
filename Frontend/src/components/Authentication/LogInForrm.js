@@ -16,7 +16,7 @@ const LogInForm = (props) => {
     return passwordPattern.test(password);
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
     const enteredEmail = emailRef.current.value;
     const enteredPassword = passwordRef.current.value;
@@ -32,6 +32,34 @@ const LogInForm = (props) => {
     } else {
       setPasswordError("");
       props.liftUpPassword(enteredPassword);
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email: enteredEmail,
+          password: enteredPassword,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      //setIsLoading(false);
+
+      if (!response.ok) {
+        const responseData = await response.json();
+
+        console.log(responseData);
+      }
+
+      //Si la request pasa el if anterior, no hay mensaje de error y lo reseteamos por si quedo un error del submit anterior.
+      //setErrorRequest("");
+      const data = await response.json();
+      console.log("bien", data);
+    } catch (error) {
+      // setErrorRequest(error.message);
     }
   };
 

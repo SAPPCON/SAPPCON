@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import Head from "next/head";
 import BudgetNav from "@/components/Navigation/BudgetNav";
+import Budget from "@/components/Budget/Budget";
 
 function BudgetPage() {
   return (
@@ -12,7 +13,7 @@ function BudgetPage() {
           content="List of all the budgets you have. Add, modify, delete as needed."
         />
       </Head>
-      <BudgetNav />
+      <Budget />
     </Fragment>
   );
 }

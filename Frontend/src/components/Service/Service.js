@@ -66,6 +66,7 @@ const Service = (props) => {
         </div>
       </div>
 
+      {/* Este es fixed, se ubica respecto al primer padre que no sea estatico, en este caso se ubica directo al vieeport. */}
       {showNewService && (
         <div
           onClick={handleClick}

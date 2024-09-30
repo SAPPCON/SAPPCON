@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import Head from "next/head";
-import BuildingNav from "@/components/Navigation/BuildingNav";
+import Building from "@/components/Building/Building";
 
 function BuildingPage() {
   return (
@@ -12,7 +12,7 @@ function BuildingPage() {
           content="List of all the buildings you have. Add, modify, delete as needed."
         />
       </Head>
-      <BuildingNav />
+      <Building />
     </Fragment>
   );
 }

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
 import { BiAccessibility } from "react-icons/bi";
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, useContext, Fragment } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
+import ServiceContext from "@/store/ServiceContext";
 
 //Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)
 
@@ -13,6 +14,8 @@ const ServiceDetail = (props) => {
   const [errorRequestUnit, setErrorRequestUnit] = useState("");
   const [correctRequestUnit, setCorrectRequestUnit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+
+  const serviceCtx = useContext(ServiceContext);
 
   //Y en esta funcion se deberia mandar la request al back para cambiar este valor.
   const handleUnitChange = (newValue) => {
@@ -39,16 +42,25 @@ const ServiceDetail = (props) => {
     }
   };
 
+  //Muestra el modal y confirmacion de eliminacion.
   const handleDelete = () => {
     setShowDelete(true);
   };
 
+  //Esconde el modal y confirmacion de eliminacion.
   const handleClickHideDelete = () => {
     setShowDelete(false);
   };
 
+  //Aca se deberia mandar la request al backend. Por ahora solo actualizo el contexto.
   const handleConfirmDelete = () => {
-    console.log("Eliminado");
+    serviceCtx.deleteItem(props.serviceData.id);
+
+    //Una vez borrado saco el modal de confirmacion de borrado
+    setShowDelete(false);
+
+    //Una vez borrado saco la planilla pero dejo el fondo negro
+    props.hideServiceFunctionBackground();
   };
 
   //Todos los otros carteles de exito estan a 5px del titulo. Este mide 56px de ancho entonces se sube 56 + 5 = 61.
@@ -107,7 +119,7 @@ const ServiceDetail = (props) => {
 
         <RxCross1
           className="text-[20px] absolute top-[10px] right-[10px] text-blackText cursor-pointer"
-          onClick={props.hideServiceFunction}
+          onClick={props.hideServiceFunctionBoth}
         ></RxCross1>
         <h1 className="font-sans text-[28px] font-normal text-blackText text-center border-b border-b-grayBorder">
           Datos del Servicio
@@ -235,7 +247,7 @@ const ServiceDetail = (props) => {
             <div className="flex items-center justify-end ">
               <button
                 className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-                onClick={props.hideServiceFunction}
+                onClick={props.hideServiceFunctionBoth}
               >
                 Atrás
               </button>
