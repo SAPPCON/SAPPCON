@@ -1,26 +1,54 @@
 import mongoose from "mongoose";
-import user from "./user";
 
 const { Schema } = mongoose;
 
-const budgetLineSchema = new Schema({
-        user_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
-        budget_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Budget",
-            required: true,
-        },
-        line_no: {
-            type: Number,
-        },
+const budgetLineSchema = new Schema(
+  {
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    {
-        timestamps: true,
-    }
+    budget_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Budget",
+      required: true,
+    },
+    line_no: {
+      type: Number,
+    },
+    service_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Service",
+      required: true,
+    },
+    service_name: {
+      type: String,
+      required: true,
+      maxlength: 250,
+    },
+    measure_unit_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MeasureUnit",
+      required: true,
+    },
+    measure_unit_name: {
+      type: String,
+      required: true,
+      maxlength: 50,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 budgetLineSchema.pre('save', async function (next) {
