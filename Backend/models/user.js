@@ -4,9 +4,16 @@ import bcrypt from "bcrypt";
 const { Schema } = mongoose; 
 
 const userSchema = new Schema({
-    username: {
+    email: {
         type: String,
         required: true,
+        unique: true,
+        validate: {
+            validator: function (v) {
+                return /^\S+@\S+\.\S+$/.test(v); // Validación de email con regex
+            },
+            message: (props) => `${props.value} no es un email válido.`,
+        },
     },
     password: {
         type: String,
@@ -29,18 +36,7 @@ const userSchema = new Schema({
     address: {
         type: String,
         default: null,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        validate: {
-            validator: function (v) {
-                return /^\S+@\S+\.\S+$/.test(v); // Validación de email con regex
-            },
-            message: (props) => `${props.value} no es un email válido.`,
-        },
-    }
+    } 
 });
 
 // Encriptar la contraseña antes de guardar

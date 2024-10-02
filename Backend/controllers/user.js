@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 export const newUser = async (req, res) => {
-    const { name, surname, email, username, password } = req.body;
+    const { email, password, name, surname, alias, address } = req.body;
 
     try {
     // Verificar si el usuario ya existe
@@ -13,7 +13,7 @@ export const newUser = async (req, res) => {
             return res.status(418).json({ msg: "El usuario ya existe" });
         }
 
-        user = new User({ name, email, password, surname, username });
+        user = new User({ email, password, name, surname, alias, address });
 
         // Guardar el nuevo usuario
         await user.save();
