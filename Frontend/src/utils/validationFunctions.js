@@ -3,14 +3,14 @@ export const noEmptyValidate = (word) => {
 };
 
 export const basicValidate = (word) => {
-  const basicPattern = /^(?!.*\s).+$/;
-  return basicPattern.test(word);
+  const regex = /^(?!.*\s).+$/;
+  return regex.test(word);
 };
 
 //Solo numeros, sin espacios y no nulo
 export const numberValidate = (word) => {
-  const basicPattern = /^\d+$/; // Solo números, sin espacios
-  return word !== null && basicPattern.test(word);
+  const regex = /^\d+$/; // Solo números, sin espacios
+  return word !== null && regex.test(word);
 };
 
 export const numberFormatValidate = (word) => {
@@ -19,4 +19,14 @@ export const numberFormatValidate = (word) => {
 
   // Verificar que no sea null, vacío o contenga solo espacios en blanco
   return word !== null && word.trim() !== "" && regex.test(word);
+};
+
+export const validateEmail = (word) => {
+  const regex = /^\S+@\S+\.\S+$/;
+  return regex.test(word);
+};
+
+export const validatePassword = (password) => {
+  const regex = /^(?!.*\s).{8,}$/;
+  return regex.test(password);
 };

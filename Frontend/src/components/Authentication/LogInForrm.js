@@ -1,41 +1,51 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
+import { validateEmail, validatePassword } from "@/utils/validationFunctions";
+import { HiOutlineExclamationTriangle } from "react-icons/hi2";
+import Loader from "../UI/Loader";
+import AuthenticationContext from "@/store/AuthenticationContext";
+import { useRouter } from "next/router";
 
 const LogInForm = (props) => {
   const [emailError, setEmailError] = useState("");
   const emailRef = useRef();
   const [passwordError, setPasswordError] = useState("");
   const passwordRef = useRef();
+  const [passwordErrorNoMsg, setPasswordErrorNoMsg] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [requestError, setRequestError] = useState("");
 
-  const validateEmail = (email) => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
-  };
-
-  const validatePassword = (password) => {
-    const passwordPattern = /^(?!.*\s).{8,}$/;
-    return passwordPattern.test(password);
-  };
+  const router = useRouter();
+  const authenticationCtx = useContext(AuthenticationContext);
 
   const submitHandler = async (event) => {
     event.preventDefault();
     const enteredEmail = emailRef.current.value;
     const enteredPassword = passwordRef.current.value;
+    setRequestError("");
+    setPasswordErrorNoMsg(false);
 
     if (!validateEmail(enteredEmail)) {
       setEmailError("Dirección de correo electrónico inválida.");
+      return;
     } else {
       setEmailError("");
     }
 
     if (!validatePassword(enteredPassword)) {
       setPasswordError("Mínimo 8 caracteres y sin espacios en blanco.");
+      return;
     } else {
       setPasswordError("");
-      props.liftUpPassword(enteredPassword);
+      //props.liftUpPassword(enteredPassword);
     }
 
+    setIsLoading(true);
+
+    //Si ambos campos son correctos, hago la request.
+    const url = process.env.NEXT_PUBLIC_LOGIN_URL;
+
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({
           email: enteredEmail,
@@ -46,30 +56,72 @@ const LogInForm = (props) => {
         },
       });
 
-      //setIsLoading(false);
+      setIsLoading(false);
+      const statusCode = response.status;
 
       if (!response.ok) {
         const responseData = await response.json();
 
-        console.log(responseData);
+        switch (statusCode) {
+          //Email no registrado
+          case 404:
+            props.liftUpPassword(enteredPassword, enteredEmail);
+            break;
+          //Password incorrecta
+          case 403:
+            setRequestError(responseData.error);
+            setPasswordErrorNoMsg(true);
+            break;
+          case 500:
+            //Error del servidor
+            setRequestError(responseData.error);
+            break;
+          default:
+            setRequestError("Ocurrió un error desconocido.");
+        }
+        return;
       }
 
-      //Si la request pasa el if anterior, no hay mensaje de error y lo reseteamos por si quedo un error del submit anterior.
-      //setErrorRequest("");
+      //Token
       const data = await response.json();
-      console.log("bien", data);
+
+      const expirationTime = new Date(
+        new Date().getTime() + 60 * 60 * 1000
+      ).toISOString(); //hora actual + 1 hora. toISOString() asegura que este en el formato estandar, asi se hace consistente en diferentes entornos.
+
+      authenticationCtx.login(data.token, expirationTime);
+
+      //Aca entran las exepciones que puedan ocurrir durante el Fetch (URL invalida, CORS, tiempo de espera, etc)
     } catch (error) {
-      // setErrorRequest(error.message);
+      setRequestError(error.message);
     }
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-white text-black font-sans min-w-[1200px] ">
       <h1 className="text-2xl font-bold mt-10 mb-4">SAPPCON</h1>
-      <section className="mx-auto border p-7 rounded-md border-gray-300 max-w-96  ">
+      {requestError && (
+        <div
+          className=" mx-auto mb-4 w-full max-w-96 flex h-20  rounded-xl border border-red-600 bg-white p-4 ring-4 ring-inset 	
+          ring-red-300 ring-opacity-20 "
+        >
+          <div className="flex w-full ">
+            <div className="flex items-center mr-3">
+              <HiOutlineExclamationTriangle className="text-[25px] text-red5"></HiOutlineExclamationTriangle>
+            </div>
+            <div className="flex flex-col justify-center font-sans   ">
+              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
+              <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
+                {requestError}
+              </h2>
+            </div>
+          </div>
+        </div>
+      )}
+      <section className="mx-auto border p-7 rounded-md border-gray-300 w-full max-w-96  ">
         <h1 className="font-medium text-xl mb-6 w-full">Iniciar Sesión</h1>
         <form onSubmit={submitHandler} className=" w-full" noValidate>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               htmlFor="email"
               className="text-sm font-semibold block w-72
@@ -81,6 +133,7 @@ const LogInForm = (props) => {
               type="email"
               id="email"
               ref={emailRef}
+              placeholder="ejemplo@gmail.com"
               className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
                 emailError !== ""
                   ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
@@ -88,11 +141,11 @@ const LogInForm = (props) => {
               }`}
             />
             {emailError !== "" && (
-              <p className="mr-2  text-xs text-red5">{emailError}</p>
+              <p className="mr-2  text-xs text-red5 absolute">{emailError}</p>
             )}
           </div>
 
-          <div>
+          <div className="relative">
             <label htmlFor="password" className="text-sm font-semibold block">
               Contraseña
             </label>
@@ -100,24 +153,34 @@ const LogInForm = (props) => {
               type="password"
               id="password"
               ref={passwordRef}
+              placeholder="*********"
               className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
-                passwordError !== ""
+                passwordError !== "" || passwordErrorNoMsg
                   ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
                   : ""
               }`}
             />
             {passwordError !== "" && (
-              <p className="mr-2  text-xs text-red5">{passwordError}</p>
+              <p className="mr-2  text-xs text-red5 absolute">
+                {passwordError}
+              </p>
             )}
           </div>
 
-          <button
-            className="w-full mt-7 p-2 text-sm font-bold rounded-md   text-white   border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring  transition  hover:duration-150"
-            //onClick={props.onButtonClick}
-            //onClick={submitHandler}
-          >
-            Iniciar Sesión
-          </button>
+          {!isLoading && (
+            <button
+              className="w-full mt-7 p-2 text-sm font-bold rounded-md   text-white   border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring  transition  hover:duration-150"
+              //onClick={props.onButtonClick}
+              onClick={submitHandler}
+            >
+              Iniciar Sesión
+            </button>
+          )}
+          {isLoading && (
+            <div className="mt-[26px] ">
+              <Loader></Loader>
+            </div>
+          )}
         </form>
       </section>
     </div>

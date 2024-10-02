@@ -7,8 +7,11 @@ import ServiceNav from "../Navigation/ServiceNav";
 import Link from "next/link";
 import { IoIosArrowForward } from "react-icons/io";
 import { BiAccessibility } from "react-icons/bi";
+import AuthenticationContext from "@/store/AuthenticationContext";
+import { useContext } from "react";
 
 const Profile = (props) => {
+  const authenticationCtx = useContext(AuthenticationContext);
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-black font-sans min-w-[1200px] ">
       <div className="flex bg-white h-20 ">
@@ -153,7 +156,7 @@ const Profile = (props) => {
               <Link href="/auth" className="">
                 <button
                   className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
-                  //onClick={submitHandler}
+                  onClick={authenticationCtx.logout}
                 >
                   Cerrar Sesión
                 </button>
