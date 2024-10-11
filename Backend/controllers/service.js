@@ -79,6 +79,7 @@ export const GetService = async (req, res) => {
 }
 
 export const UpdateService = async (req, res) => {
+    const { measure_unit_id, category_id, name, description, cost, price } = req.body;
     try {
       // User exists
       if (!req.user || !req.user.id) {
