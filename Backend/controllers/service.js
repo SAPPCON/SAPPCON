@@ -1,4 +1,5 @@
 import Service from '../models/service.js';
+import BudgetLine from '../models/budgetLine.js';
 
 // Crear un nuevo servicio
 export const NewService = async (req, res) => {
@@ -130,29 +131,46 @@ export const UpdateService = async (req, res) => {
 
 export const DeleteService = async (req, res) => {
     try {
-        // User exists
-        if (!req.user || !req.user.id) {
-            return res.status(401).json({
-                message: "Usuario no autorizado.",
-                messageinfo: "No se ha proporcionado un token válido para un usuario."
-            });
-        }
-
-        //Find and delete service
-        const userId = req.user.id;
-        const service = await Service.findOneAndDelete({ user_id: userId, _id: req.params.id });
-
-        if (!service) {
-            return res.status(404).json({
-                message: "Servicio no encontrado.",
-                messageinfo: "No se ha encontrado el servicio con el id proporcionado."
-            });
-        }
-
-        res.status(200).json({
-            message: "Servicio eliminado.",
-            messageinfo: service
+      // User exists
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          message: "Usuario no autorizado.",
+          messageinfo:
+            "No se ha proporcionado un token válido para un usuario.",
         });
+      }
+
+      //Find and delete service
+      const userId = req.user.id;
+
+      // Verify if the service is being used in a budget line
+      const budgetLineExists = await BudgetLine.findOne({service_id: req.params.id,});
+
+      if (budgetLineExists) {
+        return res.status(405).json({
+          message: "No se puede eliminar el servicio.",
+          messageinfo:
+            "Este servicio está siendo utilizado en una línea de presupuesto.",
+        });
+      }
+
+      const service = await Service.findOneAndDelete({
+        user_id: userId,
+        _id: req.params.id,
+      });
+
+      if (!service) {
+        return res.status(404).json({
+          message: "Servicio no encontrado.",
+          messageinfo:
+            "No se ha encontrado el servicio con el id proporcionado.",
+        });
+      }
+
+      res.status(200).json({
+        message: "Servicio eliminado.",
+        messageinfo: service,
+      });
     } catch (error) {
         console.error(error.message);
         res.status(500).send(

@@ -142,5 +142,44 @@ export const logout = async (req, res) => {
                 errorinfo: error.message
             }
         );
-    }   
+    } 
+}
+
+export const UpdateUserData = async (req, res) => {
+    const { email, name, surname, alias, address } = req.body;
+    try{
+      // User exists
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          message: "Usuario no autorizado.",
+          messageinfo:
+            "No se ha proporcionado un token válido para un usuario.",
+        });
+      }
+
+      // Find and update User Data
+      const userId = req.user.id;
+      const user = await User.findOneAndUpdate(
+        {
+          _id: userId,
+        },
+        { name, surname, alias, address, email },
+        { new: true }
+      ).catch((error) => {
+        return res.status(404).json({
+          message: "Cliente no encontrado.",
+          messageinfo: error.message,
+        });
+      });
+
+
+    } catch(error) {
+        console.error(error.message);
+        res.status(500).json(
+            {
+                error: "Error en el servidor.",
+                errorinfo: error.message
+            }
+        );
+    }
 }
