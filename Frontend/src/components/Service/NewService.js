@@ -10,12 +10,17 @@ import {
   noEmptyValidate,
   numberFormatValidate,
 } from "@/utils/validationFunctions";
+import Loader from "../UI/Loader";
 
 const NewService = (props) => {
-  const serviceCtx = useContext(ServiceContext);
-  const categoryCtx = useContext(CategoryContext);
-  const measureUnitCtx = useContext(MeasureUnitContext);
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+  const { categoryContext: categoryCtx, dispatchCategoriesAction } =
+    useContext(CategoryContext);
+  const { measureUnitContext: measureUnitCtx, dispatchMeasureUnitsAction } =
+    useContext(MeasureUnitContext);
 
+  const Categories = categoryCtx.items;
+  const measureUnits = measureUnitCtx.items;
   {
     /* ESTADOS Y REFERENCIAS DEL FORM */
   }
@@ -25,6 +30,7 @@ const NewService = (props) => {
   const [unitCostError, setUnitCostError] = useState("");
   const [unitPriceError, setUnitPriceError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
+  const [showLoading, setShowLoading] = useState(false);
 
   const nameRef = useRef();
   const categoryRef = useRef();
@@ -104,21 +110,35 @@ const NewService = (props) => {
 
     //Si sale todo bien se agrega al contexto y tambien se debe cambiar el Z del div del formulario a 20 para hacerlo mas chico que el background y que se vea el boton de exito con aceptar que oculta todo (background y planilla )
 
-    setZNewService("z-20");
-    setShowAccept(true);
-
     const newService = {
-      id: Date.now(), // Puedes usar otro método para generar IDs únicos
-      unidadDeMedida: enteredUnitOfMeasurement,
-      categoria: enteredCategory,
-      nombre: enteredName,
-      descripcion: enteredDescription,
-      costeUnitario: parseFloat(enteredUnitCost),
-      precioUnitario: parseFloat(enteredUnitPrice),
+      measure_unit_id: enteredUnitOfMeasurement,
+      category_id: enteredCategory,
+      name: enteredName,
+      description: enteredDescription,
+      cost: parseFloat(enteredUnitCost),
+      price: parseFloat(enteredUnitPrice),
     };
 
     // Agregar el nuevo servicio
     serviceCtx.addItem(newService);
+
+    if (serviceCtx.isLoadingAddItem) {
+      setShowLoading(true);
+    }
+
+    if (serviceCtx.errorAddItem) {
+      setZNewService("z-20");
+      setShowAccept(false);
+      setShowAcceptFail(true);
+      setShowLoading(false);
+    }
+
+    if (!serviceCtx.errorAddItem && !serviceCtx.isLoadingAddItem) {
+      setZNewService("z-20");
+      setShowAcceptFail(false);
+      setShowAccept(true);
+      setShowLoading(false);
+    }
   };
 
   {
@@ -126,10 +146,7 @@ const NewService = (props) => {
   }
   const [showAddCategory, setShowAddCategory] = useState(false); //Estado para renderizar el form de nueva categoria
   const [showfondonegro, setshowfondonegro] = useState(false); //Estado para renderizar el nuevo fondo negro con Z mayor a la planilla nuevo Servicio y al fondo negro.
-  const [showAddCategoryAcceptSuccess, setShowAddCategoryAcceptSuccess] =
-    useState(false); //Estado para renderizar cartel de exito o error de registro de nueva categoria.
-  const [showAddCategoryAcceptFail, setShowAddCategoryAcceptFail] =
-    useState(false); //Estado para renderizar cartel de exito o error de registro de nueva categoria.
+
   const [nameNewCategoryError, setNameNewCategoryError] = useState(""); //Estado para renderizar el error de nueva categoria si el campo es incrrecto
 
   const nameNewCategoryRef = useRef(); //Referencia al input de nueva categoria.
@@ -145,9 +162,6 @@ const NewService = (props) => {
     setShowAddCategory(false);
     setshowfondonegro(false);
 
-    //En caso q se toque el fondo negro y estemos en el cartel de aceptar de exito o error de registro, tambien se pone en falso dicho cartel. Para no hacer una funcion especifica para eso.
-    setShowAddCategoryAcceptSuccess(false);
-    setShowAddCategoryAcceptFail(false);
     setNameNewCategoryError(""); //Reseteamos el error en caso de que se equivoque y vuelva atras y vuelva a tocar para registrar categoria y no siga estando el error.
   };
 
@@ -164,36 +178,23 @@ const NewService = (props) => {
       setNameNewCategoryError("");
       //Se quita la planilla de nueva categoria.
       setShowAddCategory(false);
-      //Se muestra mensaje de EXITO o de ERROR segun corresponda. Tambien se agrega el isLoading.
-      setShowAddCategoryAcceptSuccess(true); //exito request
-      setShowAddCategoryAcceptFail(true); //error request
 
       //Suponiendo que sale todo bien, se agrega la categoria a el contexto
-      const newcategory = {
-        id: Date.now(),
-        name: enteredNewCategory,
-      };
-      categoryCtx.addItem(newcategory);
+      categoryCtx.addItem(enteredNewCategory);
     }
   };
 
   //Esta funcion es para quitar el cartel de aceptar exito u error y quitar el nuevo fondo negro.
   const handleAcceptCategory = () => {
-    setShowAddCategoryAcceptSuccess(false);
-    setShowAddCategoryAcceptFail(false);
     setshowfondonegro(false);
+    dispatchCategoriesAction({ type: "SET_RESTART_ALL_ADD_ITEM" });
   };
 
   {
     /* ESTADOS Y FUNCIONES DE NUEVA CATEGORIA */
   }
   const [showAddMeasureUnit, setShowAddMeasureUnit] = useState(false);
-  const [showAddMeasureUnitAcceptSuccess, setShowAddMeasureUnitAcceptSuccess] =
-    useState(false);
-  const [showAddMeasureUnitAcceptFail, setShowAddMeasureUnitAcceptFail] =
-    useState(false);
   const [nameNewMeasureUnitError, setNameNewMeasureUnitError] = useState(""); //Estado para renderizar el error de nueva categoria si el campo es incrrecto
-
   const nameNewMeasureUnitRef = useRef(); //Referencia al input de nueva categoria.
 
   //Esta funcion responde al boton (+) y renderiza el fondo y el form de categoria.
@@ -206,10 +207,6 @@ const NewService = (props) => {
   const handleNewMeasureUnitBack = () => {
     setShowAddMeasureUnit(false);
     setshowfondonegro(false);
-
-    //En caso q se toque el fondo negro y estemos en el cartel de aceptar de exito o error de registro, tambien se pone en falso dicho cartel. Para no hacer una funcion especifica para eso.
-    setShowAddMeasureUnitAcceptSuccess(false);
-    setShowAddMeasureUnitAcceptFail(false);
     setNameNewMeasureUnitError(""); //Reseteamos el error en caso de que se equivoque y vuelva atras y vuelva a tocar para registrar categoria y no siga estando el error.
   };
 
@@ -226,29 +223,26 @@ const NewService = (props) => {
       setNameNewMeasureUnitError("");
       //Se quita la planilla de nueva categoria.
       setShowAddMeasureUnit(false);
-      //Se muestra mensaje de EXITO o de ERROR segun corresponda. Tambien se agrega el isLoading.
-      setShowAddMeasureUnitAcceptSuccess(true); //exito request
-      setShowAddMeasureUnitAcceptFail(true); //error request
 
-      //Suponiendo que sale todo bien, se agrega la categoria a el contexto
-      const newmeasureunit = {
-        id: Date.now(),
-        name: enteredNewMeasureUnit,
-      };
-      measureUnitCtx.addItem(newmeasureunit);
+      measureUnitCtx.addItem(enteredNewMeasureUnit);
     }
   };
 
   //Esta funcion es para quitar el cartel de aceptar exito u error y quitar el nuevo fondo negro.
   const handleAcceptMeasureUnit = () => {
-    setShowAddMeasureUnitAcceptSuccess(false);
-    setShowAddMeasureUnitAcceptFail(false);
     setshowfondonegro(false);
+    dispatchMeasureUnitsAction({
+      type: "SET_RESTART_ALL_ADD_ITEM_MEASUREUNIT",
+    });
   };
 
   const handleBothBack = () => {
     handleNewCategoryBack();
     handleNewMeasureUnitBack();
+    dispatchCategoriesAction({ type: "SET_RESTART_ALL_ADD_ITEM" });
+    dispatchMeasureUnitsAction({
+      type: "SET_RESTART_ALL_ADD_ITEM_MEASUREUNIT",
+    });
   };
 
   //Absoluto al contenedor padre que es relativo (Customer)
@@ -292,23 +286,30 @@ const NewService = (props) => {
               <label htmlFor="category" className="text-sm font-semibold block">
                 Categoria
               </label>
-              <select
-                id="category"
-                type="category"
-                ref={categoryRef}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer ${
-                  categoryError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
-              >
-                <option value="">Seleccione una categoria</option>
-                {categoryCtx.items.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              {categoryCtx.isLoading && (
+                <div className="h-[31px] flex items-center justify-center">
+                  <Loader style={{ width: "100%", height: "100%" }}></Loader>
+                </div>
+              )}
+              {categoryCtx.error && (
+                <div className="h-[31px]">{categoryCtx.error}</div>
+              )}
+
+              {!categoryCtx.error && !categoryCtx.isLoading && (
+                <select
+                  id="category"
+                  //defaultValue={props.serviceData.categoria}
+                  //onChange={(e) => handleCategoryChange(e.target.value)}
+                  ref={categoryRef}
+                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
+                >
+                  {Categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               {/*Lo hago absoluto y al div relativo asi el msg no entra en el flujo html y el boton + me queda siempre bien puesto */}
               {categoryError !== "" && (
                 <p className="text-xs text-red5 absolute">{categoryError}</p>
@@ -332,23 +333,30 @@ const NewService = (props) => {
               >
                 Unidad de Medida
               </label>
-              <select
-                id="measureUnit"
-                type="measureUnit"
-                ref={measureUnitRef}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer ${
-                  measureUnitError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
-              >
-                <option value="">Seleccione una unidad de medida</option>
-                {measureUnitCtx.items.map((unit) => (
-                  <option key={unit.id} value={unit.id}>
-                    {unit.name}
-                  </option>
-                ))}
-              </select>
+              {measureUnitCtx.isLoading && (
+                <div className="h-[31px] flex items-center justify-center">
+                  <Loader style={{ width: "100%", height: "100%" }}></Loader>
+                </div>
+              )}
+              {measureUnitCtx.error && (
+                <div className="h-[31px]">{measureUnitCtx.error}</div>
+              )}
+
+              {!measureUnits.error && !measureUnits.isLoading && (
+                <select
+                  id="unitOfMeasurement"
+                  ref={measureUnitRef}
+                  //defaultValue={props.serviceData.unidadDeMedida}
+                  //onChange={(e) => handleUnitChange(e.target.value)}
+                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
+                >
+                  {measureUnits.map((measureUnit) => (
+                    <option key={measureUnit._id} value={measureUnit._id}>
+                      {measureUnit.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               {measureUnitError !== "" && (
                 <p className="mr-2  text-xs text-red5 absolute">
                   {measureUnitError}
@@ -437,21 +445,30 @@ const NewService = (props) => {
             )}
           </div>
 
-          <div className="flex items-center justify-end ">
-            <button
-              className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-              onClick={props.hideNewServiceFunction}
-            >
-              Atrás
-            </button>
+          {/* Min h - 40 para que coincida con el alto del loader */}
+          {!serviceCtx.isLoadingAddItem && (
+            <div className="flex items-center justify-end min-h-[40px] ">
+              <button
+                className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                onClick={props.hideNewServiceFunction}
+              >
+                Atrás
+              </button>
 
-            <button
-              className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
-              onClick={submitHandler}
-            >
-              Registrar
-            </button>
-          </div>
+              <button
+                className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
+                onClick={submitHandler}
+              >
+                Registrar
+              </button>
+            </div>
+          )}
+
+          {serviceCtx.isLoadingAddItem && (
+            <div className="flex items-center justify-center ">
+              <Loader></Loader>
+            </div>
+          )}
         </form>
       </div>
 
@@ -469,8 +486,7 @@ const NewService = (props) => {
             <div className="flex flex-col justify-center font-sans   ">
               <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
               <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                Msg de erroaasdasdsa asdasdas asdasdasdasdasas
-                dddddddddddddddddddddddd dddddd asdasdas asd
+                {serviceCtx.errorAddItem}
               </h2>
             </div>
           </div>
@@ -537,27 +553,35 @@ const NewService = (props) => {
               )}
             </div>
 
-            <div className="flex items-center justify-center mt-2 ">
-              <button
-                className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-                onClick={handleNewCategoryBack}
-              >
-                Atrás
-              </button>
+            {!categoryCtx.errorAddItem && !categoryCtx.isLoadingAddItem && (
+              <div className="flex items-center justify-center h-[40px] mt-2 ">
+                <button
+                  className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                  onClick={handleNewCategoryBack}
+                >
+                  Atrás
+                </button>
 
-              <button
-                className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
-                onClick={submitHandlerNewCategory}
-              >
-                Registrar
-              </button>
-            </div>
+                <button
+                  className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
+                  onClick={submitHandlerNewCategory}
+                >
+                  Registrar
+                </button>
+              </div>
+            )}
+
+            {categoryCtx.isLoadingAddItem && (
+              <div className="flex items-center justify-center mt-2 ">
+                <Loader></Loader>
+              </div>
+            )}
           </form>
         </div>
       )}
 
       {/* POP UP DE EXITO AGREGAR CATEGORIA -> Se queda el fondo negro y se va la planilla de registrar categoria*/}
-      {showAddCategoryAcceptSuccess && (
+      {categoryCtx.succesAddItem && (
         <div
           className=" flex flex-col h-fit w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  py-[14px] font-sans text-[14px] text-blackText absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
 "
@@ -576,8 +600,8 @@ const NewService = (props) => {
         </div>
       )}
 
-      {/* POP UP DE EXITO AGREGAR CATEGORIA -> Se queda el fondo negro y se va la planilla de registrar categoria*/}
-      {showAddCategoryAcceptFail && (
+      {/* POP UP DE ERROR AGREGAR CATEGORIA -> Se queda el fondo negro y se va la planilla de registrar categoria*/}
+      {categoryCtx.errorAddItem && (
         <div
           className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
           ring-red2 ring-opacity-20 absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  px-[18px]  py-[14px]    "
@@ -589,8 +613,7 @@ const NewService = (props) => {
             <div className="flex flex-col justify-center font-sans   ">
               <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
               <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                Msg de erroaasdasdsa asdasdas asdasdasdasdasas
-                dddddddddddddddddddddddd dddddd asdasdas asd
+                {categoryCtx.errorAddItem}
               </h2>
             </div>
           </div>
@@ -639,27 +662,36 @@ const NewService = (props) => {
               )}
             </div>
 
-            <div className="flex items-center justify-center mt-2 ">
-              <button
-                className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-                onClick={handleNewMeasureUnitBack}
-              >
-                Atrás
-              </button>
+            {!measureUnitCtx.errorAddItem &&
+              !measureUnitCtx.isLoadingAddItem && (
+                <div className="flex items-center justify-center h-[40px] mt-2 ">
+                  <button
+                    className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                    onClick={handleNewMeasureUnitBack}
+                  >
+                    Atrás
+                  </button>
 
-              <button
-                className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
-                onClick={submitHandlerNewMeasureUnit}
-              >
-                Registrar
-              </button>
-            </div>
+                  <button
+                    className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
+                    onClick={submitHandlerNewMeasureUnit}
+                  >
+                    Registrar
+                  </button>
+                </div>
+              )}
+
+            {measureUnitCtx.isLoadingAddItem && (
+              <div className="flex items-center justify-center mt-2 ">
+                <Loader></Loader>
+              </div>
+            )}
           </form>
         </div>
       )}
 
       {/* POP UP DE EXITO AGREGAR Unidad de medida -> Se queda el fondo negro y se va la planilla de registrar unidad de medida*/}
-      {showAddMeasureUnitAcceptSuccess && (
+      {measureUnitCtx.succesAddItem && (
         <div
           className=" flex flex-col h-fit w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  py-[14px] font-sans text-[14px] text-blackText absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
 "
@@ -679,7 +711,7 @@ const NewService = (props) => {
       )}
 
       {/* POP UP DE EXITO AGREGAR UNIDAD DE MEDIDA -> Se queda el fondo negro y se va la planilla de registrar unidad de medida*/}
-      {showAddMeasureUnitAcceptFail && (
+      {measureUnitCtx.errorAddItem && (
         <div
           className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
           ring-red2 ring-opacity-20 absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  px-[18px]  py-[14px]    "
@@ -691,8 +723,7 @@ const NewService = (props) => {
             <div className="flex flex-col justify-center font-sans   ">
               <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
               <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                Msg de erroaasdasdsa asdasdas asdasdasdasdasas
-                dddddddddddddddddddddddd dddddd asdasdas asd
+                {measureUnitCtx.errorAddItem}
               </h2>
             </div>
           </div>

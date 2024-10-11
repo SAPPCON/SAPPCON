@@ -65,7 +65,7 @@ const LogInForm = (props) => {
         switch (statusCode) {
           //Email no registrado
           case 404:
-            props.liftUpPassword(enteredPassword, enteredEmail);
+            props.liftUpCredentials(enteredPassword, enteredEmail);
             break;
           //Password incorrecta
           case 403:

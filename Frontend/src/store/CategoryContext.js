@@ -1,24 +1,23 @@
 import React, { useEffect, useState, useContext, useReducer } from "react";
-//import AuthContext from "./auth-context";
+import AuthenticationContext from "./AuthenticationContext";
 
 const CategoryContext = React.createContext({
   items: [],
   addItem: (item) => {},
-  //isLoading: false,
-  //error: "",
+  isLoading: false,
+  isLoadingAddItem: false,
+  error: "",
+  errorAddItem: "",
 });
 
 const defaultCategoryState = {
   items: [],
 };
 
-//Request al back
-/*
-const fetchData = async () => {
+// Función que obtiene los datos del backend
+const fetchData = async (token) => {
   try {
-    //const token = localStorage.getItem("sadasdasd12312");
-    const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:3000/users/me", {
+    const response = await fetch(process.env.NEXT_PUBLIC_GET_CATEGORIES_URL, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -26,52 +25,109 @@ const fetchData = async () => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      const errorMsg =
-        responseData.message ||
-        (responseData.errors &&
-        responseData.errors[0] &&
-        responseData.errors[0].message
-          ? responseData.errors[0].message
-          : "Something went wrong!");
-      throw new Error(errorMsg);
+      throw new Error(responseData.error || "Error al obtener las categorías");
     }
+
     const data = await response.json();
     return data;
   } catch (error) {
-    throw error; //Para capturarlo con el catch luego en el loadProfile
+    throw error;
   }
 };
-*/
 
-// Servicios hardcodeados
-const hardcodedCategories = [
-  { id: 1, name: "Movimiento de tierras" },
-  { id: 2, name: "Estructura" },
-  { id: 3, name: "Obra gruesa" },
-  { id: 4, name: "Acabados" },
-  { id: 5, name: "Instalaciones" },
-];
+const newCategory = async (name) => {
+  try {
+    const token = localStorage.getItem("token");
+    //const token = localStorage.getItem("sadasdasd12312");
+    const response = await fetch(process.env.NEXT_PUBLIC_ADD_CATEGORY_URL, {
+      method: "POST",
+      body: JSON.stringify({ name }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const responseData = await response.json();
+      throw new Error(responseData.error || "Error al agregar categoria");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const categoriesReducer = (state, action) => {
-  if (action.type === "LOAD_CATEGORIES") {
-    return {
-      items: action.categories,
-    };
+  switch (action.type) {
+    case "LOAD_CATEGORIES":
+      return {
+        ...state,
+        items: action.categories,
+        isLoading: false,
+        error: null,
+      };
+    case "SET_LOADING":
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    case "SET_LOADING_ADD_ITEM":
+      return {
+        ...state,
+        isLoading: false,
+        isLoadingAddItem: true,
+        error: null,
+        errorAddItem: null,
+        succesAddItem: false,
+      };
+    case "SET_ERROR":
+      return {
+        ...state,
+        isLoading: false,
+        error: action.error,
+      };
+    case "SET_ERROR_ADD_ITEM":
+      return {
+        ...state,
+        isLoading: false,
+        isLoadingAddItem: false,
+        error: null,
+        errorAddItem: action.error,
+        succesAddItem: false,
+      };
+    case "SET_SUCCES_ADD_ITEM":
+      return {
+        ...state,
+        isLoading: false,
+        isLoadingAddItem: false,
+        error: null,
+        errorAddItem: null,
+        succesAddItem: true,
+      };
+    case "ADD_ITEM":
+      return {
+        ...state,
+        items: [...state.items, action.item],
+        isLoading: false,
+        isLoadingAddItem: false,
+        error: null,
+        errorAddItem: null,
+        succesAddItem: false,
+      };
+    case "SET_RESTART_ALL_ADD_ITEM":
+      return {
+        ...state,
+        isLoadingAddItem: false,
+        errorAddItem: null,
+        succesAddItem: false,
+      };
+    default:
+      return defaultCategoryState;
   }
-
-  if (action.type === "SET_ERROR") {
-    return {
-      ...state,
-    };
-  }
-
-  if (action.type === "ADD_ITEM") {
-    return {
-      items: [...state.items, action.item],
-    };
-  }
-
-  return defaultCategoryState;
 };
 
 export const CategoryContextProvider = (props) => {
@@ -80,61 +136,66 @@ export const CategoryContextProvider = (props) => {
     defaultCategoryState
   );
 
-  useEffect(() => {
-    dispatchCategoriesAction({
-      type: "LOAD_CATEGORIES",
-      categories: hardcodedCategories,
-    });
-  }, []); // Se ejecuta solo una vez al montar el componente
-
-  const addItemHandler = (item) => {
-    dispatchCategoriesAction({
-      type: "ADD_ITEM",
-      item: item, // El servicio a agregar
-    });
-  };
-  //const { token } = useContext(AuthContext);
   //const token = "sadasdasd12312";
-  //const [error, setError] = useState(null);
-  //const [profileData, setProfileData] = useState({ name: "", email: "" });
-  //const [loading, setLoading] = useState(false);
-  /*
+  const { token } = useContext(AuthenticationContext);
+
   useEffect(() => {
-    const loadProfile = async () => {
-      setLoading(true);
+    const loadCategories = async () => {
+      dispatchCategoriesAction({ type: "SET_LOADING" });
       try {
-        const data = await fetchData();
-        if (data) {
-          setProfileData({
-            name: data.name,
-            email: data.email,
-          });
-          setError(null); // Resetea el error cuando la carga es exitosa
-        }
+        const data = await fetchData(token);
+        dispatchCategoriesAction({
+          type: "LOAD_CATEGORIES",
+          categories: data,
+        });
       } catch (error) {
-        setError(error.message); // Establece el mensaje de error
-      } finally {
-        setLoading(false);
+        dispatchCategoriesAction({ type: "SET_ERROR", error: error.message });
       }
     };
 
+    // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
-      console.log("cargando perfil");
-      loadProfile();
+      loadCategories();
     }
   }, [token]);
-  */
+
+  const addItemHandler = async (name) => {
+    dispatchCategoriesAction({ type: "SET_LOADING_ADD_ITEM" });
+    try {
+      const data = await newCategory(name);
+      const newCateg = {
+        name: data.messageinfo.name,
+        _id: data.messageinfo._id,
+        user_id: data.messageinfo.user_id,
+      };
+
+      dispatchCategoriesAction({
+        type: "ADD_ITEM",
+        item: newCateg,
+      });
+      dispatchCategoriesAction({ type: "SET_SUCCES_ADD_ITEM" });
+    } catch (error) {
+      dispatchCategoriesAction({
+        type: "SET_ERROR_ADD_ITEM",
+        error: error.message,
+      });
+    }
+  };
 
   const categoryContext = {
     items: categoriesState.items,
     addItem: addItemHandler,
-    //email: profileData.email,
-    //isLoading: loading,
-    //error: error, // Incluir error en el contexto
+    isLoading: categoriesState.isLoading,
+    isLoadingAddItem: categoriesState.isLoadingAddItem,
+    error: categoriesState.error,
+    errorAddItem: categoriesState.errorAddItem,
+    succesAddItem: categoriesState.succesAddItem,
   };
 
   return (
-    <CategoryContext.Provider value={categoryContext}>
+    <CategoryContext.Provider
+      value={{ categoryContext, dispatchCategoriesAction }}
+    >
       {props.children}
     </CategoryContext.Provider>
   );

@@ -25,7 +25,7 @@ const AuthenticationForm = () => {
   };
 
   //Si desde el LOGIN ponen usuario correcto (inexistente) y buena password, se abre el FORM de Registrarse, y le pasamos desde el padre (este) la password ingresada en el login para compararla en el signup y actualizamos el form
-  const correctPassword = (password, email) => {
+  const goToSignUp = (password, email) => {
     setPassword(password);
     setEmail(email);
     setIsLogin((prevState) => !prevState);
@@ -168,7 +168,7 @@ const AuthenticationForm = () => {
   return isLogin ? (
     <LogInForm
       onButtonClick={switchAuthModeHandler2}
-      liftUpPassword={correctPassword}
+      liftUpCredentials={goToSignUp}
     ></LogInForm>
   ) : (
     <SignUpForm

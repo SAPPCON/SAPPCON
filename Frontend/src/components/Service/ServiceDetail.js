@@ -1,45 +1,32 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
 import { BiAccessibility } from "react-icons/bi";
-import { useState, useRef, useContext, Fragment } from "react";
+import { useState, useRef, useEffect, useContext, Fragment } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import ServiceContext from "@/store/ServiceContext";
+import CategoryContext from "@/store/CategoryContext";
+import MeasureUnitContext from "@/store/MeasureUnitContext";
+import Loader from "../UI/Loader";
 
 //Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)
 
 const ServiceDetail = (props) => {
-  const [errorRequestCategory, setErrorRequestCategory] = useState("");
-  const [correctRequestCategory, setCorrectRequestCategory] = useState(false);
-  const [errorRequestUnit, setErrorRequestUnit] = useState("");
-  const [correctRequestUnit, setCorrectRequestUnit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const serviceCtx = useContext(ServiceContext);
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+  const { categoryContext: categoryCtx } = useContext(CategoryContext);
+  const { measureUnitContext: measureUnitCtx } = useContext(MeasureUnitContext);
+  const Categories = categoryCtx.items;
+  const measureUnits = measureUnitCtx.items;
 
   //Y en esta funcion se deberia mandar la request al back para cambiar este valor.
-  const handleUnitChange = (newValue) => {
-    console.log("Nuevo valor seleccionado:", newValue);
-
-    if (errorRequestUnit) {
-      setErrorRequestUnit("Error al actualizar la Unidad de Medida");
-      setCorrectRequestUnit(false);
-    } else {
-      setErrorRequestUnit("");
-      setCorrectRequestUnit(true);
-    }
+  const handleUnitChange = (newMeasureUnitId) => {
+    serviceCtx.updateMeasureUnit(props.serviceData, newMeasureUnitId);
   };
 
-  const handleCategoryChange = (newValue) => {
-    console.log("Nuevo valor seleccionado:", newValue);
-
-    if (errorRequestCategory) {
-      setErrorRequestCategory("Error al actualizar la Categoria");
-      setCorrectRequestCategory(false);
-    } else {
-      setErrorRequestCategory("");
-      setCorrectRequestCategory(true);
-    }
+  const handleCategoryChange = (newCategoryId) => {
+    serviceCtx.updateCategory(props.serviceData, newCategoryId);
   };
 
   //Muestra el modal y confirmacion de eliminacion.
@@ -52,9 +39,8 @@ const ServiceDetail = (props) => {
     setShowDelete(false);
   };
 
-  //Aca se deberia mandar la request al backend. Por ahora solo actualizo el contexto.
   const handleConfirmDelete = () => {
-    serviceCtx.deleteItem(props.serviceData.id);
+    serviceCtx.deleteItem(props.serviceData._id);
 
     //Una vez borrado saco el modal de confirmacion de borrado
     setShowDelete(false);
@@ -67,9 +53,10 @@ const ServiceDetail = (props) => {
   return (
     <Fragment>
       <div className=" absolute top-12 left-1/2 transform -translate-x-1/2  z-40 bg-gray-100 rounded-[8px] border border-solid border-grayBorder w-[600px] ">
-        {/*TODO lo relacionado a exito o error de las 2 actualizaciones de Select estan en estos 4 pedazos de codigo. Ambos absolutos respecto al contenedor padre (este div absoluto de arriba) */}
+        {/*TODO lo relacionado a exito o error de las 2 actualizaciones de Select estan en estos 4 pedazos de codigo. Ambos absolutos respecto al contenedor padre (este div absoluto de arriba) 
+        ESTOS DOS MENSAJES DE DEJAN DE VER CUANDO SE VA HACIA ATRAS, PORQUE ESE METODO HACIA ATRAS EJECUTA LA ACCION EN EL CONTEXTO DE RESETEAR A FALSO TODO LO RELACIONADO A UPDATE CATEGORY*/}
 
-        {correctRequestCategory && (
+        {serviceCtx.successUpdateCategory && (
           <div
             className=" flex h-[56px] w-full   items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px] pb-[18px] pt-[14px] font-sans text-[14px] text-blackText absolute left-0 top-[-61px]
            "
@@ -79,7 +66,7 @@ const ServiceDetail = (props) => {
           </div>
         )}
 
-        {errorRequestCategory && (
+        {serviceCtx.errorUpdateCategory && (
           <div
             className=" flex h-20 w-full   rounded-xl border border-red5 bg-white p-4 ring-4 ring-inset 	
           ring-red2 ring-opacity-20 absolute left-0 top-[-85px]"
@@ -88,13 +75,13 @@ const ServiceDetail = (props) => {
             <div className="flex flex-col justify-center font-sans    ">
               <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
               <h2 className="  text-xs text-blackText ">
-                {errorRequestCategory}
+                {serviceCtx.errorUpdateCategory}
               </h2>
             </div>
           </div>
         )}
 
-        {correctRequestUnit && (
+        {serviceCtx.successUpdateMeasureUnit && (
           <div
             className=" flex h-[56px] w-full   items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px] pb-[18px] pt-[14px] font-sans text-[14px] text-blackText absolute left-0 top-[-61px]
            "
@@ -104,7 +91,7 @@ const ServiceDetail = (props) => {
           </div>
         )}
 
-        {errorRequestUnit && (
+        {serviceCtx.errorUpdateMeasureUnit && (
           <div
             className=" flex h-20 w-full   rounded-xl border border-red5 bg-white p-4 ring-4 ring-inset 	
           ring-red2 ring-opacity-20 absolute left-0 top-[-85px]"
@@ -112,7 +99,9 @@ const ServiceDetail = (props) => {
             <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
             <div className="flex flex-col justify-center font-sans    ">
               <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs text-blackText ">{errorRequestUnit}</h2>
+              <h2 className="  text-xs text-blackText ">
+                {serviceCtx.errorUpdateMeasureUnit}
+              </h2>
             </div>
           </div>
         )}
@@ -132,7 +121,7 @@ const ServiceDetail = (props) => {
               <h1 className="mb-[4px] font-bold">ID</h1>
               <h1>
                 {/* {profileCtx.name} */}
-                {props.serviceData.id}
+                {props.serviceData._id}
               </h1>
             </div>
           </li>
@@ -142,7 +131,7 @@ const ServiceDetail = (props) => {
               <h1 className="mb-[4px] font-bold">Nombre</h1>
               <h1>
                 {/* {profileCtx.name} */}
-                {props.serviceData.nombre}
+                {props.serviceData.name}
               </h1>
             </div>
             <Link href="/service/name" className="pr-6">
@@ -157,41 +146,60 @@ const ServiceDetail = (props) => {
               <label htmlFor="category" className="mb-[4px] font-bold">
                 Categoria
               </label>
-              <select
-                id="category"
-                //ref={categoryRef}
-                defaultValue={props.serviceData.categoria}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer `}
-              >
-                <option value="Movimiento de tierras">
-                  Movimiento de tierras
-                </option>
-                <option value="Estructura">Estructura</option>
-                <option value="Obra gruesa">Obra gruesa</option>
-                <option value="Acabados">Acabados</option>
-                <option value="Instalaciones">Instalaciones</option>
-              </select>
+              {categoryCtx.isLoading && (
+                <div className="h-[31px] flex items-center justify-center">
+                  <Loader style={{ width: "100%", height: "100%" }}></Loader>
+                </div>
+              )}
+              {categoryCtx.error && (
+                <div className="h-[31px]">{categoryCtx.error}</div>
+              )}
+
+              {!categoryCtx.error && !categoryCtx.isLoading && (
+                <select
+                  id="category"
+                  defaultValue={props.serviceData.category_id}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
+                  disabled={categoryCtx.isLoadingUpdateCategory} // Deshabilitar si está actualizando
+                >
+                  {Categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div className="mb-4 w-[49%]">
               <label htmlFor="unitOfMeasurement" className="mb-[4px] font-bold">
                 Unidad de Medida
               </label>
-              <select
-                id="unitOfMeasurement"
-                //ref={unitOfMeasurementRef} No es necesario usar la ref para este caso de obtener el valor cuando cambia, onChange ya nos permite acceder a ir directamente.
-                defaultValue={props.serviceData.unidadDeMedida}
-                //value={props.serviceData.unidadDeMedida}
-                onChange={(e) => handleUnitChange(e.target.value)}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer`}
-              >
-                {/*<option value="">Seleccione una opción</option> */}
-                <option value="m²">m²</option>
-                <option value="m³">m³</option>
-                <option value="día">día</option>
-                <option value="punto">punto</option>
-              </select>
+
+              {measureUnitCtx.isLoading && (
+                <div className="h-[31px] flex items-center justify-center">
+                  <Loader style={{ width: "100%", height: "100%" }}></Loader>
+                </div>
+              )}
+              {measureUnitCtx.error && (
+                <div className="h-[31px]">{measureUnitCtx.error}</div>
+              )}
+
+              {!measureUnits.error && !measureUnits.isLoading && (
+                <select
+                  id="unitOfMeasurement"
+                  defaultValue={props.serviceData.measure_unit_id}
+                  onChange={(e) => handleUnitChange(e.target.value)}
+                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
+                >
+                  {measureUnits.map((measureUnit) => (
+                    <option key={measureUnit.id} value={measureUnit._id}>
+                      {measureUnit.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           </li>
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
@@ -201,7 +209,7 @@ const ServiceDetail = (props) => {
               <h1 className="mb-[4px] font-bold">Coste Unitario</h1>
               <h1>
                 {/* {profileCtx.name} */}
-                {props.serviceData.costeUnitario}
+                {props.serviceData.cost}
               </h1>
             </div>
             <Link href="/service/unitcost" className="pr-6">
@@ -216,7 +224,7 @@ const ServiceDetail = (props) => {
               <h1 className="mb-[4px] font-bold">Precio Unitario</h1>
               <h1>
                 {/* {profileCtx.name} */}
-                {props.serviceData.precioUnitario}
+                {props.serviceData.price}
               </h1>
             </div>
             <Link href="/service/unitprice" className="pr-6">
@@ -232,7 +240,7 @@ const ServiceDetail = (props) => {
               <h1 className="mb-[4px] font-bold">Descripción</h1>
               <h1 className="mr-1">
                 {/* {profileCtx.name} */}
-                {props.serviceData.descripcion}
+                {props.serviceData.description}
               </h1>
             </div>
             <Link href="/service/description" className="pr-6">
@@ -274,21 +282,29 @@ const ServiceDetail = (props) => {
           <h4 className="font-bold">
             ¿Está seguro de que desea eliminar este servicio?
           </h4>
-          <div className="flex w-full items-center justify-between mt-5 ">
-            <button
-              className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-              onClick={handleClickHideDelete}
-            >
-              Atrás
-            </button>
 
-            <button
-              className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
-              onClick={handleConfirmDelete}
-            >
-              Eliminar
-            </button>
-          </div>
+          {categoryCtx.isLoadingDeleteItem && (
+            <div className="h-[40px] mt-5 w-full flex items-center justify-center">
+              <Loader style={{ width: "100%", height: "100%" }}></Loader>
+            </div>
+          )}
+          {!serviceCtx.idLoadingDeleteItem && (
+            <div className="flex w-full items-center justify-between mt-5 ">
+              <button
+                className="flex h-[40px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                onClick={handleClickHideDelete}
+              >
+                Atrás
+              </button>
+
+              <button
+                className=" flex h-[40px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
+                onClick={handleConfirmDelete}
+              >
+                Eliminar
+              </button>
+            </div>
+          )}
         </div>
       )}
 

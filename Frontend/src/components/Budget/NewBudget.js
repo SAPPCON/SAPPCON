@@ -19,7 +19,7 @@ const NewBudget = (props) => {
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
   const [cantidades, setCantidades] = useState({});
 
-  const serviceCtx = useContext(ServiceContext);
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
   const servicios = serviceCtx.items;
 
   //Como en el Select el campo value solo acepta string o number (HTML es asi) y no el objeto servicio, para poder trabajar con dicho objeto en el Select se convierte el objeto a cadena de texto con stringify.
