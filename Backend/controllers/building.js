@@ -155,7 +155,11 @@ export const DeleteBuilding = async (req, res) => {
         }
 
         // Delete Building
-        const building = await Building.findByIdAndDelete(req.params.id);
+        const userId = req.user.id;
+        const building = await Building.findOneAndDelete({
+            _id:req.params.id,
+            user_id: userId,
+        })
 
         if (!building) {
             return res.status(404).json({
