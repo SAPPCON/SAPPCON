@@ -134,7 +134,7 @@ const ServiceDetail = (props) => {
                 {props.serviceData.name}
               </h1>
             </div>
-            <Link href="/service/name" className="pr-6">
+            <Link href={`/service/name/${props.serviceData._id}`} className="pr-6">
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -212,7 +212,7 @@ const ServiceDetail = (props) => {
                 {props.serviceData.cost}
               </h1>
             </div>
-            <Link href="/service/unitcost" className="pr-6">
+            <Link href={`/service/unitcost/${props.serviceData._id}`} className="pr-6">
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -227,7 +227,7 @@ const ServiceDetail = (props) => {
                 {props.serviceData.price}
               </h1>
             </div>
-            <Link href="/service/unitprice" className="pr-6">
+            <Link href={`/service/unitprice/${props.serviceData._id}`} className="pr-6">
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -243,7 +243,7 @@ const ServiceDetail = (props) => {
                 {props.serviceData.description}
               </h1>
             </div>
-            <Link href="/service/description" className="pr-6">
+            <Link href={`/service/description/${props.serviceData._id}`} className="pr-6">
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>

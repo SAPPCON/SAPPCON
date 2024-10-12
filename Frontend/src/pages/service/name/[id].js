@@ -1,15 +1,16 @@
 import React, { Fragment, useContext, useEffect } from "react";
 import Head from "next/head";
-import Password from "@/components/Profile/ProfileUpdate/Password";
+import Name from "@/components/Service/ServiceUpdate/Name";
+import AuthenticationContext from "@/store/AuthenticationContext";
 import Loader from "@/components/UI/Loader";
 import { useRouter } from "next/router";
-import AuthenticationContext from "@/store/AuthenticationContext";
+
 
 function NamePage() {
   const router = useRouter();
   const authenticationContext = useContext(AuthenticationContext);
+  const { id } = router.query;
 
-  
   useEffect(() => {
     if (!authenticationContext.isLoading && !authenticationContext.isLoggedIn) {
       router.push("/auth");
@@ -24,8 +25,8 @@ function NamePage() {
     return (
       <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Nombre del Servicio</title>
+        <meta name="description" content="Edit your service's name" />
       </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -38,8 +39,8 @@ function NamePage() {
     return (
       <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Nombre del Servicio</title>
+        <meta name="description" content="Edit your service's name" />
       </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -47,13 +48,14 @@ function NamePage() {
       </Fragment>
     );
   }
+
   return (
     <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Nombre del Servicio</title>
+        <meta name="description" content="Edit your service's name" />
       </Head>
-      <Password></Password>
+      <Name serviceId={id}></Name>
     </Fragment>
   );
 }

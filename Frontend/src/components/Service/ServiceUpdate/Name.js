@@ -10,28 +10,84 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { useContext, useEffect, useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
 import ProfileNav from "@/components/Navigation/ProfileNav";
+import { noEmptyValidate } from "@/utils/validationFunctions";
+import ServiceContext from "@/store/ServiceContext";
+import { useRouter } from "next/router";
 
-const Name = (props) => {
+const Name = ({serviceId}) => {
+  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
   const newNameInputRef = useRef();
 
-  const basicValidate = (word) => {
-    const basicPattern = /^(?!.*\s).+$/;
-    return basicPattern.test(word);
-  };
+  // Busca el servicio con el _id que coincide
+  const service = serviceCtx.items.find((item) => item._id === serviceId);
+
+  // Si el servicio existe, usa su nombre, si no, muestra un placeholder por defecto
+  const serviceName = service ? service.name : 'Nombre no encontrado';
+
+ 
+  useEffect(() => {
+    // Verificar si el reload se hizo a través del router
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
+
+    if (reloadViaRouter) {
+      // Limpia la marca de recarga del sessionStorage
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
+    setCorrectRequest(false);
     const enteredName = newNameInputRef.current.value;
 
-    if (!basicValidate(enteredName)) {
-      setErrorRequest("Mínimo 1 carácter y sin espacios en blanco.");
-      setCorrectRequest(false);
+    if (!noEmptyValidate(enteredName)) {
+      setErrorRequest("Ingrese el nombre.");
+      return;
     } else {
       setErrorRequest("");
-      setCorrectRequest(true);
     }
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+       //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_UPDATE_SERVICE_URL}${serviceId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          name: enteredName,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setIsLoading(false);
+      
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(responseData.error || "Error al actualizar el nombre del servicio");
+      }
+
+
+      setCorrectRequest(true);
+      newNameInputRef.current.value ="";
+      setErrorRequest("");
+
+      sessionStorage.setItem("reloadViaRouter", "true");
+  
+      router.reload();
+    } catch (error) {
+      setErrorRequest(error.message);
+    }
+
   };
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-blackText font-sans min-w-[1200px] ">
@@ -109,31 +165,21 @@ const Name = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newNameInputRef}
-                    //   placeholder={profileCtx.name}
+                    placeholder={serviceName}
                   ></input>
                 </div>
 
-                {!false && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                    onClick={submitHandler}
-                  >
-                    Guardar
-                  </button>
-                )}
-                {false && <Loader />}
-
-                {/*
                 {!isLoading && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring "
-                    onClick={submitHandler}
-                  >
-                    Guardar Cambios
-                  </button>
+                 <button
+                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                 onClick={submitHandler}
+               >
+                 Guardar
+               </button>
                 )}
+
                 {isLoading && <Loader />}
-                */}
+                
               </form>
             </div>
           </div>

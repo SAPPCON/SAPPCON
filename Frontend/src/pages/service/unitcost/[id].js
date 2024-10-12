@@ -1,15 +1,15 @@
 import React, { Fragment, useContext, useEffect } from "react";
 import Head from "next/head";
-import Password from "@/components/Profile/ProfileUpdate/Password";
+import UnitCost from "@/components/Service/ServiceUpdate/UnitCost";
+import AuthenticationContext from "@/store/AuthenticationContext";
 import Loader from "@/components/UI/Loader";
 import { useRouter } from "next/router";
-import AuthenticationContext from "@/store/AuthenticationContext";
 
-function NamePage() {
+function UnitCostPage() {
   const router = useRouter();
   const authenticationContext = useContext(AuthenticationContext);
+  const { id } = router.query;
 
-  
   useEffect(() => {
     if (!authenticationContext.isLoading && !authenticationContext.isLoggedIn) {
       router.push("/auth");
@@ -20,12 +20,13 @@ function NamePage() {
     router,
   ]);
 
+
   if (authenticationContext.isLoading) {
     return (
       <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Costo Unitario del Servicio</title>
+        <meta name="description" content="Edit your service's unit cost" />
       </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -38,8 +39,8 @@ function NamePage() {
     return (
       <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Costo Unitario del Servicio</title>
+        <meta name="description" content="Edit your service's unit cost" />
       </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -50,12 +51,12 @@ function NamePage() {
   return (
     <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Costo Unitario del Servicio</title>
+        <meta name="description" content="Edit your service's unit cost" />
       </Head>
-      <Password></Password>
+      <UnitCost serviceId={id}></UnitCost>
     </Fragment>
   );
 }
 
-export default NamePage;
+export default UnitCostPage;

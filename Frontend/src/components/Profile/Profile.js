@@ -9,9 +9,49 @@ import { IoIosArrowForward } from "react-icons/io";
 import { BiAccessibility } from "react-icons/bi";
 import AuthenticationContext from "@/store/AuthenticationContext";
 import { useContext } from "react";
+import ProfileContext from "@/store/ProfileContext";
+import Loader from "../UI/Loader";
+import { useState } from "react";
+
 
 const Profile = (props) => {
   const authenticationCtx = useContext(AuthenticationContext);
+  const profileCtx = useContext(ProfileContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorRequest, setErrorRequest] = useState(false);
+
+  const logoutHandler = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(process.env.NEXT_PUBLIC_LOGOUT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setIsLoading(false);
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(responseData.error || "Error al actualizar cerrar sesion");
+      }
+      //Si sale bien, tamb borro el token de local storage y ahi nos va mover a auth
+      setErrorRequest("");
+      authenticationCtx.logout();
+
+    } catch (error) {
+      setErrorRequest(error.message);
+    }
+
+  };
+
+
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-black font-sans min-w-[1200px] ">
       <div className="flex bg-white h-20 ">
@@ -40,7 +80,13 @@ const Profile = (props) => {
           Tú Perfil
         </h1>
 
-        <ul className="flex flex-col pt-6 pb-2 relative rounded-[8px] border border-solid border-grayBorder">
+ {/* Le hago el contenedor para que el borde quede identico al borde cuando estan los datos */}
+{profileCtx.isLoading &&    <div className="flex  pt-6 pb-2 relative rounded-[8px] w-[600px] h-[520px] border border-solid border-grayBorder justify-center items-center "><Loader></Loader></div>}
+
+ {/* Le hago el contenedor para que el borde quede identico al borde cuando estan los datos */}
+ {profileCtx.error &&    <div className="flex  pt-6 pb-2 relative rounded-[8px] w-[600px] h-[520px] border border-solid border-grayBorder justify-center items-center">{profileCtx.error}</div>}
+
+{!profileCtx.isLoading && !profileCtx.error && (        <ul className="flex flex-col pt-6 pb-2 relative rounded-[8px] border border-solid border-grayBorder">
           <div className="absolute right-[24px] top-[24px] w-[150px] h-[150px] bg-gray-300 flex justify-center items-center truncate ">
             <BiAccessibility className="text-[130px] "></BiAccessibility>
           </div>
@@ -50,9 +96,9 @@ const Profile = (props) => {
             <div className="pl-6 mb-[12px] w-full truncate">
               <h1 className="mb-[4px] font-bold">Nombre</h1>
               <h1>
-                {/* {profileCtx.name} */}
-                {/*props.clientData.name*/}
-                Nombre
+                 {profileCtx.name} 
+             
+            
               </h1>
             </div>
             <Link href="/profile/name" className="pr-6">
@@ -66,8 +112,8 @@ const Profile = (props) => {
             <div className="pl-6 mb-[12px] w-full truncate">
               <h1 className="mb-[4px] font-bold">Apellido</h1>
               <h1>
-                {/* {profileCtx.name} */}
-                Apellido
+              {profileCtx.surname} 
+        
               </h1>
             </div>
             <Link href="/profile/lastname" className="pr-6">
@@ -79,19 +125,18 @@ const Profile = (props) => {
 
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
-              <h1 className="mb-[4px] font-bold">Nombre de Usuario</h1>
+              <h1 className="mb-[4px] font-bold">Alias</h1>
               <h1>
-                {/* {profileCtx.name} */}
-                Nombre de Usuario
+              {profileCtx.alias ? profileCtx.alias : 'Sin definir'}
               </h1>
             </div>
-            {/* 
+            
             <Link href="/profile/username" className="pr-6">
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
             </Link>
-            */}
+            
           </li>
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
@@ -99,7 +144,6 @@ const Profile = (props) => {
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Contraseña</h1>
               <h1>
-                {/* {profileCtx.name} */}
                 **********
               </h1>
             </div>
@@ -115,8 +159,8 @@ const Profile = (props) => {
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Dirección</h1>
               <h1>
-                {/* {profileCtx.name} */}
-                Dirección
+              {profileCtx.address ? profileCtx.address : 'Sin definir'}
+               
               </h1>
             </div>
             <Link href="/profile/address" className="pr-6">
@@ -131,8 +175,8 @@ const Profile = (props) => {
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Correo Electrónico</h1>
               <h1>
-                {/* {profileCtx.name} */}
-                Correo Electrónico
+                {profileCtx.email}
+             
               </h1>
             </div>
             <Link href="/profile/email" className="pr-6">
@@ -143,7 +187,9 @@ const Profile = (props) => {
           </li>
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
-          <li className=" px-[18px] ">
+{/* le hago h-40 para q coincida con el alto del loader. Los botones ademas de depender de q se cargue bien el context depende tambien desp de q se haga bien o mal la request. Si hay error se renderiza igual para q pueda volver a intentar */}
+          
+          {!isLoading && (<li className="h-[40px] px-[18px]  ">
             <div className="flex items-center justify-end ">
               <Link href="/" className="">
                 <button
@@ -156,14 +202,20 @@ const Profile = (props) => {
               <Link href="/auth" className="">
                 <button
                   className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
-                  onClick={authenticationCtx.logout}
+                  onClick={logoutHandler}
                 >
                   Cerrar Sesión
                 </button>
               </Link>
             </div>
-          </li>
-        </ul>
+          </li>)}
+          
+
+           {/* Esto es para mostrar el Loader mientras se esta haciendo la request del logout */}
+{isLoading &&    <div className="flex justify-center items-center "><Loader></Loader></div>}
+{errorRequest &&    <div className="flex w-full justify-center items-center text-xs text-red5 ">{errorRequest}</div>}
+        </ul>)}
+        
       </div>
     </div>
   );

@@ -1,15 +1,15 @@
 import React, { Fragment, useContext, useEffect } from "react";
 import Head from "next/head";
-import Password from "@/components/Profile/ProfileUpdate/Password";
+import Description from "@/components/Service/ServiceUpdate/Description";
+import AuthenticationContext from "@/store/AuthenticationContext";
 import Loader from "@/components/UI/Loader";
 import { useRouter } from "next/router";
-import AuthenticationContext from "@/store/AuthenticationContext";
 
-function NamePage() {
+function DescriptionPage() {
   const router = useRouter();
   const authenticationContext = useContext(AuthenticationContext);
+  const { id } = router.query;
 
-  
   useEffect(() => {
     if (!authenticationContext.isLoading && !authenticationContext.isLoggedIn) {
       router.push("/auth");
@@ -24,8 +24,8 @@ function NamePage() {
     return (
       <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Descripción del Servicio</title>
+        <meta name="description" content="Edit your service's description" />
       </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -34,12 +34,13 @@ function NamePage() {
     );
   }
 
+  
   if (!authenticationContext.isLoggedIn) {
     return (
       <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Descripción del Servicio</title>
+        <meta name="description" content="Edit your service's description" />
       </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -47,15 +48,16 @@ function NamePage() {
       </Fragment>
     );
   }
+
   return (
     <Fragment>
       <Head>
-        <title>SAPPCON Cambiar Contraseña</title>
-        <meta name="description" content="Edit your password" />
+        <title>SAPPCON Cambiar Descripción del Servicio</title>
+        <meta name="description" content="Edit your service's description" />
       </Head>
-      <Password></Password>
+      <Description serviceId={id}></Description>
     </Fragment>
   );
 }
 
-export default NamePage;
+export default DescriptionPage;

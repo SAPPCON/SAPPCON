@@ -28,6 +28,7 @@ const defaultServiceState = {
 
 // Función que obtiene los datos del backend
 const fetchData = async (token) => {
+
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_GET_SERVICE_URL, {
       headers: {
@@ -52,9 +53,8 @@ const newService = async (item) => {
     const token = localStorage.getItem("token");
     //const token = localStorage.getItem("sadasdasd12312");
 
-    const response = await fetch(process.env.NEXT_PUBLIC_ADD_SERVICE_URL, {
+    const response = await fetch(process.env.NEXT_PUBLIC_LOGOUT_URL, {
       method: "POST",
-      body: JSON.stringify(item),
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

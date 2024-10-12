@@ -10,27 +10,78 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { useContext, useEffect, useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
 import ProfileNav from "@/components/Navigation/ProfileNav";
+import ServiceContext from "@/store/ServiceContext";
+import { numberFormatValidate } from "@/utils/validationFunctions";
+import { useRouter } from "next/router";
 
-const UnitPrice = (props) => {
+const UnitPrice = ({serviceId}) => {
+  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
   const newUnitPriceInputRef = useRef();
 
-  const numberValidate = (word) => {
-    const basicPattern = /^\d+$/;
-    return word !== null && basicPattern.test(word);
-  };
+  const service = serviceCtx.items.find((item) => item._id === serviceId);
+  const serviceUnitPrice = service ? service.price : 'Precio no encontrado';
+
+  useEffect(() => {
+    // Verificar si el reload se hizo a través del router
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
+
+    if (reloadViaRouter) {
+      // Limpia la marca de recarga del sessionStorage
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
+    setCorrectRequest(false);
     const enteredUnitPrice = newUnitPriceInputRef.current.value;
 
-    if (!numberValidate(enteredUnitPrice)) {
-      setErrorRequest("Solo numeros, sin espacios en blanco y no nulo.");
-      setCorrectRequest(false);
+    if (!numberFormatValidate(enteredUnitPrice)) {
+      setErrorRequest("Ingrese un numero correcto.");
+      return;
     } else {
       setErrorRequest("");
+    }
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+       //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_UPDATE_SERVICE_URL}${serviceId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          price: enteredUnitPrice,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setIsLoading(false);
+      
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(responseData.error || "Error al actualizar el precio del servicio");
+      }
+
+
       setCorrectRequest(true);
+      newUnitPriceInputRef.current.value ="";
+      setErrorRequest("");
+
+      sessionStorage.setItem("reloadViaRouter", "true");
+  
+      router.reload();
+    } catch (error) {
+      setErrorRequest(error.message);
     }
   };
   return (
@@ -109,31 +160,20 @@ const UnitPrice = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newUnitPriceInputRef}
-                    //   placeholder={profileCtx.name}
+                    placeholder={serviceUnitPrice}
                   ></input>
                 </div>
 
-                {!false && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                    onClick={submitHandler}
-                  >
-                    Guardar
-                  </button>
-                )}
-                {false && <Loader />}
-
-                {/*
                 {!isLoading && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring "
-                    onClick={submitHandler}
-                  >
-                    Guardar Cambios
-                  </button>
+                 <button
+                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                 onClick={submitHandler}
+               >
+                 Guardar
+               </button>
                 )}
+
                 {isLoading && <Loader />}
-                */}
               </form>
             </div>
           </div>

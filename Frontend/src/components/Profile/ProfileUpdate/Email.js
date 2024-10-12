@@ -10,28 +10,75 @@ import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { useContext, useEffect, useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
+import { useRouter } from "next/router";
+import ProfileContext from "@/store/ProfileContext";
+import { validateEmail } from "@/utils/validationFunctions";
 
 const Email = (props) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const profileCtx = useContext(ProfileContext)
+  const router = useRouter();
   const newEmailInputRef = useRef();
 
-  const validateEmail = (email) => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
-  };
+  useEffect(() => {
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
+
+    if (reloadViaRouter) {
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
+
 
   const submitHandler = async (event) => {
     event.preventDefault();
+    setCorrectRequest(false);
     const enteredEmail = newEmailInputRef.current.value;
 
     if (!validateEmail(enteredEmail)) {
       setErrorRequest("Dirección de correo electrónico inválida.");
-      setCorrectRequest(false);
+      return;
     } else {
       setErrorRequest("");
-      //x ahora el correcto va aca, en realidad va despues de hacer la request al back
+    }
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(process.env.NEXT_PUBLIC_UPDATE_USER_URL, {
+        method: "PUT",
+        body: JSON.stringify({
+          email: enteredEmail,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setIsLoading(false);
+      
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        console.log(responseData);
+        throw new Error(responseData.message || "Error al actualizar el email del usuario");
+      }
+
+
       setCorrectRequest(true);
+      newEmailInputRef.current.value ="";
+      setErrorRequest("");
+
+      sessionStorage.setItem("reloadViaRouter", "true");
+  
+      router.reload();
+    } catch (error) {
+      setErrorRequest(error.message);
     }
   };
 
@@ -111,31 +158,20 @@ const Email = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newEmailInputRef}
-                    //   placeholder={profileCtx.name}
+                    placeholder={profileCtx.email}
                   ></input>
                 </div>
 
-                {!false && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                    onClick={submitHandler}
-                  >
-                    Guardar
-                  </button>
-                )}
-                {false && <Loader />}
-
-                {/*
                 {!isLoading && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring "
-                    onClick={submitHandler}
-                  >
-                    Guardar Cambios
-                  </button>
+                 <button
+                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                 onClick={submitHandler}
+               >
+                 Guardar
+               </button>
                 )}
+
                 {isLoading && <Loader />}
-                */}
               </form>
             </div>
           </div>

@@ -8,31 +8,75 @@ import Link from "next/link";
 import { IoIosArrowForward } from "react-icons/io";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
+import { useRouter } from "next/router";
+import { validatePassword } from "@/utils/validationFunctions";
 
 const Password = (props) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const newPasswordInputRef = useRef();
 
-  const validatePassword = (password) => {
-    const passwordPattern = /^(?!.*\s).{8,}$/;
-    return passwordPattern.test(password);
-  };
+  useEffect(() => {
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
+
+    if (reloadViaRouter) {
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
+    setCorrectRequest(false);
     const enteredPassword = newPasswordInputRef.current.value;
+
 
     if (!validatePassword(enteredPassword)) {
       setErrorRequest("Mínimo 8 caracteres y sin espacios en blanco.");
-      setCorrectRequest(false);
+      return;
     } else {
       setErrorRequest("");
-      //x ahora el correcto va aca, en realidad va despues de hacer la request al back
-      setCorrectRequest(true);
     }
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(process.env.NEXT_PUBLIC_UPDATE_USER_URL, {
+        method: "PUT",
+        body: JSON.stringify({
+          password: enteredPassword,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setIsLoading(false);
+      
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(responseData.error || "Error al actualizar la contraseña");
+      }
+
+      setCorrectRequest(true);
+      newPasswordInputRef.current.value ="";
+      setErrorRequest("");
+
+      sessionStorage.setItem("reloadViaRouter", "true");
+  
+      router.reload();
+    } catch (error) {
+      setErrorRequest(error.message);
+    }
+
   };
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-blackText font-sans min-w-[1200px] ">
@@ -108,31 +152,20 @@ const Password = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newPasswordInputRef}
-                    //   placeholder={profileCtx.name}
+                    
                   ></input>
                 </div>
 
-                {!false && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                    onClick={submitHandler}
-                  >
-                    Guardar
-                  </button>
-                )}
-                {false && <Loader />}
-
-                {/*
                 {!isLoading && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring "
-                    onClick={submitHandler}
-                  >
-                    Guardar Cambios
-                  </button>
+                 <button
+                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                 onClick={submitHandler}
+               >
+                 Guardar
+               </button>
                 )}
+
                 {isLoading && <Loader />}
-                */}
               </form>
             </div>
           </div>
