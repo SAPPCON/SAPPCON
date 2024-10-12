@@ -102,6 +102,108 @@ export const login = async (req, res) => {
     }
 }
 
+
+export const getUser = async (req, res) => {
+    // Obtener el token del header Authorization
+    const token = req.header("Authorization")?.split(" ")[1];
+  
+    // Verificar si no hay token
+    if (!token) {
+      return res.status(401).json({ error: "No hay token." });
+    }
+  
+    try {
+      // Verificar si el token es válido
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+      // Buscar el usuario cuyo id está codificado en el token
+      const user = await User.findById(decoded.user.id);
+  
+      if (!user) {
+        return res.status(404).json({ error: "Usuario no encontrado." });
+      }
+  
+      // Retornar el usuario encontrado
+      return res.status(200).json({ 
+        message: "Usuario obtenido exitosamente.",
+        user
+      });
+  
+    } catch (error) {
+      return res.status(500).json({
+        error: "Error en el servidor.",
+        errorinfo: error.message,
+      });
+    }
+  };
+
+
+  export const UpdateUser = async (req, res) => {
+    const { name, email, password: plainPassword, alias, address } = req.body;
+  
+    try {
+      // Verifica si el usuario está autorizado
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          message: "Usuario no autorizado.",
+          messageinfo: "No se ha proporcionado un token válido para un usuario.",
+        });
+      }
+  
+      const userId = req.user.id;
+  
+      // Si hay un email en el body, verificar si ya está en uso por otro usuario
+      if (email) {
+        const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+        if (existingUser) {
+          return res.status(400).json({
+            message: "El email ya está en uso.",
+            messageinfo: "Por favor, utiliza otro email.",
+          });
+        }
+      }
+  
+      let updatedFields = { name, email, alias, address };
+  
+      // Si se proporciona una nueva contraseña, la encripta
+      if (plainPassword) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(plainPassword, salt);
+        updatedFields.password = hashedPassword;
+      }
+  
+      // Busca y actualiza el usuario
+      const user = await User.findByIdAndUpdate(
+        userId,
+        updatedFields,
+        { new: true }
+      ).catch((error) => {
+        return res.status(404).json({
+          message: "Usuario no encontrado.",
+          messageinfo: error.message,
+        });
+      });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "Usuario no encontrado.",
+          messageinfo: "No se ha encontrado el usuario con el id proporcionado.",
+        });
+      }
+  
+      res.status(200).json({
+        message: "Usuario actualizado.",
+        messageinfo: user
+      });
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send({
+        error: "Error en el servidor.",
+        errorinfo: error.message
+      });
+    }
+  };
+
 export const logout = async (req, res) => {
     const token = req.header("Authorization").split(" ")[1];
 
