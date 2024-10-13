@@ -40,7 +40,7 @@ const CustomerProfile = (props) => {
               <h1 className="mb-[4px] font-bold">ID</h1>
               <h1>
                 {/* {profileCtx.name} */}
-                {props.clientData.id}
+                {props.clientData._id}
               </h1>
             </div>
           </li>
@@ -65,7 +65,7 @@ const CustomerProfile = (props) => {
               <h1 className="mb-[4px] font-bold">Apellido</h1>
               <h1>
                 {/* {profileCtx.name} */}
-                {props.clientData.apellido}
+                {props.clientData.surname}
               </h1>
             </div>
             <Link href="/customer/lastname" className="pr-6">
@@ -97,10 +97,25 @@ const CustomerProfile = (props) => {
               <h1 className="mb-[4px] font-bold">Dirección</h1>
               <h1>
                 {/* {profileCtx.name} */}
-                {props.clientData.direccion}
+                {props.clientData.address}
               </h1>
             </div>
             <Link href="/customer/address" className="pr-6">
+              <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
+                Editar
+              </button>
+            </Link>
+          </li>
+          <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
+          <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
+            <div className="pl-6 mb-[12px] truncate">
+              <h1 className="mb-[4px] font-bold">Teléfono</h1>
+              <h1>
+                {/* {profileCtx.name} */}
+                {props.clientData.phone}
+              </h1>
+            </div>
+            <Link href="/customer/phone" className="pr-6">
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>

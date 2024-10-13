@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import CustomerProfile from "./CustomerProfile";
+import CustomerContext from "@/store/CustomerContext";
 
 const CustomerList = (props) => {
   const [client, setClient] = useState(null);
   const [showClient, setShowClient] = useState(false);
+
+  const { customerContext: customerCtx} =
+  useContext(CustomerContext);
+
+  const Customers = customerCtx.items;
 
   const handleClick = (cliente) => {
     setClient(cliente); // Guardo el cliente seleccionado (sus datos para la planilla)
@@ -14,116 +20,8 @@ const CustomerList = (props) => {
     setShowClient(false);
   };
 
-  const Clientes = [
-    {
-      id: 1,
-      name: "Juan",
-      apellido: "Pérez",
-      email: "juan.perez@example.com",
-      alias: "juanperez",
-      direccion: "Calle Falsa 123, Buenos Aires",
-    },
-    {
-      id: 2,
-      name: "Ana",
-      apellido: "Gómez",
-      email: "ana.gomez@example.com",
-      alias: "anagomez",
-      direccion: "Av. Siempre Viva 456, Córdoba",
-    },
-    {
-      id: 3,
-      name: "Carlos",
-      apellido: "Díaz",
-      email: "carlos.diaz@example.com",
-      alias: "carlosdiaz",
-      direccion: "Calle del Sol 789, Rosario",
-    },
-    {
-      id: 4,
-      name: "Daenerys",
-      apellido: "Targaryen",
-      email: "daenerys.targaryen@example.com",
-      alias: "daeneryst",
-      direccion: "Dragons Lane 1, Meereen",
-    },
-    {
-      id: 5,
-      name: "Rhaegal",
-      apellido: "Targaryen",
-      email: "rhaegal@example.com",
-      alias: "rhaegalt",
-      direccion: "Sky Castle 101, Valyria",
-    },
-    {
-      id: 6,
-      name: "Viserion",
-      apellido: "Díaz",
-      email: "viserion.diaz@example.com",
-      alias: "viseriond",
-      direccion: "Calle del Dragón 202, Volantis",
-    },
-    {
-      id: 7,
-      name: "Syrax",
-      apellido: "Velaryon",
-      email: "syrax@example.com",
-      alias: "syraxv",
-      direccion: "Sea Tower 303, Driftmark",
-    },
-    {
-      id: 8,
-      name: "Meleys",
-      apellido: "Velaryon",
-      email: "meleys@example.com",
-      alias: "meleysv",
-      direccion: "Wave Road 404, Driftmark",
-    },
-    {
-      id: 9,
-      name: "Caraxes",
-      apellido: "Targaryen",
-      email: "caraxes@example.com",
-      alias: "caraxest",
-      direccion: "Fire Hill 505, Dragonstone",
-    },
-    {
-      id: 10,
-      name: "Sunfyre",
-      apellido: "Targaryen",
-      email: "sunfyre@example.com",
-      alias: "sunfyret",
-      direccion: "Golden Way 606, Dragonstone",
-    },
-    {
-      id: 11,
-      name: "Arrax",
-      apellido: "Velaryon",
-      email: "arrax@example.com",
-      alias: "arraxv",
-      direccion: "Blue Mountain 707, Driftmark",
-    },
-    {
-      id: 12,
-      name: "Vermax",
-      apellido: "Targaryen",
-      email: "vermax@example.com",
-      alias: "vermaxt",
-      direccion: "Rock Road 808, Dragonstone",
-    },
-    {
-      id: 13,
-      name: "Moondancer",
-      apellido: "Targaryen",
-      email: "moondancer@example.com",
-      alias: "moondancert",
-      direccion: "Lunar Valley 909, Dragonstone",
-    },
-  ];
 
-  //const Clientes = [];
-
-  if (Clientes.length === 0) {
+  if (Customers.length === 0 && !customerCtx.error) {
     return (
       <div className="font-sans text-blackText h-[420px] flex justify-center items-center font-medium">
         No tienes clientes aún.
@@ -134,19 +32,34 @@ const CustomerList = (props) => {
   return (
     <div>
       <ul className="max-h-[420px] overflow-y-auto font-sans text-blackText ">
-        {Clientes.map((cliente, index) => (
-          <li
-            key={cliente.id}
-            onClick={() => handleClick(cliente)}
-            className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70  ${
-              index !== Clientes.length - 1
-                ? "border-b border-b-grayBorder"
-                : ""
-            }`}
-          >
-            <strong>{cliente.name}</strong> - {cliente.email}
-          </li>
-        ))}
+      {customerCtx.isLoading && (
+          <div className="justify-center items-center flex w-full h-full ">
+            <Loader></Loader>
+          </div>
+        )}
+        {customerCtx.error && (
+          <div className="h-full justify-center flex items-center">
+            {customerCtx.error}
+          </div>
+        )}
+
+        {!customerCtx.error &&
+          !customerCtx.isLoading &&
+          Customers.map((customer, index) => {
+            return (
+              <li
+                key={customer._id}
+                onClick={() => handleClick(customer)}
+                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 ${
+                  index !== Customers.length - 1
+                    ? "border-b border-b-grayBorder"
+                    : "border-b border-b-grayBorder"
+                }`}
+              >
+                <strong>{customer.name}</strong>
+              </li>
+            );
+          })}
       </ul>
 
       {/* Planilla para mostrar los detalles del cliente */}
