@@ -18,6 +18,10 @@ const budgetSchema = new Schema({
             ref: "Customer",
             required: true,
         },
+        customer_name: {
+            type: String,
+            maxlength: 500,
+        },
         status: {
             type: String,
             required: true,

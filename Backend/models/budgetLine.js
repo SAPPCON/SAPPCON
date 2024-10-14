@@ -45,6 +45,10 @@ const budgetLineSchema = new Schema(
       type: Number,
       required: true,
     },
+    amount: {
+      type: Number,
+      required: true,
+    }
   },
   {
     timestamps: true,

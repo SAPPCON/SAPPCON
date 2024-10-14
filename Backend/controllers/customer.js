@@ -1,4 +1,5 @@
 import Customer from '../models/customer.js';
+import Building from '../models/building.js';
 
 export const NewCustomer = async (req, res) => {
     const { name, surname, alias, address, phone, email } = req.body;
@@ -148,9 +149,21 @@ export const DeleteCustomer = async (req, res) => {
             "No se ha proporcionado un token válido para un usuario.",
         });
       }
+      const userId = req.user.id;
+
+      // If Customer have buildings cannot delete
+      const customerBuildings = await Building.find({
+        user_id: userId,
+        customer_id: req.params.id,
+      });
+      if (customerBuildings.length > 0) {
+        return res.status(400).json({
+          message: "Cliente no eliminado.",
+          messageinfo: "El cliente tiene construcciones asociadas, no se puede eliminar."
+        });
+      }
 
       //Find and delete customer
-      const userId = req.user.id;
       const customer = await Customer.findOneAndDelete({
         user_id: userId,
         _id: req.params.id,

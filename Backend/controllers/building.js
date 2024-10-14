@@ -153,9 +153,17 @@ export const DeleteBuilding = async (req, res) => {
                 messageinfo: "No se ha proporcionado un token válido para un usuario."
             });
         }
+        const userId = req.user.id;
+
+        const Budget = Budget.find({ building_id: req.params.id });
+        if (Budget) {
+            return res.status(400).json({
+                message: "Construcción no eliminada.",
+                messageinfo: "No se puede eliminar la construcción porque tiene presupuestos asociados."
+            });
+        }
 
         // Delete Building
-        const userId = req.user.id;
         const building = await Building.findOneAndDelete({
             _id:req.params.id,
             user_id: userId,
