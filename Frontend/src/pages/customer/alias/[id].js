@@ -1,13 +1,14 @@
-import Head from "next/head";
-import Profile from "@/components/Profile/Profile";
 import React, { Fragment, useContext, useEffect } from "react";
 import Loader from "@/components/UI/Loader";
 import { useRouter } from "next/router";
 import AuthenticationContext from "@/store/AuthenticationContext";
+import Head from "next/head";
+import Alias from "@/components/Customer/CustomerUpdate/Alias";
 
-function ProfilePage() {
+function AliasPage() {
   const router = useRouter();
   const authenticationContext = useContext(AuthenticationContext);
+  const { id } = router.query;
 
   useEffect(() => {
     if (!authenticationContext.isLoading && !authenticationContext.isLoggedIn) {
@@ -23,11 +24,8 @@ function ProfilePage() {
     return (
       <Fragment>
         <Head>
-          <title>SAPPCON Perfil</title>
-          <meta
-            name="description"
-            content="Manage your account settings on our platform. Access and update your personal information, security settings, and preferences. Stay in control of your account details and customize your experience with ease"
-          />
+          <title>SAPPCON Cambiar Alias del Cliente</title>
+          <meta name="description" content="Edit your client's alias" />
         </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -40,11 +38,8 @@ function ProfilePage() {
     return (
       <Fragment>
         <Head>
-          <title>SAPPCON Perfil</title>
-          <meta
-            name="description"
-            content="Manage your account settings on our platform. Access and update your personal information, security settings, and preferences. Stay in control of your account details and customize your experience with ease"
-          />
+          <title>SAPPCON Cambiar Alias del Cliente</title>
+          <meta name="description" content="Edit your client's alias" />
         </Head>
         <div className="flex h-screen items-center justify-center bg-white">
           <Loader></Loader>
@@ -52,19 +47,15 @@ function ProfilePage() {
       </Fragment>
     );
   }
-
   return (
     <Fragment>
       <Head>
-        <title>SAPPCON Perfil</title>
-        <meta
-          name="description"
-          content="Manage your account settings on our platform. Access and update your personal information, security settings, and preferences. Stay in control of your account details and customize your experience with ease"
-        />
+        <title>SAPPCON Cambiar Alias del Cliente</title>
+        <meta name="description" content="Edit your client's alias" />
       </Head>
-      <Profile />
+      <Alias customerId={id}></Alias>
     </Fragment>
   );
 }
 
-export default ProfilePage;
+export default AliasPage;

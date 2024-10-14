@@ -9,26 +9,24 @@ import { IoIosArrowForward } from "react-icons/io";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { useContext, useEffect, useRef, useState } from "react";
-import { noEmptyValidate } from "@/utils/validationFunctions";
+import { numberFormatValidate } from "@/utils/validationFunctions";
 import { useRouter } from "next/router";
 import CustomerContext from "@/store/CustomerContext";
 import Loader from "@/components/UI/Loader";
 
-const Address = ({ customerId }) => {
+const Phone = ({ customerId }) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { customerContext: customerCtx } = useContext(CustomerContext);
-  const newAddressInputRef = useRef();
+  const newPhoneInputRef = useRef();
 
   // Busca el cliente con el _id que coincide
   const customer = customerCtx.items.find((item) => item._id === customerId);
 
   // Si el cliente existe, usa su nombre, si no, muestra un placeholder por defecto
-  const customerAddress = customer
-    ? customer.address
-    : "Dirección no encontrada";
+  const customerPhone = customer ? customer.phone : "Teléfono no encontrado";
 
   useEffect(() => {
     // Verificar si el reload se hizo a través del router
@@ -44,10 +42,10 @@ const Address = ({ customerId }) => {
   const submitHandler = async (event) => {
     event.preventDefault();
     setCorrectRequest(false);
-    const enteredAddress = newAddressInputRef.current.value;
+    const enteredPhone = newPhoneInputRef.current.value;
 
-    if (!noEmptyValidate(enteredAddress)) {
-      setErrorRequest("Ingrese la dirección.");
+    if (!numberFormatValidate(enteredPhone)) {
+      setErrorRequest("Ingrese un número correcto.");
       return;
     } else {
       setErrorRequest("");
@@ -63,7 +61,7 @@ const Address = ({ customerId }) => {
         {
           method: "PUT",
           body: JSON.stringify({
-            address: enteredAddress,
+            phone: enteredPhone,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -77,12 +75,12 @@ const Address = ({ customerId }) => {
       if (!response.ok) {
         const responseData = await response.json();
         throw new Error(
-          responseData.error || "Error al actualizar la dirección del cliente"
+          responseData.error || "Error al actualizar el teléfono del cliente"
         );
       }
 
       setCorrectRequest(true);
-      newAddressInputRef.current.value = "";
+      newPhoneInputRef.current.value = "";
       setErrorRequest("");
 
       sessionStorage.setItem("reloadViaRouter", "true");
@@ -123,7 +121,7 @@ const Address = ({ customerId }) => {
             </Link>
             <IoIosArrowForward className=" mx-1 text-[12px] text-[#555555]"></IoIosArrowForward>
             <p className="font-sans text-[#C45500]">
-              Cambia la dirección del cliente
+              Cambia el teléfono del cliente
             </p>
           </div>
 
@@ -133,7 +131,7 @@ const Address = ({ customerId }) => {
            "
             >
               <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-              Dirección del cliente actualizada.
+              Teléfono del cliente actualizado.
             </div>
           )}
 
@@ -151,24 +149,24 @@ const Address = ({ customerId }) => {
           )}
 
           <h1 className="mb-[8px] font-sans text-[28px] font-normal text-blackText">
-            Cambia la dirección del cliente
+            Cambia el Teléfono del cliente
           </h1>
           <div className="flex flex-col rounded-[8px] border border-solid border-[#D5D9D9] px-[18px] py-[14px] font-sans">
             <div className="w-full text-[13px]">
-              Si desea cambiar la dirección asociada al cliente seleccionado,
+              Si desea cambiar el Teléfono asociado al cliente seleccionado,
               puede hacerlo a continuación. Asegúrese de hacer clic en botón
               <strong> Guardar </strong> cuando termine.
             </div>
             <div className="mt-[22px] w-full">
               <form onSubmit={submitHandler}>
                 <div className="pb-[2px] pl-[2px]  text-[13px] font-bold text-blackText">
-                  Nueva Dirección
+                  Nuevo Teléfono
                 </div>
                 <div className="mb-[22px]">
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
-                    ref={newAddressInputRef}
-                    placeholder={customerAddress}
+                    ref={newPhoneInputRef}
+                    placeholder={customerPhone}
                   ></input>
                 </div>
 
@@ -191,4 +189,4 @@ const Address = ({ customerId }) => {
   );
 };
 
-export default Address;
+export default Phone;

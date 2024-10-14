@@ -6,15 +6,22 @@ import ServiceNav from "../Navigation/ServiceNav";
 import Link from "next/link";
 import ProfileNav from "../Navigation/ProfileNav";
 import { IoIosArrowForward } from "react-icons/io";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import CustomerNav from "../Navigation/CustomerNav";
 import ServiceList from "./ServiceList";
 import NewService from "./NewService";
+import ServiceContext from "@/store/ServiceContext";
 
 const Service = (props) => {
   const [showNewService, setShowNewService] = useState(false);
+
+  const { serviceContext: serviceCtx, dispatchServicesAction } =
+    useContext(ServiceContext);
+
+  //Esta funcion es la que uso para sacar el cartel de exito o error de agregar nuevo servicio.
   const handleClick = () => {
     setShowNewService(!showNewService);
+    dispatchServicesAction({ type: "SET_RESTART_ALL_ADD_ITEM" });
   };
 
   return (

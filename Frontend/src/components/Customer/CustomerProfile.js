@@ -1,22 +1,36 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
 import { BiAccessibility } from "react-icons/bi";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useContext } from "react";
+import CustomerContext from "@/store/CustomerContext";
+import Loader from "../UI/Loader";
 
 //Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)
 
 const CustomerProfile = (props) => {
   const [showDelete, setShowDelete] = useState(false);
+  const { customerContext: customerCtx } = useContext(CustomerContext);
+
+  //Muestra el modal y confirmacion de eliminacion. Este esta en el boton de eliminar original.
   const handleDelete = () => {
     setShowDelete(true);
   };
 
+  //Esconde el fondo negro nuevo y confirmacion de eliminacion. Va al fondo negro nuevo y al boton de atras de la confirmacion de eliminacion.
   const handleClickHideDelete = () => {
     setShowDelete(false);
   };
 
+  //Este va en el boton de eliminar de la confirmacion.
   const handleConfirmDelete = () => {
-    console.log("Eliminado");
+    //Escondo el nuevo fondo negro y el cartel de confimacion de eliminacion.
+    setShowDelete(false);
+
+    //Mando la request para borrar el cliente tanto de la BD como del contexto.
+    customerCtx.deleteItem(props.clientData._id);
+
+    //Saca solo la planilla, y deja el fondo negro original. Y quedan renderizados ambos fondos y el cartel de exito o error de la eliminacion (x el estado del context)
+    props.hideClientFunctionBackground();
   };
 
   return (
@@ -24,7 +38,7 @@ const CustomerProfile = (props) => {
       <div className=" absolute top-12 left-1/2 transform -translate-x-1/2  z-40 bg-gray-100 rounded-[8px] border border-solid border-grayBorder w-[600px] ">
         <RxCross1
           className="text-[20px] absolute top-[10px] right-[10px] text-blackText cursor-pointer"
-          onClick={props.hideClientFunction}
+          onClick={props.hideClientFunctionBoth}
         ></RxCross1>
         <h1 className="font-sans text-[28px] font-normal text-blackText text-center border-b border-b-grayBorder">
           Datos del Cliente
@@ -53,7 +67,10 @@ const CustomerProfile = (props) => {
                 {props.clientData.name}
               </h1>
             </div>
-            <Link href="/customer/name" className="pr-6">
+            <Link
+              href={`/customer/name/${props.clientData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -68,7 +85,10 @@ const CustomerProfile = (props) => {
                 {props.clientData.surname}
               </h1>
             </div>
-            <Link href="/customer/lastname" className="pr-6">
+            <Link
+              href={`/customer/lastname/${props.clientData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -84,7 +104,10 @@ const CustomerProfile = (props) => {
                 {props.clientData.alias}
               </h1>
             </div>
-            <Link href="/customer/alias" className="pr-6">
+            <Link
+              href={`/customer/alias/${props.clientData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -100,7 +123,10 @@ const CustomerProfile = (props) => {
                 {props.clientData.address}
               </h1>
             </div>
-            <Link href="/customer/address" className="pr-6">
+            <Link
+              href={`/customer/address/${props.clientData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -115,7 +141,10 @@ const CustomerProfile = (props) => {
                 {props.clientData.phone}
               </h1>
             </div>
-            <Link href="/customer/phone" className="pr-6">
+            <Link
+              href={`/customer/phone/${props.clientData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -130,7 +159,10 @@ const CustomerProfile = (props) => {
                 {props.clientData.email}
               </h1>
             </div>
-            <Link href="/customer/email" className="pr-6">
+            <Link
+              href={`/customer/email/${props.clientData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -142,7 +174,7 @@ const CustomerProfile = (props) => {
             <div className="flex items-center justify-end ">
               <button
                 className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-                onClick={props.hideClientFunction}
+                onClick={props.hideClientFunctionBoth}
               >
                 Atrás
               </button>
@@ -158,6 +190,7 @@ const CustomerProfile = (props) => {
         </ul>
       </div>
 
+      {/* afuera para q el z-50 pueda competir xq sino si esta en el div padre toma el z-30 del padre.e */}
       {showDelete && (
         <div
           className=" flex flex-col h-fit w-fit z-50   items-center rounded-xl border border-solid border-black  bg-white px-6 py-5 pb-2 font-sans text-[14px] text-blackText absolute top-2/3 left-1/2 transform -translate-x-1/2  -translate-y-1/2
@@ -166,23 +199,34 @@ const CustomerProfile = (props) => {
           <h4 className="font-bold">
             ¿Está seguro de que desea eliminar este cliente?
           </h4>
-          <div className="flex w-full items-center justify-between mt-5 ">
-            <button
-              className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-              onClick={handleClickHideDelete}
-            >
-              Atrás
-            </button>
 
-            <button
-              className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
-              onClick={handleConfirmDelete}
-            >
-              Eliminar
-            </button>
-          </div>
+          {customerCtx.isLoadingDeleteItem && (
+            <div className="h-[40px] mt-5 w-full flex items-center justify-center">
+              <Loader style={{ width: "100%", height: "100%" }}></Loader>
+            </div>
+          )}
+
+          {!customerCtx.isLoadingDeleteItem && (
+            <div className="flex w-full items-center justify-between mt-5 ">
+              <button
+                className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                onClick={handleClickHideDelete}
+              >
+                Atrás
+              </button>
+
+              <button
+                className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
+                onClick={handleConfirmDelete}
+              >
+                Eliminar
+              </button>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Este es el fondo negro adicional que se coloca para el cartel de confirmar borrado. Z-40 para que se haga delante del fondo negro original (z-30) y el customerProfile tambien tiene z-40, pero se ubica respecto a el componente padre entonces el fondo negro queda con priodidad.*/}
 
       {showDelete && (
         <div

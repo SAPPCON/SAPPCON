@@ -3,25 +3,21 @@ import BuildingNav from "../Navigation/BuildingNav";
 import StatsNav from "../Navigation/StatsNav";
 import HomeNav from "../Navigation/HomeNav";
 import ServiceNav from "../Navigation/ServiceNav";
-import Link from "next/link";
 import ProfileNav from "../Navigation/ProfileNav";
-import { IoIosArrowForward } from "react-icons/io";
 import CustomerList from "./CustomerList";
 import NewCustomer from "./NewCustomer";
 import { useState, useContext } from "react";
 import CustomerContext from "@/store/CustomerContext";
-
 
 const Customer = (props) => {
   const [showNewClient, setShowNewClient] = useState(false);
   const { customerContext: customerCtx, dispatchCustomersAction } =
     useContext(CustomerContext);
 
-
-    //La funcion que le paso al boton atras, la cruz, y aceptar de exito o error de nuevo cliente y al fondo negro, tambien lo que hacen ademas de dejar de mostrar la planilla, tambien resetean los valores de si hubo error o exito en el nuevo registro de cliente.
+  //La funcion que le paso al boton atras, la cruz, y aceptar de exito o error de nuevo cliente y al fondo negro, tambien lo que hacen ademas de dejar de mostrar la planilla, tambien resetean los valores de si hubo error o exito en el nuevo registro de cliente.
   const handleClick = () => {
     setShowNewClient(!showNewClient);
-    dispatchCustomersAction({type: "SET_RESTART_ALL_NEW_ITEM"});
+    dispatchCustomersAction({ type: "SET_RESTART_ALL_NEW_ITEM" });
   };
 
   return (

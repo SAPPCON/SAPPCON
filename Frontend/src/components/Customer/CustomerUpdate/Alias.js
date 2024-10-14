@@ -10,30 +10,86 @@ import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { useContext, useEffect, useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
+import { noEmptyValidate } from "@/utils/validationFunctions";
+import { useRouter } from "next/router";
+import CustomerContext from "@/store/CustomerContext";
 
-const Alias = (props) => {
+const Alias = ({ customerId }) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { customerContext: customerCtx } = useContext(CustomerContext);
   const newAliasInputRef = useRef();
 
-  const basicValidate = (word) => {
-    const basicPattern = /^(?!.*\s).+$/;
-    return basicPattern.test(word);
-  };
+  // Busca el cliente con el _id que coincide
+  const customer = customerCtx.items.find((item) => item._id === customerId);
+
+  // Si el cliente existe, usa su nombre, si no, muestra un placeholder por defecto
+  const customerAlias = customer ? customer.alias : "Alias no encontrado";
+
+  useEffect(() => {
+    // Verificar si el reload se hizo a través del router
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
+
+    if (reloadViaRouter) {
+      // Limpia la marca de recarga del sessionStorage
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
+    setCorrectRequest(false);
     const enteredAlias = newAliasInputRef.current.value;
 
-    if (!basicValidate(enteredAlias)) {
-      setErrorRequest("Mínimo 1 carácter y sin espacios en blanco.");
-      setCorrectRequest(false);
+    if (!noEmptyValidate(enteredAlias)) {
+      setErrorRequest("Ingrese el elias.");
+      return;
     } else {
       setErrorRequest("");
+    }
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_UPDATE_CUSTOMER_URL}${customerId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            alias: enteredAlias,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsLoading(false);
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(
+          responseData.error || "Error al actualizar el alias del cliente"
+        );
+      }
+
       setCorrectRequest(true);
+      newAliasInputRef.current.value = "";
+      setErrorRequest("");
+
+      sessionStorage.setItem("reloadViaRouter", "true");
+
+      router.reload();
+    } catch (error) {
+      setErrorRequest(error.message);
     }
   };
-
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-blackText font-sans min-w-[1200px] ">
       <div className="flex bg-white h-20 ">
@@ -110,11 +166,11 @@ const Alias = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newAliasInputRef}
-                    //   placeholder={profileCtx.name}
+                    placeholder={customerAlias}
                   ></input>
                 </div>
 
-                {true && (
+                {!isLoading && (
                   <button
                     className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
                     onClick={submitHandler}
@@ -122,19 +178,8 @@ const Alias = (props) => {
                     Guardar
                   </button>
                 )}
-                {!true && <Loader />}
 
-                {/*
-                {!isLoading && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring "
-                    onClick={submitHandler}
-                  >
-                    Guardar Cambios
-                  </button>
-                )}
                 {isLoading && <Loader />}
-                */}
               </form>
             </div>
           </div>

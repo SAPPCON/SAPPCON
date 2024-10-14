@@ -12,6 +12,7 @@ const CustomerContext = React.createContext({
   errorAddItem: "",
   errorDeleteItem: "",
   successDeleteItem: false,
+  successAddItem: false,
 });
 
 const defaultCustomerState = {
@@ -20,7 +21,6 @@ const defaultCustomerState = {
 
 // Función que obtiene los datos del backend
 const fetchData = async (token) => {
-
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_GET_CUSTOMER_URL, {
       headers: {
@@ -93,7 +93,6 @@ const deleteCustomer = async (customerId) => {
     throw error;
   }
 };
-
 
 const customerReducer = (state, action) => {
   switch (action.type) {
@@ -182,18 +181,18 @@ const customerReducer = (state, action) => {
         successAddItem: false,
         successDeleteItem: false,
       };
-      case "SET_SUCCESS_ADD_ITEM":
-        return {
-          ...state,
-          isLoading: false,
-          isLoadingAddItem: false,
-          isLoadingDeleteItem: false,
-          error: "",
-          errorAddItem: "",
-          errorDeleteItem: "",
-          successAddItem: true,
-          successDeleteItem: false,
-        };
+    case "SET_SUCCESS_ADD_ITEM":
+      return {
+        ...state,
+        isLoading: false,
+        isLoadingAddItem: false,
+        isLoadingDeleteItem: false,
+        error: "",
+        errorAddItem: "",
+        errorDeleteItem: "",
+        successAddItem: true,
+        successDeleteItem: false,
+      };
     case "SET_SUCCESS_DELETE_ITEM":
       return {
         ...state,
@@ -233,18 +232,20 @@ const customerReducer = (state, action) => {
         successAddItem: false,
         successDeleteItem: false,
       };
-      case "SET_RESTART_ALL_NEW_ITEM":
-        return {
-            ...state,
-            isLoading: false,
-            isLoadingAddItem: false,
-            isLoadingDeleteItem: false,
-            error: "",
-            errorAddItem: "",
-            errorDeleteItem: "",
-            successAddItem: false,
-            successDeleteItem: false,
-        };
+    case "SET_RESTART_ALL_NEW_ITEM":
+      return {
+        ...state,
+        isLoadingAddItem: false,
+        errorAddItem: "",
+        successAddItem: false,
+      };
+    case "SET_RESTART_ALL_DELETE_ITEM":
+      return {
+        ...state,
+        isLoadingDeleteItem: false,
+        errorDeleteItem: "",
+        successDeleteItem: false,
+      };
     default:
       return defaultCustomerState;
   }
@@ -275,7 +276,7 @@ export const CustomerContextProvider = (props) => {
 
     // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
-        loadCustomers();
+      loadCustomers();
     }
   }, [token]);
 
@@ -283,22 +284,22 @@ export const CustomerContextProvider = (props) => {
     dispatchCustomersAction({ type: "SET_LOADING_ADD_ITEM" });
     try {
       const data = await newCustomer(item);
-      
-      dispatchCustomersAction({ type: "SET_SUCCESS_ADD_ITEM" });
+
       const newItem = {
         name: data.messageinfo.name,
         surname: data.messageinfo.surname,
         alias: data.messageinfo.alias,
         address: data.messageinfo.address,
         phone: data.messageinfo.phone,
-        email: data.messageinfo.address,
-        user_id: data.messageinfo._id,
+        email: data.messageinfo.email,
+        _id: data.messageinfo._id,
       };
 
       dispatchCustomersAction({
         type: "ADD_ITEM",
-        item: newItem, 
+        item: newItem,
       });
+      dispatchCustomersAction({ type: "SET_SUCCESS_ADD_ITEM" });
     } catch (error) {
       dispatchCustomersAction({
         type: "SET_ERROR_ADD_ITEM",
@@ -336,7 +337,9 @@ export const CustomerContextProvider = (props) => {
   };
 
   return (
-    <CustomerContext.Provider value={{ customerContext, dispatchCustomersAction }}>
+    <CustomerContext.Provider
+      value={{ customerContext, dispatchCustomersAction }}
+    >
       {props.children}
     </CustomerContext.Provider>
   );

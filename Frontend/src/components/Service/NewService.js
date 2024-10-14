@@ -45,10 +45,6 @@ const NewService = (props) => {
   const [zNewService, setZNewService] = useState("z-40"); //Al aparecer ACEPTAR del exito o error de agregar nuevo servicio se hace Z de la planilla mas chico para que quede detras el fondo negro.
   //Esto de Aceptar exito o fallo de planilla se modifica el Z de la misma porque al tocar el boton o el fondo negro, queremos que se salga la planilla y volver a los servicios. A diferencia de el registrar categoria o unidad de medida que ponemos otro fondo cosa de al aceptar o tocar el fondo, que se quede la nueva planilla y el fondo negro original.
 
-  //Ambos carteles se salen al tocar el boton "aceptar" con la funcion de props que oculta el fondo negro y la planilla de nuevo registro
-  const [showAccept, setShowAccept] = useState(false); //Estado cartel de exito de registro.
-  const [showAcceptFail, setShowAcceptFail] = useState(false); //Estado cartel de fallo de registro.
-
   //Funcion que trabaja el Registro de Nuevo Servicio
   const submitHandler = (event) => {
     event.preventDefault();
@@ -121,24 +117,7 @@ const NewService = (props) => {
 
     // Agregar el nuevo servicio
     serviceCtx.addItem(newService);
-
-    if (serviceCtx.isLoadingAddItem) {
-      setShowLoading(true);
-    }
-
-    if (serviceCtx.errorAddItem) {
-      setZNewService("z-20");
-      setShowAccept(false);
-      setShowAcceptFail(true);
-      setShowLoading(false);
-    }
-
-    if (!serviceCtx.errorAddItem && !serviceCtx.isLoadingAddItem) {
-      setZNewService("z-20");
-      setShowAcceptFail(false);
-      setShowAccept(true);
-      setShowLoading(false);
-    }
+    setZNewService("z-20");
   };
 
   {
@@ -245,7 +224,7 @@ const NewService = (props) => {
     });
   };
 
-  //Absoluto al contenedor padre que es relativo (Customer)
+  //Absoluto al contenedor padre que es relativo
 
   return (
     <Fragment>
@@ -474,7 +453,7 @@ const NewService = (props) => {
 
       {/*Uso FRAGMENT -> Todos los elementos que sean ABSOLUTE al estar fuera del DIV absoluto de NewService se van a ubicar respecto al contenedor de Service que es el padre no estatico mas cercano que tienen.*/}
 
-      {showAcceptFail && (
+      {serviceCtx.errorAddItem && (
         <div
           className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
           ring-red2 ring-opacity-20 z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2  -translate-y-1/2   px-[18px]  py-[14px]    "
@@ -500,7 +479,7 @@ const NewService = (props) => {
         </div>
       )}
 
-      {showAccept && (
+      {serviceCtx.successAddItem && (
         <div
           className=" flex flex-col h-fit w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  py-[14px] font-sans text-[14px] text-blackText z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
          "

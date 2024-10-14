@@ -17,6 +17,7 @@ const ServiceContext = React.createContext({
   errorDeleteItem: "",
   errorUpdateCategory: "",
   errorUpdateMeasureUnit: "",
+  successAddItem: false,
   successDeleteItem: false,
   successUpdateCategory: false,
   successUpdateMeasureUnit: false,
@@ -28,7 +29,6 @@ const defaultServiceState = {
 
 // Función que obtiene los datos del backend
 const fetchData = async (token) => {
-
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_GET_SERVICE_URL, {
       headers: {
@@ -274,6 +274,18 @@ const servicesReducer = (state, action) => {
         errorUpdateMeasureUnit: action.error,
         successUpdateMeasureUnit: false,
       };
+    case "SET_SUCCESS_ADD_ITEM":
+      return {
+        ...state,
+        isLoading: false,
+        isLoadingAddItem: false,
+        isLoadingDeleteItem: false,
+        error: null,
+        errorAddItem: null,
+        errorDeleteItem: null,
+        successDeleteItem: false,
+        successAddItem: true,
+      };
     case "SET_SUCCESS_DELETE_ITEM":
       return {
         ...state,
@@ -379,6 +391,20 @@ const servicesReducer = (state, action) => {
         errorUpdateMeasureUnit: null,
         successUpdateMeasureUnit: false,
       };
+    case "SET_RESTART_ALL_ADD_ITEM":
+      return {
+        ...state,
+        isLoadingAddItem: false,
+        errorAddItem: null,
+        successAddItem: false,
+      };
+    case "SET_RESTART_ALL_DELETE_ITEM":
+      return {
+        ...state,
+        isLoadingDeleteItem: false,
+        errorDeleteItem: null,
+        successDeleteItem: false,
+      };
     default:
       return defaultServiceState;
   }
@@ -432,6 +458,7 @@ export const ServiceContextProvider = (props) => {
         type: "ADD_ITEM",
         item: newItem, // El servicio a agregar
       });
+      dispatchServicesAction({ type: "SET_SUCCESS_ADD_ITEM" });
     } catch (error) {
       dispatchServicesAction({
         type: "SET_ERROR_ADD_ITEM",
@@ -524,6 +551,7 @@ export const ServiceContextProvider = (props) => {
     successDeleteItem: servicesState.successDeleteItem,
     successUpdateCategory: servicesState.successUpdateCategory,
     successUpdateMeasureUnit: servicesState.successUpdateMeasureUnit,
+    successAddItem: servicesState.successAddItem,
   };
 
   return (

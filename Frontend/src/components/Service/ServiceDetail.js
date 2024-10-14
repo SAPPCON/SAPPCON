@@ -40,10 +40,10 @@ const ServiceDetail = (props) => {
   };
 
   const handleConfirmDelete = () => {
-    serviceCtx.deleteItem(props.serviceData._id);
-
     //Una vez borrado saco el modal de confirmacion de borrado
     setShowDelete(false);
+
+    serviceCtx.deleteItem(props.serviceData._id);
 
     //Una vez borrado saco la planilla pero dejo el fondo negro
     props.hideServiceFunctionBackground();
@@ -134,7 +134,10 @@ const ServiceDetail = (props) => {
                 {props.serviceData.name}
               </h1>
             </div>
-            <Link href={`/service/name/${props.serviceData._id}`} className="pr-6">
+            <Link
+              href={`/service/name/${props.serviceData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -192,6 +195,7 @@ const ServiceDetail = (props) => {
                   defaultValue={props.serviceData.measure_unit_id}
                   onChange={(e) => handleUnitChange(e.target.value)}
                   className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
+                  disabled={measureUnitCtx.isLoadingUpdateMeasureUnit} // Deshabilitar si está actualizando
                 >
                   {measureUnits.map((measureUnit) => (
                     <option key={measureUnit.id} value={measureUnit._id}>
@@ -212,7 +216,10 @@ const ServiceDetail = (props) => {
                 {props.serviceData.cost}
               </h1>
             </div>
-            <Link href={`/service/unitcost/${props.serviceData._id}`} className="pr-6">
+            <Link
+              href={`/service/unitcost/${props.serviceData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -227,7 +234,10 @@ const ServiceDetail = (props) => {
                 {props.serviceData.price}
               </h1>
             </div>
-            <Link href={`/service/unitprice/${props.serviceData._id}`} className="pr-6">
+            <Link
+              href={`/service/unitprice/${props.serviceData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -243,7 +253,10 @@ const ServiceDetail = (props) => {
                 {props.serviceData.description}
               </h1>
             </div>
-            <Link href={`/service/description/${props.serviceData._id}`} className="pr-6">
+            <Link
+              href={`/service/description/${props.serviceData._id}`}
+              className="pr-6"
+            >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
               </button>
@@ -283,12 +296,12 @@ const ServiceDetail = (props) => {
             ¿Está seguro de que desea eliminar este servicio?
           </h4>
 
-          {categoryCtx.isLoadingDeleteItem && (
+          {serviceCtx.isLoadingDeleteItem && (
             <div className="h-[40px] mt-5 w-full flex items-center justify-center">
               <Loader style={{ width: "100%", height: "100%" }}></Loader>
             </div>
           )}
-          {!serviceCtx.idLoadingDeleteItem && (
+          {!serviceCtx.isLoadingDeleteItem && (
             <div className="flex w-full items-center justify-between mt-5 ">
               <button
                 className="flex h-[40px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
@@ -319,63 +332,3 @@ const ServiceDetail = (props) => {
 };
 
 export default ServiceDetail;
-
-/*
-
-          <div className="mb-4 w-[49%]">
-            <label
-              htmlFor="unitOfMeasurement"
-              className="text-sm font-semibold block"
-            >
-              Unidad de Medida
-            </label>
-            <select
-              id="unitOfMeasurement"
-              //ref={unitOfMeasurementRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer`}
-            >
-              <option value="">Seleccione una opción</option>
-              <option value="opcion1">Opción 1</option>
-              <option value="opcion2">Opción 2</option>
-              <option value="opcion3">Opción 3</option>
-            </select>
-          </div>
-
-
-
-                  <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
-          <div className="pl-6 mb-[12px] truncate">
-            <h1 className="mb-[4px] font-bold">Categoria</h1>
-            <h1>
-   
-              {props.serviceData.categoria}
-            </h1>
-          </div>
-          <Link href="/customer/lastname" className="pr-6">
-            <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-              Editar
-            </button>
-          </Link>
-        </li>
-        <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
-
-        <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
-          <div className="pl-6 mb-[12px] truncate">
-            <h1 className="mb-[4px] font-bold">Unidad de Medida</h1>
-            <h1>
-
-              {props.serviceData.unidadDeMedida}
-            </h1>
-          </div>
-          <Link href="/customer/username" className="pr-6">
-            <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-              Editar
-            </button>
-          </Link>
-        </li>
-        <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
-
-
-          
-
-*/
