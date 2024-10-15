@@ -202,7 +202,7 @@ const CustomerProfile = (props) => {
 
           {customerCtx.isLoadingDeleteItem && (
             <div className="h-[40px] mt-5 w-full flex items-center justify-center">
-              <Loader style={{ width: "100%", height: "100%" }}></Loader>
+              <Loader></Loader>
             </div>
           )}
 

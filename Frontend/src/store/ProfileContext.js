@@ -4,9 +4,9 @@ import AuthenticationContext from "./AuthenticationContext";
 const ProfileContext = React.createContext({
   name: "",
   email: "",
-  surname:"",
-  alias:"",
-  address:"",
+  surname: "",
+  alias: "",
+  address: "",
   isLoading: false,
   error: "",
 });
@@ -22,10 +22,9 @@ const fetchData = async () => {
     });
 
     if (!response.ok) {
-        const responseData = await response.json();
-        console.log(responseData);
-        throw new Error(responseData.error || "Error al cargar perfil");
-      }
+      const responseData = await response.json();
+      throw new Error(responseData.error || "Error al cargar perfil");
+    }
     const data = await response.json();
     return data;
   } catch (error) {
@@ -37,21 +36,26 @@ export const ProfileContextProvider = (props) => {
   const { token } = useContext(AuthenticationContext);
   //const token = "sadasdasd12312";
   const [error, setError] = useState(null);
-  const [profileData, setProfileData] = useState({ name: "", email: "", surname:"", alias:"", address:"" });
+  const [profileData, setProfileData] = useState({
+    name: "",
+    email: "",
+    surname: "",
+    alias: "",
+    address: "",
+  });
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const loadProfile = async () => {
       setLoading(true);
       try {
         const data = await fetchData();
-        console.log("INFO: ", data);
         if (data) {
           setProfileData({
             name: data.user.name,
             email: data.user.email,
-            surname:data.user.surname,
-            alias:data.user.alias,
-            address:data.user.address
+            surname: data.user.surname,
+            alias: data.user.alias,
+            address: data.user.address,
           });
           setError(null); // Resetea el error cuando la carga es exitosa
         }
@@ -70,9 +74,9 @@ export const ProfileContextProvider = (props) => {
   const contextValue = {
     name: profileData.name,
     email: profileData.email,
-    surname:profileData.surname,
-    alias:profileData.alias,
-    address:profileData.address,
+    surname: profileData.surname,
+    alias: profileData.alias,
+    address: profileData.address,
     isLoading: loading,
     error: error, // Incluir error en el contexto
   };

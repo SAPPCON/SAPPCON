@@ -484,17 +484,7 @@ export const ServiceContextProvider = (props) => {
   const updateCategoryHandler = async (service, newCategoryId) => {
     try {
       dispatchServicesAction({ type: "SET_LOADING_UPDATE_CATEGORY_ITEM" });
-      const updatedService = {
-        _id: service._id,
-        measure_unit_id: service.measure_unit_id,
-        category_id: newCategoryId,
-        name: service.name,
-        description: service.description,
-        cost: service.cost,
-        price: service.price,
-      };
 
-      //Le paso ya el servicio con el nuevo id de categoria.
       await updateCategoryService(service._id, newCategoryId);
       dispatchServicesAction({
         type: "UPDATE_CATEGORY",
@@ -515,7 +505,6 @@ export const ServiceContextProvider = (props) => {
     try {
       dispatchServicesAction({ type: "SET_LOADING_UPDATE_MEASUREUNIT_ITEM" });
 
-      //Le paso ya el servicio con el nuevo id de categoria.
       await updateMeasureUnitService(service._id, newMeasureUnitId);
       dispatchServicesAction({
         type: "UPDATE_MEASUREUNIT",

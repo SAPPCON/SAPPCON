@@ -11,27 +11,83 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
 import ProfileNav from "@/components/Navigation/ProfileNav";
 import ServiceNav from "@/components/Navigation/ServiceNav";
+import { noEmptyValidate } from "@/utils/validationFunctions";
+import BuildingContext from "@/store/BuildingContext";
+import { useRouter } from "next/router";
 
-const Address = (props) => {
+const Address = ({ buildingId }) => {
+  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { buildingContext: buildingCtx } = useContext(BuildingContext);
   const newAddressInputRef = useRef();
 
-  const alphanumericWithSpacesValidate = (word) => {
-    const basicPattern = /^[a-zA-Z0-9\s]+$/; // Letras, números y espacios
-    return word !== null && word.trim() !== "" && basicPattern.test(word);
-  };
+  const building = buildingCtx.items.find((item) => item._id === buildingId);
+  const buildingAddress = building
+    ? building.address
+    : "Dirección no encontrada";
+
+  useEffect(() => {
+    // Verificar si el reload se hizo a través del router
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
+
+    if (reloadViaRouter) {
+      // Limpia la marca de recarga del sessionStorage
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
+    setCorrectRequest(false);
     const enteredAddress = newAddressInputRef.current.value;
 
-    if (!alphanumericWithSpacesValidate(enteredAddress)) {
-      setErrorRequest("Solo letras y numeros, no nulo.");
-      setCorrectRequest(false);
+    if (!noEmptyValidate(enteredAddress)) {
+      setErrorRequest("Ingrese la dirección .");
+      return;
     } else {
       setErrorRequest("");
+    }
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_UPDATE_BUILDING_URL}${buildingId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            address: enteredAddress,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsLoading(false);
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(
+          responseData.error || "Error al actualizar la dirección de la obra"
+        );
+      }
+
       setCorrectRequest(true);
+      newAddressInputRef.current.value = "";
+      setErrorRequest("");
+
+      sessionStorage.setItem("reloadViaRouter", "true");
+
+      router.reload();
+    } catch (error) {
+      setErrorRequest(error.message);
     }
   };
   return (
@@ -110,11 +166,11 @@ const Address = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newAddressInputRef}
-                    //   placeholder={profileCtx.name}
+                    placeholder={buildingAddress}
                   ></input>
                 </div>
 
-                {!false && (
+                {!isLoading && (
                   <button
                     className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
                     onClick={submitHandler}
@@ -122,19 +178,8 @@ const Address = (props) => {
                     Guardar
                   </button>
                 )}
-                {false && <Loader />}
 
-                {/*
-                {!isLoading && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring "
-                    onClick={submitHandler}
-                  >
-                    Guardar Cambios
-                  </button>
-                )}
                 {isLoading && <Loader />}
-                */}
               </form>
             </div>
           </div>

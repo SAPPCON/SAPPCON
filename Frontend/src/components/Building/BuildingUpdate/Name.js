@@ -11,29 +11,84 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
 import ProfileNav from "@/components/Navigation/ProfileNav";
 import ServiceNav from "@/components/Navigation/ServiceNav";
+import { noEmptyValidate } from "@/utils/validationFunctions";
+import BuildingContext from "@/store/BuildingContext";
+import { useRouter } from "next/router";
 
-const Name = (props) => {
+const Name = ({ buildingId }) => {
+  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { buildingContext: buildingCtx } = useContext(BuildingContext);
   const newNameInputRef = useRef();
 
-  const basicValidate = (word) => {
-    const basicPattern = /^(?!.*\s).+$/;
-    return basicPattern.test(word);
-  };
+  const building = buildingCtx.items.find((item) => item._id === buildingId);
+  const buildingName = building ? building.name : "Nombre no encontrado";
+
+  useEffect(() => {
+    // Verificar si el reload se hizo a través del router
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
+
+    if (reloadViaRouter) {
+      // Limpia la marca de recarga del sessionStorage
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
+    setCorrectRequest(false);
     const enteredName = newNameInputRef.current.value;
 
-    if (!basicValidate(enteredName)) {
-      setErrorRequest("Mínimo 1 carácter y sin espacios en blanco.");
-      setCorrectRequest(false);
+    if (!noEmptyValidate(enteredName)) {
+      setErrorRequest("Ingrese el nombre.");
+      return;
     } else {
       setErrorRequest("");
+    }
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_UPDATE_BUILDING_URL}${buildingId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            name: enteredName,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsLoading(false);
+
+      if (!response.ok) {
+        const responseData = await response.json();
+        throw new Error(
+          responseData.error || "Error al actualizar el nombre de la obra"
+        );
+      }
+
       setCorrectRequest(true);
+      newNameInputRef.current.value = "";
+      setErrorRequest("");
+
+      sessionStorage.setItem("reloadViaRouter", "true");
+
+      router.reload();
+    } catch (error) {
+      setErrorRequest(error.message);
     }
   };
+
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-blackText font-sans min-w-[1200px] ">
       <div className="flex bg-white h-20 ">
@@ -111,11 +166,11 @@ const Name = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newNameInputRef}
-                    //   placeholder={profileCtx.name}
+                    placeholder={buildingName}
                   ></input>
                 </div>
 
-                {!false && (
+                {!isLoading && (
                   <button
                     className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
                     onClick={submitHandler}
@@ -123,19 +178,8 @@ const Name = (props) => {
                     Guardar
                   </button>
                 )}
-                {false && <Loader />}
 
-                {/*
-                {!isLoading && (
-                  <button
-                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring "
-                    onClick={submitHandler}
-                  >
-                    Guardar Cambios
-                  </button>
-                )}
                 {isLoading && <Loader />}
-                */}
               </form>
             </div>
           </div>

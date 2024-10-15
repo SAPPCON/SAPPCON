@@ -198,7 +198,7 @@ const ServiceDetail = (props) => {
                   disabled={measureUnitCtx.isLoadingUpdateMeasureUnit} // Deshabilitar si está actualizando
                 >
                   {measureUnits.map((measureUnit) => (
-                    <option key={measureUnit.id} value={measureUnit._id}>
+                    <option key={measureUnit._id} value={measureUnit._id}>
                       {measureUnit.name}
                     </option>
                   ))}
