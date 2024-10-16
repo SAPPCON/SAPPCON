@@ -45,7 +45,10 @@ const Description = ({ buildingId }) => {
     const enteredDescription = newDescriptionInputRef.current.value;
 
     if (!noEmptyValidate(enteredDescription)) {
-      setErrorRequest("Ingrese la descripción.");
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Ingresa la descripción",
+      });
       return;
     } else {
       setErrorRequest("");
@@ -74,9 +77,10 @@ const Description = ({ buildingId }) => {
 
       if (!response.ok) {
         const responseData = await response.json();
-        throw new Error(
-          responseData.error || "Error al actualizar la descripción de la obra"
-        );
+        throw {
+          message: responseData.message || "Error al actualizar la descripción",
+          messageinfo: responseData.messageinfo || "Detalles no disponibles",
+        };
       }
 
       setCorrectRequest(true);
@@ -87,7 +91,10 @@ const Description = ({ buildingId }) => {
 
       router.reload();
     } catch (error) {
-      setErrorRequest(error.message);
+      setErrorRequest({
+        message: error.message || "Error desconocido",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
   };
 
@@ -143,8 +150,10 @@ const Description = ({ buildingId }) => {
             >
               <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
               <div className="flex flex-col justify-center font-sans    ">
-                <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-                <h2 className="  text-xs text-blackText ">{errorRequest}</h2>
+                <h1 className="text-lg  text-red5 ">{errorRequest.message}</h1>
+                <h2 className="  text-xs text-blackText ">
+                  {errorRequest.messageinfo}
+                </h2>
               </div>
             </div>
           )}

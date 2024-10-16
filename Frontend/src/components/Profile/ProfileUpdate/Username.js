@@ -14,13 +14,11 @@ import { noEmptyValidate } from "@/utils/validationFunctions";
 import { useRouter } from "next/router";
 import ProfileContext from "@/store/ProfileContext";
 
-
-
 const Username = (props) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const profileCtx = useContext(ProfileContext)
+  const profileCtx = useContext(ProfileContext);
   const router = useRouter();
   const newUsernameInputRef = useRef();
 
@@ -38,9 +36,11 @@ const Username = (props) => {
     setCorrectRequest(false);
     const enteredAlias = newUsernameInputRef.current.value;
 
-
     if (!noEmptyValidate(enteredAlias)) {
-      setErrorRequest("Ingresa tu alias.");
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Ingresa tu alias",
+      });
       return;
     } else {
       setErrorRequest("");
@@ -63,23 +63,27 @@ const Username = (props) => {
       });
 
       setIsLoading(false);
-      
 
       if (!response.ok) {
         const responseData = await response.json();
-        throw new Error(responseData.error || "Error al actualizar el Alias");
+        throw {
+          message: responseData.message || "Error al actualizar el alias",
+          messageinfo: responseData.messageinfo || "Detalles no disponibles",
+        };
       }
 
-
       setCorrectRequest(true);
-      newUsernameInputRef.current.value ="";
+      newUsernameInputRef.current.value = "";
       setErrorRequest("");
 
       sessionStorage.setItem("reloadViaRouter", "true");
-  
+
       router.reload();
     } catch (error) {
-      setErrorRequest(error.message);
+      setErrorRequest({
+        message: error.message || "Error desconocido",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
   };
   return (
@@ -112,9 +116,7 @@ const Username = (props) => {
               </p>
             </Link>
             <IoIosArrowForward className=" mx-1 text-[12px] text-[#555555]"></IoIosArrowForward>
-            <p className="font-sans text-[#C45500]">
-              Cambia tú alias
-            </p>
+            <p className="font-sans text-[#C45500]">Cambia tú alias</p>
           </div>
 
           {correctRequest && (
@@ -134,8 +136,10 @@ const Username = (props) => {
             >
               <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
               <div className="flex flex-col justify-center font-sans    ">
-                <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-                <h2 className="  text-xs text-blackText ">{errorRequest}</h2>
+                <h1 className="text-lg  text-red5 ">{errorRequest.message}</h1>
+                <h2 className="  text-xs text-blackText ">
+                  {errorRequest.messageinfo}
+                </h2>
               </div>
             </div>
           )}
@@ -145,8 +149,8 @@ const Username = (props) => {
           </h1>
           <div className="flex flex-col rounded-[8px] border border-solid border-[#D5D9D9] px-[18px] py-[14px] font-sans">
             <div className="w-full text-[13px]">
-              Si desea cambiar el alias asociado a su cuenta, puede
-              hacerlo a continuación. Asegúrese de hacer clic en botón
+              Si desea cambiar el alias asociado a su cuenta, puede hacerlo a
+              continuación. Asegúrese de hacer clic en botón
               <strong> Guardar </strong> cuando termine.
             </div>
             <div className="mt-[22px] w-full">
@@ -158,17 +162,19 @@ const Username = (props) => {
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newUsernameInputRef}
-                    placeholder={profileCtx.alias ? profileCtx.alias : 'Sin definir'}
+                    placeholder={
+                      profileCtx.alias ? profileCtx.alias : "Sin definir"
+                    }
                   ></input>
                 </div>
 
                 {!isLoading && (
-                 <button
-                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                 onClick={submitHandler}
-               >
-                 Guardar
-               </button>
+                  <button
+                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                    onClick={submitHandler}
+                  >
+                    Guardar
+                  </button>
                 )}
 
                 {isLoading && <Loader />}

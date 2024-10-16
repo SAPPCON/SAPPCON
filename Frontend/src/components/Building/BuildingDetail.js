@@ -60,9 +60,11 @@ const BuildingDetail = (props) => {
           >
             <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
             <div className="flex flex-col justify-center font-sans    ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
+              <h1 className="text-lg  text-red5 ">
+                {buildingCtx.errorUpdateCustomer.message}
+              </h1>
               <h2 className="  text-xs text-blackText ">
-                {buildingCtx.errorUpdateCustomer}
+                {buildingCtx.errorUpdateCustomer.messageinfo}
               </h2>
             </div>
           </div>
@@ -111,7 +113,10 @@ const BuildingDetail = (props) => {
                 </div>
               )}
               {customerCtx.error && (
-                <div className="h-[31px]">{customerCtx.error}</div>
+                <div className="flex flex-col justify-center items-center h-auto border   border-gray-500 rounded-md">
+                  <p>{customerCtx.error.message}</p>
+                  <small>{customerCtx.error.messageinfo}</small>
+                </div>
               )}
 
               {!customerCtx.error && !customerCtx.isLoading && (

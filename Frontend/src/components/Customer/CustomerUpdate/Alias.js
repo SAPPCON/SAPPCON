@@ -45,7 +45,10 @@ const Alias = ({ customerId }) => {
     const enteredAlias = newAliasInputRef.current.value;
 
     if (!noEmptyValidate(enteredAlias)) {
-      setErrorRequest("Ingrese el elias.");
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Ingresa el alias",
+      });
       return;
     } else {
       setErrorRequest("");
@@ -74,9 +77,10 @@ const Alias = ({ customerId }) => {
 
       if (!response.ok) {
         const responseData = await response.json();
-        throw new Error(
-          responseData.error || "Error al actualizar el alias del cliente"
-        );
+        throw {
+          message: responseData.message || "Error al actualizar el alias",
+          messageinfo: responseData.messageinfo || "Detalles no disponibles",
+        };
       }
 
       setCorrectRequest(true);
@@ -87,7 +91,10 @@ const Alias = ({ customerId }) => {
 
       router.reload();
     } catch (error) {
-      setErrorRequest(error.message);
+      setErrorRequest({
+        message: error.message || "Error desconocido",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
   };
   return (
@@ -142,8 +149,10 @@ const Alias = ({ customerId }) => {
             >
               <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
               <div className="flex flex-col justify-center font-sans    ">
-                <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-                <h2 className="  text-xs text-blackText ">{errorRequest}</h2>
+                <h1 className="text-lg  text-red5 ">{errorRequest.message}</h1>
+                <h2 className="  text-xs text-blackText ">
+                  {errorRequest.messageinfo}
+                </h2>
               </div>
             </div>
           )}

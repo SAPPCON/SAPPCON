@@ -23,12 +23,17 @@ const fetchData = async () => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al cargar perfil");
+      // Acceder tanto al 'error' como a 'errorinfo'
+      throw {
+        message: responseData.message || "Error al cargar perfil",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
+
     const data = await response.json();
     return data;
   } catch (error) {
-    throw error; //Para capturarlo con el catch luego en el loadProfile
+    throw error;
   }
 };
 
@@ -60,7 +65,10 @@ export const ProfileContextProvider = (props) => {
           setError(null); // Resetea el error cuando la carga es exitosa
         }
       } catch (error) {
-        setError(error.message); // Establece el mensaje de error
+        setError({
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        });
       } finally {
         setLoading(false);
       }

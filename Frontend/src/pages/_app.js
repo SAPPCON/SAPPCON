@@ -6,22 +6,25 @@ import { AuthenticationContextProvider } from "@/store/AuthenticationContext";
 import { ProfileContextProvider } from "@/store/ProfileContext";
 import { CustomerContextProvider } from "@/store/CustomerContext";
 import { BuildingContextProvider } from "@/store/BuildingContext";
+import { BudgetContextProvider } from "@/store/BudgetContext";
 
 export default function App({ Component, pageProps }) {
   return (
     <AuthenticationContextProvider>
       <BuildingContextProvider>
-        <MeasureUnitContextProvider>
-          <CategoryContextProvider>
-            <ServiceContextProvider>
-              <CustomerContextProvider>
-                <ProfileContextProvider>
-                  <Component {...pageProps} />
-                </ProfileContextProvider>
-              </CustomerContextProvider>
-            </ServiceContextProvider>
-          </CategoryContextProvider>
-        </MeasureUnitContextProvider>
+        <BudgetContextProvider>
+          <MeasureUnitContextProvider>
+            <CategoryContextProvider>
+              <ServiceContextProvider>
+                <CustomerContextProvider>
+                  <ProfileContextProvider>
+                    <Component {...pageProps} />
+                  </ProfileContextProvider>
+                </CustomerContextProvider>
+              </ServiceContextProvider>
+            </CategoryContextProvider>
+          </MeasureUnitContextProvider>
+        </BudgetContextProvider>
       </BuildingContextProvider>
     </AuthenticationContextProvider>
   );

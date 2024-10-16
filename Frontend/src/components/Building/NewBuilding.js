@@ -7,6 +7,8 @@ import { noEmptyValidate } from "@/utils/validationFunctions";
 import CustomerContext from "@/store/CustomerContext";
 import BuildingContext from "@/store/BuildingContext";
 import Loader from "../UI/Loader";
+import PopUpError from "../UI/PopUpError";
+import PopUpSuccess from "../UI/PopUpSuccess";
 
 const NewBuilding = (props) => {
   const { customerContext: customerCtx } = useContext(CustomerContext);
@@ -144,11 +146,14 @@ const NewBuilding = (props) => {
 
             {customerCtx.isLoading && (
               <div className="h-[31px] flex items-center justify-center">
-                <Loader style={{ width: "100%", height: "100%" }}></Loader>
+                <Loader></Loader>
               </div>
             )}
             {customerCtx.error && (
-              <div className="h-[31px]">{customerCtx.error}</div>
+              <div className="flex flex-col justify-center items-center h-auto border   border-gray-500 rounded-md">
+                <p>{customerCtx.error.message}</p>
+                <small>{customerCtx.error.messageinfo}</small>
+              </div>
             )}
 
             {!customerCtx.error && !customerCtx.isLoading && (
@@ -246,48 +251,20 @@ const NewBuilding = (props) => {
       {/*Aca van los 2 carteles que van a ser absolutos respecto a su contenedor padre (este div). Algo absoluto se hace referencia al padre mas cercano que tenga que no sea static, en este caso este es absoluto */}
 
       {buildingCtx.errorAddItem && (
-        <div
-          className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2  -translate-y-1/2   px-[18px]  py-[14px]    "
-        >
-          <div className="flex w-full ">
-            <div className="flex items-center mr-3">
-              <HiOutlineExclamationTriangle className="text-[25px] text-red5"></HiOutlineExclamationTriangle>
-            </div>
-            <div className="flex flex-col justify-center font-sans   ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                {buildingCtx.errorAddItem}
-              </h2>
-            </div>
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={props.hideNewBuildingFunction}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpError
+          message={buildingCtx.errorAddItem.message}
+          messageinfo={buildingCtx.errorAddItem.messageinfo}
+          onAccept={props.hideNewBuildingFunction}
+          icon={HiOutlineExclamationTriangle}
+        />
       )}
 
       {buildingCtx.successAddItem && (
-        <div
-          className=" flex flex-col h-fit w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  py-[14px] font-sans text-[14px] text-blackText z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-         "
-        >
-          <div className="flex">
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Obra Registrada.
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={props.hideNewBuildingFunction}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpSuccess
+          message="Obra Registrada."
+          onAccept={props.hideNewBuildingFunction}
+          icon={FaCheckCircle}
+        />
       )}
     </Fragment>
   );

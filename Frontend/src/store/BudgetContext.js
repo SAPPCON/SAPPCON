@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect, useContext, useState } from "react";
 import AuthenticationContext from "./AuthenticationContext";
 
-const BuildingContext = React.createContext({
+const BudgetContext = React.createContext({
   items: [],
   addItem: (item) => {},
   deleteItem: (item) => {},
@@ -19,25 +19,27 @@ const BuildingContext = React.createContext({
   successUpdateCustomer: false,
 });
 
-const defaultBuildingState = {
+const defaultBudgetState = {
   items: [],
 };
 
-// Función que obtiene los datos del backend
+// Función que obtiene los datos del backend, en el caso del presupuesto solo los headers.
 const fetchData = async (token) => {
   try {
-    const response = await fetch(process.env.NEXT_PUBLIC_GET_BUILDING_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_GET_BUDGET_HEADERS_URL,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw {
-        message: responseData.message || "Error al cargar las obras",
-        messageinfo: responseData.messageinfo || "Detalles no disponibles",
-      };
+      throw new Error(
+        responseData.error || "Error al obtener los presupuestos"
+      );
     }
 
     const data = await response.json();
@@ -47,12 +49,12 @@ const fetchData = async (token) => {
   }
 };
 
-const newBuilding = async (item) => {
+const newBudget = async (item) => {
   try {
     const token = localStorage.getItem("token");
     //const token = localStorage.getItem("sadasdasd12312");
 
-    const response = await fetch(process.env.NEXT_PUBLIC_ADD_BUILDING_URL, {
+    const response = await fetch(process.env.NEXT_PUBLIC_ADD_BUDGET_URL, {
       method: "POST",
       body: JSON.stringify(item),
       headers: {
@@ -63,10 +65,7 @@ const newBuilding = async (item) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw {
-        message: responseData.message || "Error al crear obra",
-        messageinfo: responseData.messageinfo || "Detalles no disponibles",
-      };
+      throw new Error(responseData.error || "Error al agregar el presupuesto");
     }
 
     const data = await response.json();
@@ -76,13 +75,15 @@ const newBuilding = async (item) => {
   }
 };
 
-const deleteBuilding = async (buildingId) => {
+const deleteBudget = async (budgetId) => {
   try {
     const token = localStorage.getItem("token");
     //const token = localStorage.getItem("sadasdasd12312");
 
+    console.log("ID QUE LLEGA AL BORRAR DEL CONTEXTO: ", budgetId);
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_DELETE_BUILDING_URL}${buildingId}`,
+      `${process.env.NEXT_PUBLIC_DELETE_BUDGET_URL}${budgetId}`,
       {
         method: "DELETE",
         headers: {
@@ -92,15 +93,18 @@ const deleteBuilding = async (buildingId) => {
       }
     );
 
+    console.log("HACE EL FETCH ", response);
+
     if (!response.ok) {
+      console.log(" HAY ERROR");
       const responseData = await response.json();
-      throw {
-        message: responseData.message || "Error al eliminar obra",
-        messageinfo: responseData.messageinfo || "Detalles no disponibles",
-      };
+      console.log("ERROR: ", responseData);
+      throw new Error(responseData.error || "Error al eliminar el presupuesto");
     }
 
+    console.log("NO HAY ERROR");
     const data = await response.json();
+
     return data;
   } catch (error) {
     throw error;
@@ -125,11 +129,9 @@ const updateCustomerBuilding = async (building_id, newCustomerId) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw {
-        message:
-          responseData.message || "Error al actualizar cliente de la obra",
-        messageinfo: responseData.messageinfo || "Detalles no disponibles",
-      };
+      throw new Error(
+        responseData.error || "Error al actualizar el cliente de la obra"
+      );
     }
 
     const data = await response.json();
@@ -140,12 +142,12 @@ const updateCustomerBuilding = async (building_id, newCustomerId) => {
   }
 };
 
-const buildingsReducer = (state, action) => {
+const budgetsReducer = (state, action) => {
   switch (action.type) {
-    case "LOAD_BUILDINGS":
+    case "LOAD_BUDGETS":
       return {
         ...state,
-        items: action.services,
+        items: action.budgets,
         isLoading: false,
         error: "",
       };
@@ -178,38 +180,26 @@ const buildingsReducer = (state, action) => {
       return {
         ...state,
         isLoading: false,
-        error: {
-          message: action.error.message,
-          messageinfo: action.error.messageinfo,
-        },
+        error: action.error,
       };
     case "SET_ERROR_ADD_ITEM":
       return {
         ...state,
         isLoadingAddItem: false,
-        errorAddItem: {
-          message: action.error.message,
-          messageinfo: action.error.messageinfo,
-        },
+        errorAddItem: action.error,
       };
     case "SET_ERROR_DELETE_ITEM":
       return {
         ...state,
         isLoadingDeleteItem: false,
-        errorDeleteItem: {
-          message: action.error.message,
-          messageinfo: action.error.messageinfo,
-        },
+        errorDeleteItem: action.error,
         successDeleteItem: false,
       };
     case "SET_ERROR_UPDATE_CUSTOMER":
       return {
         ...state,
         isLoadingUpdateCustomer: false,
-        errorUpdateCustomer: {
-          message: action.error.message,
-          messageinfo: action.error.messageinfo,
-        },
+        errorUpdateCustomer: action.error,
         successUpdateCustomer: false,
       };
     case "SET_SUCCESS_ADD_ITEM":
@@ -285,141 +275,126 @@ const buildingsReducer = (state, action) => {
         successUpdateCustomer: false,
       };
     default:
-      return defaultBuildingState;
+      return defaultBudgetState;
   }
 };
 
-export const BuildingContextProvider = (props) => {
-  const [buildingsState, dispatchBuildingsAction] = useReducer(
-    buildingsReducer,
-    defaultBuildingState
+export const BudgetContextProvider = (props) => {
+  const [budgetsState, dispatchBudgetsAction] = useReducer(
+    budgetsReducer,
+    defaultBudgetState
   );
 
   //const token = "sadasdasd12312";
   const { token } = useContext(AuthenticationContext);
 
   useEffect(() => {
-    const loadServices = async () => {
-      dispatchBuildingsAction({ type: "SET_LOADING" });
+    const loadBudgets = async () => {
+      dispatchBudgetsAction({ type: "SET_LOADING" });
       try {
         const data = await fetchData(token);
-        dispatchBuildingsAction({
-          type: "LOAD_BUILDINGS",
-          services: data,
+        dispatchBudgetsAction({
+          type: "LOAD_BUDGETS",
+          budgets: data,
         });
       } catch (error) {
-        dispatchBuildingsAction({
-          type: "SET_ERROR",
-          error: {
-            message: error.message || "Error desconocido",
-            messageinfo: error.messageinfo || "Detalles no disponibles",
-          },
-        });
+        dispatchBudgetsAction({ type: "SET_ERROR", error: error.message });
       }
     };
 
     // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
-      loadServices();
+      loadBudgets();
     }
   }, [token]);
 
   const addItemHandler = async (item) => {
-    dispatchBuildingsAction({ type: "SET_LOADING_ADD_ITEM" });
+    dispatchBudgetsAction({ type: "SET_LOADING_ADD_ITEM" });
     try {
-      const data = await newBuilding(item);
+      const data = await newBudget(item);
 
+      //Creamos el presupuesto a partir del presupuesto creado que nos retorna la base de datos, para almacenarlo en el contexto.
       const newItem = {
         user_id: data.messageinfo.user_id,
+        building_id: data.messageinfo.building_id,
         customer_id: data.messageinfo.customer_id,
-        name: data.messageinfo.name,
-        alias: data.messageinfo.alias,
-        address: data.messageinfo.address,
-        description: data.messageinfo.description,
+        customer_name: data.messageinfo.customer_name,
+        amount: data.messageinfo.amount,
+        status: data.messageinfo.status,
         _id: data.messageinfo._id,
       };
 
-      dispatchBuildingsAction({
+      //Agrego el presupuesto tambien en el contexto, asi se actualiza la lista de presupuestos.
+      dispatchBudgetsAction({
         type: "ADD_ITEM",
-        item: newItem, // La obra a agregar
+        item: newItem,
       });
-      dispatchBuildingsAction({ type: "SET_SUCCESS_ADD_ITEM" });
+      dispatchBudgetsAction({ type: "SET_SUCCESS_ADD_ITEM" });
     } catch (error) {
-      dispatchBuildingsAction({
+      dispatchBudgetsAction({
         type: "SET_ERROR_ADD_ITEM",
-        error: {
-          message: error.message || "Error desconocido",
-          messageinfo: error.messageinfo || "Detalles no disponibles",
-        },
+        error: error.message,
       });
     }
   };
 
   const deleteItemHandler = async (id) => {
     try {
-      dispatchBuildingsAction({ type: "SET_LOADING_DELETE_ITEM" });
-      await deleteBuilding(id);
-      dispatchBuildingsAction({ type: "DELETE_ITEM", id: id });
-      dispatchBuildingsAction({ type: "SET_SUCCESS_DELETE_ITEM" });
+      dispatchBudgetsAction({ type: "SET_LOADING_DELETE_ITEM" });
+      await deleteBudget(id);
+      dispatchBudgetsAction({ type: "DELETE_ITEM", id: id });
+      dispatchBudgetsAction({ type: "SET_SUCCESS_DELETE_ITEM" });
     } catch (error) {
-      dispatchBuildingsAction({
+      dispatchBudgetsAction({
         type: "SET_ERROR_DELETE_ITEM",
-        error: {
-          message: error.message || "Error desconocido",
-          messageinfo: error.messageinfo || "Detalles no disponibles",
-        },
+        error: error.message,
       });
     }
   };
 
   const updateCustomerHandler = async (customer, newCustomerId) => {
     try {
-      dispatchBuildingsAction({ type: "SET_LOADING_UPDATE_CUSTOMER_ITEM" });
+      dispatchBudgetsAction({ type: "SET_LOADING_UPDATE_CUSTOMER_ITEM" });
 
       await updateCustomerBuilding(customer._id, newCustomerId);
-      dispatchBuildingsAction({
+      dispatchBudgetsAction({
         type: "UPDATE_CUSTOMER",
         id: customer._id,
         customer_id: newCustomerId,
       });
 
-      dispatchBuildingsAction({ type: "SET_SUCCESS_UPDATE_CUSTOMER" });
+      dispatchBudgetsAction({ type: "SET_SUCCESS_UPDATE_CUSTOMER" });
     } catch (error) {
-      dispatchBuildingsAction({
+      dispatchBudgetsAction({
         type: "SET_ERROR_UPDATE_CUSTOMER",
-        error: {
-          message: error.message || "Error desconocido",
-          messageinfo: error.messageinfo || "Detalles no disponibles",
-        },
+        error: error.message,
       });
     }
   };
 
-  const buildingContext = {
-    items: buildingsState.items,
+  const budgetContext = {
+    items: budgetsState.items,
     addItem: addItemHandler,
     deleteItem: deleteItemHandler,
     updateCustomer: updateCustomerHandler,
-    isLoading: buildingsState.isLoading,
-    isLoadingAddItem: buildingsState.isLoadingAddItem,
-    isLoadingDeleteItem: buildingsState.isLoadingDeleteItem,
-    isLoadingUpdateCustomer: buildingsState.isLoadingUpdateCustomer,
-    error: buildingsState.error,
-    errorAddItem: buildingsState.errorAddItem,
-    errorDeleteItem: buildingsState.errorDeleteItem,
-    errorUpdateCustomer: buildingsState.errorUpdateCustomer,
-    successDeleteItem: buildingsState.successDeleteItem,
-    successAddItem: buildingsState.successAddItem,
-    successUpdateCustomer: buildingsState.successUpdateCustomer,
+    isLoading: budgetsState.isLoading,
+    isLoadingAddItem: budgetsState.isLoadingAddItem,
+    isLoadingDeleteItem: budgetsState.isLoadingDeleteItem,
+    isLoadingUpdateCustomer: budgetsState.isLoadingUpdateCustomer,
+    error: budgetsState.error,
+    errorAddItem: budgetsState.errorAddItem,
+    errorDeleteItem: budgetsState.errorDeleteItem,
+    errorUpdateCustomer: budgetsState.errorUpdateCustomer,
+    successDeleteItem: budgetsState.successDeleteItem,
+    successAddItem: budgetsState.successAddItem,
+    successUpdateCustomer: budgetsState.successUpdateCustomer,
   };
 
   return (
-    <BuildingContext.Provider
-      value={{ buildingContext, dispatchBuildingsAction }}
-    >
+    <BudgetContext.Provider value={{ budgetContext, dispatchBudgetsAction }}>
       {props.children}
-    </BuildingContext.Provider>
+    </BudgetContext.Provider>
   );
 };
 
-export default BuildingContext;
+export default BudgetContext;

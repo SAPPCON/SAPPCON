@@ -11,6 +11,8 @@ import {
   numberFormatValidate,
 } from "@/utils/validationFunctions";
 import Loader from "../UI/Loader";
+import PopUpError from "../UI/PopUpError";
+import PopUpSuccess from "../UI/PopUpSuccess";
 
 const NewService = (props) => {
   const { serviceContext: serviceCtx } = useContext(ServiceContext);
@@ -271,7 +273,10 @@ const NewService = (props) => {
                 </div>
               )}
               {categoryCtx.error && (
-                <div className="h-[31px]">{categoryCtx.error}</div>
+                <div className="flex flex-col justify-center items-center h-auto border   border-gray-500 rounded-md">
+                  <p>{categoryCtx.error.message}</p>
+                  <small>{categoryCtx.error.messageinfo}</small>
+                </div>
               )}
 
               {!categoryCtx.error && !categoryCtx.isLoading && (
@@ -318,10 +323,13 @@ const NewService = (props) => {
                 </div>
               )}
               {measureUnitCtx.error && (
-                <div className="h-[31px]">{measureUnitCtx.error}</div>
+                <div className="flex flex-col justify-center items-center h-auto border   border-gray-500 rounded-md">
+                  <p>{measureUnitCtx.error.message}</p>
+                  <small>{measureUnitCtx.error.messageinfo}</small>
+                </div>
               )}
 
-              {!measureUnits.error && !measureUnits.isLoading && (
+              {!measureUnitCtx.error && !measureUnitCtx.isLoading && (
                 <select
                   id="unitOfMeasurement"
                   ref={measureUnitRef}
@@ -454,48 +462,20 @@ const NewService = (props) => {
       {/*Uso FRAGMENT -> Todos los elementos que sean ABSOLUTE al estar fuera del DIV absoluto de NewService se van a ubicar respecto al contenedor de Service que es el padre no estatico mas cercano que tienen.*/}
 
       {serviceCtx.errorAddItem && (
-        <div
-          className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2  -translate-y-1/2   px-[18px]  py-[14px]    "
-        >
-          <div className="flex w-full ">
-            <div className="flex items-center mr-3">
-              <HiOutlineExclamationTriangle className="text-[25px] text-red5"></HiOutlineExclamationTriangle>
-            </div>
-            <div className="flex flex-col justify-center font-sans   ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                {serviceCtx.errorAddItem}
-              </h2>
-            </div>
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={props.hideNewServiceFunction}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpError
+          message={serviceCtx.errorAddItem.message}
+          messageinfo={serviceCtx.errorAddItem.messageinfo}
+          onAccept={props.hideNewServiceFunction}
+          icon={HiOutlineExclamationTriangle}
+        />
       )}
 
       {serviceCtx.successAddItem && (
-        <div
-          className=" flex flex-col h-fit w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  py-[14px] font-sans text-[14px] text-blackText z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-         "
-        >
-          <div className="flex">
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Servicio Registrado.
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={props.hideNewServiceFunction}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpSuccess
+          message="Servicio Registrado."
+          onAccept={props.hideNewServiceFunction}
+          icon={FaCheckCircle}
+        />
       )}
 
       {/* POP UP AGREGAR CATEGORIA */}
@@ -561,49 +541,21 @@ const NewService = (props) => {
 
       {/* POP UP DE EXITO AGREGAR CATEGORIA -> Se queda el fondo negro y se va la planilla de registrar categoria*/}
       {categoryCtx.succesAddItem && (
-        <div
-          className=" flex flex-col h-fit w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  py-[14px] font-sans text-[14px] text-blackText absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-"
-        >
-          <div className="flex">
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Categoria registrada.
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={handleAcceptCategory}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpSuccess
+          message="Categoria registrada."
+          onAccept={handleAcceptCategory}
+          icon={FaCheckCircle}
+        />
       )}
 
       {/* POP UP DE ERROR AGREGAR CATEGORIA -> Se queda el fondo negro y se va la planilla de registrar categoria*/}
       {categoryCtx.errorAddItem && (
-        <div
-          className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  px-[18px]  py-[14px]    "
-        >
-          <div className="flex w-full ">
-            <div className="flex items-center mr-3">
-              <HiOutlineExclamationTriangle className="text-[25px] text-red5"></HiOutlineExclamationTriangle>
-            </div>
-            <div className="flex flex-col justify-center font-sans   ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                {categoryCtx.errorAddItem}
-              </h2>
-            </div>
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={handleAcceptCategory}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpError
+          message={categoryCtx.errorAddItem.message}
+          messageinfo={categoryCtx.errorAddItem.messageinfo}
+          onAccept={handleAcceptCategory}
+          icon={HiOutlineExclamationTriangle}
+        />
       )}
 
       {/* POP UP AGREGAR UNIDAD DE MEDIDA */}
@@ -669,51 +621,22 @@ const NewService = (props) => {
         </div>
       )}
 
-      {/* POP UP DE EXITO AGREGAR Unidad de medida -> Se queda el fondo negro y se va la planilla de registrar unidad de medida*/}
       {measureUnitCtx.succesAddItem && (
-        <div
-          className=" flex flex-col h-fit w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  py-[14px] font-sans text-[14px] text-blackText absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-"
-        >
-          <div className="flex">
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Unidad de Medida registrada.
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={handleAcceptMeasureUnit}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpSuccess
+          message="Unidad de Medida registrada."
+          onAccept={handleAcceptMeasureUnit}
+          icon={FaCheckCircle}
+        />
       )}
 
-      {/* POP UP DE EXITO AGREGAR UNIDAD DE MEDIDA -> Se queda el fondo negro y se va la planilla de registrar unidad de medida*/}
+      {/* POP UP DE ERROR AGREGAR CATEGORIA -> Se queda el fondo negro y se va la planilla de registrar categoria*/}
       {measureUnitCtx.errorAddItem && (
-        <div
-          className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  px-[18px]  py-[14px]    "
-        >
-          <div className="flex w-full ">
-            <div className="flex items-center mr-3">
-              <HiOutlineExclamationTriangle className="text-[25px] text-red5"></HiOutlineExclamationTriangle>
-            </div>
-            <div className="flex flex-col justify-center font-sans   ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                {measureUnitCtx.errorAddItem}
-              </h2>
-            </div>
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={handleAcceptMeasureUnit}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpError
+          message={measureUnitCtx.errorAddItem.message}
+          messageinfo={measureUnitCtx.errorAddItem.messageinfo}
+          onAccept={handleAcceptMeasureUnit}
+          icon={HiOutlineExclamationTriangle}
+        />
       )}
 
       {/* NUEVO FONDO NEGRO -> Se usa para nueva cateogria y nueva unidad de medida*/}

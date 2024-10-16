@@ -84,14 +84,26 @@ const SignUpForm = (props) => {
         switch (statusCode) {
           //Usuario ya existe, no deberia pasar porque si estamos aca es porque el email no existe
           case 418:
-            setRequestError(responseData.msg);
+            setRequestError({
+              message: responseData.message || "Error desconocido",
+              messageinfo:
+                responseData.messageinfo || "Detalles no disponibles",
+            });
             break;
           case 500:
             //Error del servidor
-            setRequestError(responseData.error);
+            setRequestError({
+              message: responseData.message || "Error desconocido",
+              messageinfo:
+                responseData.messageinfo || "Detalles no disponibles",
+            });
             break;
           default:
-            setRequestError("Ocurrió un error desconocido.");
+            setRequestError({
+              message: responseData.message || "Error desconocido",
+              messageinfo:
+                responseData.messageinfo || "Detalles no disponibles",
+            });
         }
         return;
       }
@@ -104,7 +116,10 @@ const SignUpForm = (props) => {
 
       authenticationCtx.login(data.token, expirationTime);
     } catch (error) {
-      setRequestError(error.message);
+      setRequestError({
+        message: error.message || "Hubo un problema",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
   };
 
@@ -121,9 +136,9 @@ const SignUpForm = (props) => {
               <HiOutlineExclamationTriangle className="text-[25px] text-red5"></HiOutlineExclamationTriangle>
             </div>
             <div className="flex flex-col justify-center font-sans   ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                {requestError}
+              <h1 className="text-lg  text-red5 ">{requestError.message}</h1>
+              <h2 className="  text-xs text-blackText ">
+                {requestError.messageinfo}
               </h2>
             </div>
           </div>

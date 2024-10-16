@@ -18,20 +18,18 @@ const Address = (props) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const profileCtx = useContext(ProfileContext)
+  const profileCtx = useContext(ProfileContext);
   const router = useRouter();
   const newAddressInputRef = useRef();
 
+  useEffect(() => {
+    const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
 
-useEffect(() => {
-  const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
-
-  if (reloadViaRouter) {
-    sessionStorage.removeItem("reloadViaRouter");
-    setCorrectRequest(true);
-  }
-}, [router.asPath]);
-
+    if (reloadViaRouter) {
+      sessionStorage.removeItem("reloadViaRouter");
+      setCorrectRequest(true);
+    }
+  }, [router.asPath]);
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -39,7 +37,10 @@ useEffect(() => {
     const enteredAddress = newAddressInputRef.current.value;
 
     if (!noEmptyValidate(enteredAddress)) {
-      setErrorRequest("Ingresa tu dirección");
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Ingresa tu dirección",
+      });
       return;
     } else {
       setErrorRequest("");
@@ -62,23 +63,27 @@ useEffect(() => {
       });
 
       setIsLoading(false);
-      
 
       if (!response.ok) {
         const responseData = await response.json();
-        throw new Error(responseData.error || "Error al actualizar la dirección del usuario");
+        throw {
+          message: responseData.message || "Error al actualizar la dirección",
+          messageinfo: responseData.messageinfo || "Detalles no disponibles",
+        };
       }
 
-
       setCorrectRequest(true);
-      newAddressInputRef.current.value ="";
+      newAddressInputRef.current.value = "";
       setErrorRequest("");
 
       sessionStorage.setItem("reloadViaRouter", "true");
-  
+
       router.reload();
     } catch (error) {
-      setErrorRequest(error.message);
+      setErrorRequest({
+        message: error.message || "Error desconocido",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
   };
   return (
@@ -131,8 +136,10 @@ useEffect(() => {
             >
               <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
               <div className="flex flex-col justify-center font-sans    ">
-                <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-                <h2 className="  text-xs text-blackText ">{errorRequest}</h2>
+                <h1 className="text-lg  text-red5 ">{errorRequest.message}</h1>
+                <h2 className="  text-xs text-blackText ">
+                  {errorRequest.messageinfo}
+                </h2>
               </div>
             </div>
           )}
@@ -160,12 +167,12 @@ useEffect(() => {
                 </div>
 
                 {!isLoading && (
-                 <button
-                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                 onClick={submitHandler}
-               >
-                 Guardar
-               </button>
+                  <button
+                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                    onClick={submitHandler}
+                  >
+                    Guardar
+                  </button>
                 )}
 
                 {isLoading && <Loader />}

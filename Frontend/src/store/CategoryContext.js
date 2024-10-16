@@ -25,7 +25,10 @@ const fetchData = async (token) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al obtener las categorías");
+      throw {
+        message: responseData.message || "Error al cargar las categorías",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -50,7 +53,10 @@ const newCategory = async (name) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al agregar categoria");
+      throw {
+        message: responseData.message || "Error al crear categoria",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -88,7 +94,10 @@ const categoriesReducer = (state, action) => {
       return {
         ...state,
         isLoading: false,
-        error: action.error,
+        error: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
       };
     case "SET_ERROR_ADD_ITEM":
       return {
@@ -96,7 +105,10 @@ const categoriesReducer = (state, action) => {
         isLoading: false,
         isLoadingAddItem: false,
         error: null,
-        errorAddItem: action.error,
+        errorAddItem: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         succesAddItem: false,
       };
     case "SET_SUCCES_ADD_ITEM":
@@ -149,7 +161,13 @@ export const CategoryContextProvider = (props) => {
           categories: data,
         });
       } catch (error) {
-        dispatchCategoriesAction({ type: "SET_ERROR", error: error.message });
+        dispatchCategoriesAction({
+          type: "SET_ERROR",
+          error: {
+            message: error.message || "Error desconocido",
+            messageinfo: error.messageinfo || "Detalles no disponibles",
+          },
+        });
       }
     };
 
@@ -177,7 +195,10 @@ export const CategoryContextProvider = (props) => {
     } catch (error) {
       dispatchCategoriesAction({
         type: "SET_ERROR_ADD_ITEM",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };

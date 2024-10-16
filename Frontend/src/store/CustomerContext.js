@@ -30,7 +30,10 @@ const fetchData = async (token) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al obtener los clientes");
+      throw {
+        message: responseData.message || "Error al cargar clientes",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -56,7 +59,10 @@ const newCustomer = async (item) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.errorinfo || "Error al agregar cliente");
+      throw {
+        message: responseData.message || "Error al agregar cliente",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -84,7 +90,10 @@ const deleteCustomer = async (customerId) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al eliminar cliente");
+      throw {
+        message: responseData.message || "Error al eliminar cliente",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -151,7 +160,10 @@ const customerReducer = (state, action) => {
         isLoading: false,
         isLoadingAddItem: false,
         isLoadingDeleteItem: false,
-        error: action.error,
+        error: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         errorAddItem: "",
         errorDeleteItem: "",
         successAddItem: false,
@@ -164,7 +176,10 @@ const customerReducer = (state, action) => {
         isLoadingAddItem: false,
         isLoadingDeleteItem: false,
         error: "",
-        errorAddItem: action.error,
+        errorAddItem: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         errorDeleteItem: "",
         successAddItem: false,
         successDeleteItem: false,
@@ -177,7 +192,10 @@ const customerReducer = (state, action) => {
         isLoadingDeleteItem: false,
         error: "",
         errorAddItem: "",
-        errorDeleteItem: action.error,
+        errorDeleteItem: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         successAddItem: false,
         successDeleteItem: false,
       };
@@ -270,7 +288,13 @@ export const CustomerContextProvider = (props) => {
           customers: data,
         });
       } catch (error) {
-        dispatchCustomersAction({ type: "SET_ERROR", error: error.message });
+        dispatchCustomersAction({
+          type: "SET_ERROR",
+          error: {
+            message: error.message || "Error desconocido",
+            messageinfo: error.messageinfo || "Detalles no disponibles",
+          },
+        });
       }
     };
 
@@ -303,7 +327,10 @@ export const CustomerContextProvider = (props) => {
     } catch (error) {
       dispatchCustomersAction({
         type: "SET_ERROR_ADD_ITEM",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };
@@ -317,7 +344,10 @@ export const CustomerContextProvider = (props) => {
     } catch (error) {
       dispatchCustomersAction({
         type: "SET_ERROR_DELETE_ITEM",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };

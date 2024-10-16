@@ -38,7 +38,10 @@ const fetchData = async (token) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al obtener los servicios");
+      throw {
+        message: responseData.message || "Error al cargar los servicios",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -64,7 +67,10 @@ const newService = async (item) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al agregar servicio");
+      throw {
+        message: responseData.message || "Error al crear servicio",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -92,7 +98,10 @@ const deleteService = async (serviceId) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(responseData.error || "Error al eliminar servicio");
+      throw {
+        message: responseData.message || "Error al eliminar servicio",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -121,9 +130,10 @@ const updateCategoryService = async (service_id, newCategoryId) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(
-        responseData.error || "Error al actualizar la categoría del servicio"
-      );
+      throw {
+        message: responseData.message || "Error al actualizar la categoria",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -153,10 +163,11 @@ const updateMeasureUnitService = async (service_id, newMeasureUnitId) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(
-        responseData.error ||
-          "Error al actualizar la unidad de medida del servicio"
-      );
+      throw {
+        message:
+          responseData.message || "Error al actualizar la unidad de medida",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -231,7 +242,10 @@ const servicesReducer = (state, action) => {
         ...state,
         isLoading: false,
         isLoadingAddItem: false,
-        error: action.error,
+        error: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         errorAddItem: null,
       };
     case "SET_ERROR_ADD_ITEM":
@@ -240,7 +254,10 @@ const servicesReducer = (state, action) => {
         isLoading: false,
         isLoadingAddItem: false,
         error: null,
-        errorAddItem: action.error,
+        errorAddItem: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
       };
     case "SET_ERROR_DELETE_ITEM":
       return {
@@ -250,7 +267,10 @@ const servicesReducer = (state, action) => {
         isLoadingDeleteItem: false,
         error: null,
         errorAddItem: null,
-        errorDeleteItem: action.error,
+        errorDeleteItem: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         successDeleteItem: false,
       };
     case "SET_ERROR_UPDATE_CATEGORY":
@@ -263,7 +283,10 @@ const servicesReducer = (state, action) => {
         error: null,
         errorAddItem: null,
         errorDeleteItem: null,
-        errorUpdateCategory: action.error,
+        errorUpdateCategory: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         successDeleteItem: false,
         successUpdateCategory: false,
       };
@@ -271,7 +294,10 @@ const servicesReducer = (state, action) => {
       return {
         ...state,
         isLoadingUpdateMeasureUnit: true,
-        errorUpdateMeasureUnit: action.error,
+        errorUpdateMeasureUnit: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         successUpdateMeasureUnit: false,
       };
     case "SET_SUCCESS_ADD_ITEM":
@@ -429,7 +455,13 @@ export const ServiceContextProvider = (props) => {
           services: data,
         });
       } catch (error) {
-        dispatchServicesAction({ type: "SET_ERROR", error: error.message });
+        dispatchServicesAction({
+          type: "SET_ERROR",
+          error: {
+            message: error.message || "Error desconocido",
+            messageinfo: error.messageinfo || "Detalles no disponibles",
+          },
+        });
       }
     };
 
@@ -462,7 +494,10 @@ export const ServiceContextProvider = (props) => {
     } catch (error) {
       dispatchServicesAction({
         type: "SET_ERROR_ADD_ITEM",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };
@@ -476,7 +511,10 @@ export const ServiceContextProvider = (props) => {
     } catch (error) {
       dispatchServicesAction({
         type: "SET_ERROR_DELETE_ITEM",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };
@@ -496,7 +534,10 @@ export const ServiceContextProvider = (props) => {
     } catch (error) {
       dispatchServicesAction({
         type: "SET_ERROR_UPDATE_CATEGORY",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };
@@ -516,7 +557,10 @@ export const ServiceContextProvider = (props) => {
     } catch (error) {
       dispatchServicesAction({
         type: "SET_ERROR_UPDATE_MEASUREUNIT",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };

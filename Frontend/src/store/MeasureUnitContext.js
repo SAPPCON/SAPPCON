@@ -25,9 +25,11 @@ const fetchData = async (token) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(
-        responseData.error || "Error al obtener las unidades de medida"
-      );
+      throw {
+        message:
+          responseData.message || "Error al cargar las unidades de medida",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -52,9 +54,10 @@ const newMeasureUnit = async (name) => {
 
     if (!response.ok) {
       const responseData = await response.json();
-      throw new Error(
-        responseData.error || "Error al agregar unidad de medida"
-      );
+      throw {
+        message: responseData.message || "Error al crear unidad de medida",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
     }
 
     const data = await response.json();
@@ -92,7 +95,10 @@ const measureUnitReducer = (state, action) => {
       return {
         ...state,
         isLoading: false,
-        error: action.error,
+        error: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
       };
     case "SET_ERROR_ADD_ITEM":
       return {
@@ -100,7 +106,10 @@ const measureUnitReducer = (state, action) => {
         isLoading: false,
         isLoadingAddItem: false,
         error: null,
-        errorAddItem: action.error,
+        errorAddItem: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
         succesAddItem: false,
       };
     case "SET_SUCCES_ADD_ITEM":
@@ -154,7 +163,13 @@ export const MeasureUnitContextProvider = (props) => {
           measureUnits: data,
         });
       } catch (error) {
-        dispatchMeasureUnitsAction({ type: "SET_ERROR", error: error.message });
+        dispatchMeasureUnitsAction({
+          type: "SET_ERROR",
+          error: {
+            message: error.message || "Error desconocido",
+            messageinfo: error.messageinfo || "Detalles no disponibles",
+          },
+        });
       }
     };
 
@@ -182,7 +197,10 @@ export const MeasureUnitContextProvider = (props) => {
     } catch (error) {
       dispatchMeasureUnitsAction({
         type: "SET_ERROR_ADD_ITEM",
-        error: error.message,
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
       });
     }
   };

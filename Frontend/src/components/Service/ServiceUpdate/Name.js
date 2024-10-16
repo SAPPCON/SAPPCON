@@ -14,7 +14,7 @@ import { noEmptyValidate } from "@/utils/validationFunctions";
 import ServiceContext from "@/store/ServiceContext";
 import { useRouter } from "next/router";
 
-const Name = ({serviceId}) => {
+const Name = ({ serviceId }) => {
   const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
@@ -26,9 +26,8 @@ const Name = ({serviceId}) => {
   const service = serviceCtx.items.find((item) => item._id === serviceId);
 
   // Si el servicio existe, usa su nombre, si no, muestra un placeholder por defecto
-  const serviceName = service ? service.name : 'Nombre no encontrado';
+  const serviceName = service ? service.name : "Nombre no encontrado";
 
- 
   useEffect(() => {
     // Verificar si el reload se hizo a través del router
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
@@ -46,7 +45,10 @@ const Name = ({serviceId}) => {
     const enteredName = newNameInputRef.current.value;
 
     if (!noEmptyValidate(enteredName)) {
-      setErrorRequest("Ingrese el nombre.");
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Ingresa el nombre",
+      });
       return;
     } else {
       setErrorRequest("");
@@ -56,38 +58,44 @@ const Name = ({serviceId}) => {
 
     try {
       const token = localStorage.getItem("token");
-       //const token = localStorage.getItem("sadasdasd12312");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_UPDATE_SERVICE_URL}${serviceId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          name: enteredName,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      //const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_UPDATE_SERVICE_URL}${serviceId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            name: enteredName,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setIsLoading(false);
-      
 
       if (!response.ok) {
         const responseData = await response.json();
-        throw new Error(responseData.error || "Error al actualizar el nombre del servicio");
+        throw {
+          message: responseData.message || "Error al actualizar el nombre",
+          messageinfo: responseData.messageinfo || "Detalles no disponibles",
+        };
       }
 
-
       setCorrectRequest(true);
-      newNameInputRef.current.value ="";
+      newNameInputRef.current.value = "";
       setErrorRequest("");
 
       sessionStorage.setItem("reloadViaRouter", "true");
-  
+
       router.reload();
     } catch (error) {
-      setErrorRequest(error.message);
+      setErrorRequest({
+        message: error.message || "Error desconocido",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
-
   };
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-blackText font-sans min-w-[1200px] ">
@@ -141,8 +149,10 @@ const Name = ({serviceId}) => {
             >
               <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
               <div className="flex flex-col justify-center font-sans    ">
-                <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-                <h2 className="  text-xs text-blackText ">{errorRequest}</h2>
+                <h1 className="text-lg  text-red5 ">{errorRequest.message}</h1>
+                <h2 className="  text-xs text-blackText ">
+                  {errorRequest.messageinfo}
+                </h2>
               </div>
             </div>
           )}
@@ -170,16 +180,15 @@ const Name = ({serviceId}) => {
                 </div>
 
                 {!isLoading && (
-                 <button
-                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                 onClick={submitHandler}
-               >
-                 Guardar
-               </button>
+                  <button
+                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                    onClick={submitHandler}
+                  >
+                    Guardar
+                  </button>
                 )}
 
                 {isLoading && <Loader />}
-                
               </form>
             </div>
           </div>

@@ -47,7 +47,10 @@ const Lastname = ({ customerId }) => {
     const enteredLastName = newLastnameInputRef.current.value;
 
     if (!noEmptyValidate(enteredLastName)) {
-      setErrorRequest("Ingrese el apellido.");
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Ingresa el apellido",
+      });
       return;
     } else {
       setErrorRequest("");
@@ -76,9 +79,10 @@ const Lastname = ({ customerId }) => {
 
       if (!response.ok) {
         const responseData = await response.json();
-        throw new Error(
-          responseData.error || "Error al actualizar el apellido del cliente"
-        );
+        throw {
+          message: responseData.message || "Error al actualizar el apellido",
+          messageinfo: responseData.messageinfo || "Detalles no disponibles",
+        };
       }
 
       setCorrectRequest(true);
@@ -89,7 +93,10 @@ const Lastname = ({ customerId }) => {
 
       router.reload();
     } catch (error) {
-      setErrorRequest(error.message);
+      setErrorRequest({
+        message: error.message || "Error desconocido",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
   };
 
@@ -145,8 +152,10 @@ const Lastname = ({ customerId }) => {
             >
               <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
               <div className="flex flex-col justify-center font-sans    ">
-                <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-                <h2 className="  text-xs text-blackText ">{errorRequest}</h2>
+                <h1 className="text-lg  text-red5 ">{errorRequest.message}</h1>
+                <h2 className="  text-xs text-blackText ">
+                  {errorRequest.messageinfo}
+                </h2>
               </div>
             </div>
           )}

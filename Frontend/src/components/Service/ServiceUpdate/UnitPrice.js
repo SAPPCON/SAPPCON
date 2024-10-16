@@ -14,7 +14,7 @@ import ServiceContext from "@/store/ServiceContext";
 import { numberFormatValidate } from "@/utils/validationFunctions";
 import { useRouter } from "next/router";
 
-const UnitPrice = ({serviceId}) => {
+const UnitPrice = ({ serviceId }) => {
   const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
@@ -23,7 +23,7 @@ const UnitPrice = ({serviceId}) => {
   const newUnitPriceInputRef = useRef();
 
   const service = serviceCtx.items.find((item) => item._id === serviceId);
-  const serviceUnitPrice = service ? service.price : 'Precio no encontrado';
+  const serviceUnitPrice = service ? service.price : "Precio no encontrado";
 
   useEffect(() => {
     // Verificar si el reload se hizo a través del router
@@ -42,7 +42,10 @@ const UnitPrice = ({serviceId}) => {
     const enteredUnitPrice = newUnitPriceInputRef.current.value;
 
     if (!numberFormatValidate(enteredUnitPrice)) {
-      setErrorRequest("Ingrese un numero correcto.");
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Ingrese un número correcto",
+      });
       return;
     } else {
       setErrorRequest("");
@@ -51,37 +54,44 @@ const UnitPrice = ({serviceId}) => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-       //const token = localStorage.getItem("sadasdasd12312");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_UPDATE_SERVICE_URL}${serviceId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          price: enteredUnitPrice,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      //const token = localStorage.getItem("token");
+      const token = localStorage.getItem("sadasdasd12312");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_UPDATE_SERVICE_URL}${serviceId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            price: enteredUnitPrice,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setIsLoading(false);
-      
 
       if (!response.ok) {
         const responseData = await response.json();
-        throw new Error(responseData.error || "Error al actualizar el precio del servicio");
+        throw {
+          message: responseData.message || "Error al actualizar el precio",
+          messageinfo: responseData.messageinfo || "Detalles no disponibles",
+        };
       }
 
-
       setCorrectRequest(true);
-      newUnitPriceInputRef.current.value ="";
+      newUnitPriceInputRef.current.value = "";
       setErrorRequest("");
 
       sessionStorage.setItem("reloadViaRouter", "true");
-  
+
       router.reload();
     } catch (error) {
-      setErrorRequest(error.message);
+      setErrorRequest({
+        message: error.message || "Error desconocido",
+        messageinfo: error.messageinfo || "Detalles no disponibles",
+      });
     }
   };
   return (
@@ -136,8 +146,10 @@ const UnitPrice = ({serviceId}) => {
             >
               <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
               <div className="flex flex-col justify-center font-sans    ">
-                <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-                <h2 className="  text-xs text-blackText ">{errorRequest}</h2>
+                <h1 className="text-lg  text-red5 ">{errorRequest.message}</h1>
+                <h2 className="  text-xs text-blackText ">
+                  {errorRequest.messageinfo}
+                </h2>
               </div>
             </div>
           )}
@@ -165,12 +177,12 @@ const UnitPrice = ({serviceId}) => {
                 </div>
 
                 {!isLoading && (
-                 <button
-                 className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
-                 onClick={submitHandler}
-               >
-                 Guardar
-               </button>
+                  <button
+                    className="mt-[14px] flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-md border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center "
+                    onClick={submitHandler}
+                  >
+                    Guardar
+                  </button>
                 )}
 
                 {isLoading && <Loader />}

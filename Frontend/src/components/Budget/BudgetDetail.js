@@ -1,58 +1,77 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
 import { BiAccessibility } from "react-icons/bi";
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, Fragment, useEffect, useContext } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
-
-//Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)
+import BuildingContext from "@/store/BuildingContext";
+import Loader from "../UI/Loader";
+import BudgetContext from "@/store/BudgetContext";
 
 const BudgetDetail = (props) => {
-  const [errorRequestClient, setErrorRequestClient] = useState("");
-  const [correctRequestClient, setCorrectRequestClient] = useState(false);
-  const [errorRequestActualState, setErrorRequestActualState] = useState("");
-  const [correctRequestActualState, setCorrectRequestActualState] =
-    useState(false);
-  const [errorRequestBuilding, setErrorRequestBuilding] = useState("");
-  const [correctRequestBuilding, setCorrectRequestBuilding] = useState(false);
+  //Cosas de Renderizar el detalle de presupuesto:
+
+  //Almaceno la data del presupuesto, incluidas las lineas de presupuesto.
+  const [budgetData, setBudgetData] = useState({});
+  //Error para renderizaar en caso de no poder obtener la data del presupuesto.
+  const [errorRequest, setErrorRequest] = useState("");
+  //Mientras esta cargando la request, renderizo el loader.
+  //Hago que sea TRUE desde un principio, para que se haga false cuando salga bien la request y asi evitar tener problema de la data de budger undefined.
+  const [isLoading, setIsLoading] = useState(true);
+  //Para renderizar las obras
+  const { buildingContext: buildingCtx } = useContext(BuildingContext);
+  const Buildings = buildingCtx.items;
+
+  //Obtengo TODA la data del presupuesto, incluido la linea de servicios.
+  //A diferencia de los demas componentes que esta data viene del context, aca debo usar los estados locales del componente y en base a eso renderizar la data, el msg de error o el cargando.
+  useEffect(() => {
+    const fetchBudgetData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        setIsLoading(true);
+
+        console.log(
+          "URL: ",
+          `${process.env.NEXT_PUBLIC_GET_BUDGET_URL}${props.budgetData._id}`
+        );
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_GET_BUDGET_URL}${props.budgetData._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const responseData = await response.json();
+          throw new Error(
+            responseData.error || "Error al obtener el presupuesto"
+          );
+        }
+
+        const data = await response.json();
+        setBudgetData(data);
+        setIsLoading(false);
+        setErrorRequest("");
+
+        console.log("DATA: ", data);
+      } catch (error) {
+        setErrorRequest(error.message);
+      }
+    };
+
+    fetchBudgetData();
+  }, []);
+
+  const buildingRef = useRef();
+  const stateRef = useRef();
+  const dateRef = useRef();
+
+  //Cosas de Eliminar Presupuesto:
+  const { budgetContext: budgetCtx } = useContext(BudgetContext);
   const [showDelete, setShowDelete] = useState(false);
-
-  //Y en esta funcion se deberia mandar la request al back para cambiar este valor.
-  const handleActualStateChange = (newValue) => {
-    console.log("Nuevo valor seleccionado:", newValue);
-
-    if (errorRequestActualState) {
-      setErrorRequestActualState("Error al actualizar la Unidad de Medida");
-      setCorrectRequestActualState(false);
-    } else {
-      setErrorRequestActualState("");
-      setCorrectRequestActualState(true);
-    }
-  };
-
-  const handleClientChange = (newValue) => {
-    console.log("Nuevo valor seleccionado:", newValue);
-
-    if (errorRequestClient) {
-      setErrorRequestClient("Error al actualizar el Cliente");
-      setCorrectRequestClient(false);
-    } else {
-      setErrorRequestClient("");
-      setCorrectRequestClient(true);
-    }
-  };
-
-  const handleBuildingChange = (newValue) => {
-    console.log("Nuevo valor seleccionado:", newValue);
-
-    if (errorRequestBuilding) {
-      setErrorRequestBuilding("Error al actualizar la Obra");
-      setCorrectRequestBuilding(false);
-    } else {
-      setErrorRequestBuilding("");
-      setCorrectRequestBuilding(true);
-    }
-  };
 
   const handleDelete = () => {
     setShowDelete(true);
@@ -63,204 +82,144 @@ const BudgetDetail = (props) => {
   };
 
   const handleConfirmDelete = () => {
-    console.log("Eliminado");
+    setShowDelete(false);
+    budgetCtx.deleteItem(props.budgetData._id);
+    props.hideBudgetFunctionBackground();
   };
 
   //Todos los otros carteles de exito estan a 5px del titulo. Este mide 56px de ancho entonces se sube 56 + 5 = 61.
   return (
     <Fragment>
       <div className=" absolute top-12 left-1/2 transform -translate-x-1/2  z-40 bg-gray-100 rounded-[8px] border border-solid border-grayBorder w-[600px] ">
-        {/*TODO lo relacionado a exito o error de las 2 actualizaciones de Select estan en estos 4 pedazos de codigo. Ambos absolutos respecto al contenedor padre (este div absoluto de arriba) */}
-
-        {correctRequestClient && (
-          <div
-            className=" flex h-[56px] w-full   items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px] pb-[18px] pt-[14px] font-sans text-[14px] text-blackText absolute left-0 top-[-61px]
-           "
-          >
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Cliente actualizado.
+        {isLoading && (
+          <div className="h-[346px] justify-center items-center flex w-full  ">
+            <Loader></Loader>
           </div>
         )}
 
-        {correctRequestClient && (
-          <div
-            className=" flex h-20 w-full   rounded-xl border border-red5 bg-white p-4 ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 absolute left-0 top-[-85px]"
-          >
-            <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
-            <div className="flex flex-col justify-center font-sans    ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs text-blackText ">
-                {correctRequestClient}
-              </h2>
-            </div>
+        {errorRequest && (
+          <div className=" h-[346px] justify-center items-center flex w-full  ">
+            {errorRequest}
           </div>
         )}
 
-        {correctRequestActualState && (
-          <div
-            className=" flex h-[56px] w-full   items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px] pb-[18px] pt-[14px] font-sans text-[14px] text-blackText absolute left-0 top-[-61px]
-           "
-          >
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Estado actual actualizado.
+        {!errorRequest && !isLoading && (
+          <div>
+            <RxCross1
+              className="text-[20px] absolute top-[10px] right-[10px] text-blackText cursor-pointer"
+              onClick={props.hideBudgetFunctionBoth}
+            ></RxCross1>
+            <h1 className="font-sans text-[28px] font-normal text-blackText text-center border-b border-b-grayBorder">
+              Datos del Presupuesto
+            </h1>
+
+            <ul className="flex flex-col  pt-3 pb-2 ">
+              <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
+                <div className="pl-6 mb-[12px] w-full truncate">
+                  <h1 className="mb-[4px] font-bold">ID</h1>
+                  <h1>{budgetData.budget._id}</h1>
+                </div>
+              </li>
+
+              <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
+                <div className="pl-6 mb-[12px] w-[49%] ">
+                  <label htmlFor="date" className="text-sm font-semibold block">
+                    Fecha
+                  </label>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    defaultValue={
+                      new Date(budgetData.budget.date)
+                        .toISOString()
+                        .split("T")[0]
+                    }
+                    required
+                    ref={dateRef}
+                    className={`w-full p-1 border   border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none`}
+                  />
+                </div>
+              </li>
+
+              <li className="flex  justify-between text-blackText font-sans text-[14px] px-6 ">
+                <div className="mb-4 w-[49%]">
+                  <label htmlFor="building" className="mb-[4px] font-bold">
+                    Obra
+                  </label>
+                  {buildingCtx.isLoading && (
+                    <div className="h-[31px] flex items-center justify-center">
+                      <Loader></Loader>
+                    </div>
+                  )}
+                  {buildingCtx.error && (
+                    <div className="h-[31px]">{buildingCtx.error}</div>
+                  )}
+
+                  {!buildingCtx.error && !buildingCtx.isLoading && (
+                    <select
+                      id="building"
+                      ref={buildingRef}
+                      className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer `}
+                      defaultValue={budgetData.budget.building_id}
+                    >
+                      {Buildings.map((building) => (
+                        <option key={building._id} value={building._id}>
+                          {building.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+                <div className="mb-4 w-[49%]">
+                  <label htmlFor="state" className="mb-[4px] font-bold">
+                    Estado
+                  </label>
+                  <select
+                    id="state"
+                    defaultValue={budgetData.budget.status}
+                    onChange={(e) => handleActualStateChange(e.target.value)}
+                    className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer`}
+                  >
+                    <option key={"Pendiente"} value="Pendiente">
+                      Pendiente
+                    </option>
+                    <option key={"Aprobado"} value="Aprobado">
+                      Aprobado
+                    </option>
+                    <option key={"Rechazado"} value="Rechazado">
+                      Rechazado
+                    </option>
+                    <option key={"En Construcción"} value="En Construcción">
+                      En Construcción
+                    </option>
+                    <option key={"Finalizado"} value="Finalizado">
+                      Finalizado
+                    </option>
+                  </select>
+                </div>
+              </li>
+              <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
+              <li className=" px-[23px] ">
+                <div className="flex items-center justify-end ">
+                  <button
+                    className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                    onClick={props.hideBudgetFunctionBoth}
+                  >
+                    Atrás
+                  </button>
+
+                  <button
+                    className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
+                    onClick={handleDelete}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </li>
+            </ul>
           </div>
         )}
-
-        {errorRequestActualState && (
-          <div
-            className=" flex h-20 w-full   rounded-xl border border-red5 bg-white p-4 ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 absolute left-0 top-[-85px]"
-          >
-            <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
-            <div className="flex flex-col justify-center font-sans    ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs text-blackText ">
-                {errorRequestActualState}
-              </h2>
-            </div>
-          </div>
-        )}
-
-        {correctRequestBuilding && (
-          <div
-            className=" flex h-[56px] w-full   items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px] pb-[18px] pt-[14px] font-sans text-[14px] text-blackText absolute left-0 top-[-61px]
-           "
-          >
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Obra actualizada.
-          </div>
-        )}
-
-        {errorRequestBuilding && (
-          <div
-            className=" flex h-20 w-full   rounded-xl border border-red5 bg-white p-4 ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 absolute left-0 top-[-85px]"
-          >
-            <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
-            <div className="flex flex-col justify-center font-sans    ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs text-blackText ">
-                {errorRequestBuilding}
-              </h2>
-            </div>
-          </div>
-        )}
-
-        <RxCross1
-          className="text-[20px] absolute top-[10px] right-[10px] text-blackText cursor-pointer"
-          onClick={props.hideBudgetFunction}
-        ></RxCross1>
-        <h1 className="font-sans text-[28px] font-normal text-blackText text-center border-b border-b-grayBorder">
-          Datos del Presupuesto
-        </h1>
-
-        <ul className="flex flex-col  pt-3 pb-2 ">
-          <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
-            <div className="pl-6 mb-[12px] w-full truncate">
-              <h1 className="mb-[4px] font-bold">ID</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.budgetData.id}
-              </h1>
-            </div>
-          </li>
-
-          <li className="flex  justify-between text-blackText font-sans text-[14px] px-6 ">
-            <div className="mb-4 w-[49%]">
-              <label htmlFor="client" className="mb-[4px] font-bold">
-                Cliente
-              </label>
-              <select
-                id="client"
-                //ref={categoryRef}
-                defaultValue={props.budgetData.cliente}
-                onChange={(e) => handleClientChange(e.target.value)}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer `}
-              >
-                <option value="Cliente A">Cliente A</option>
-                <option value="Cliente B">Cliente B</option>
-                <option value="Cliente C">Cliente C</option>
-                <option value="Cliente D">Cliente D</option>
-                <option value="Cliente E">Cliente E</option>
-                <option value="Cliente F">Cliente F</option>
-                <option value="Cliente G">Cliente G</option>
-                <option value="Cliente H">Cliente H</option>
-                <option value="Cliente I">Cliente I</option>
-                <option value="Cliente J">Cliente J</option>
-              </select>
-            </div>
-
-            <div className="mb-4 w-[49%]">
-              <label htmlFor="building" className="mb-[4px] font-bold">
-                Obra
-              </label>
-              <select
-                id="building"
-                defaultValue={props.budgetData.obra}
-                onChange={(e) => handleBuildingChange(e.target.value)}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer`}
-              >
-                <option value="Proyecto de Vivienda A">
-                  Proyecto de Vivienda A
-                </option>
-                <option value="Ampliación Casa B">Ampliación Casa B</option>
-                <option value="Edificio de Oficinas C">
-                  Edificio de Oficinas C
-                </option>
-                <option value="Rehabilitación Parque D">
-                  Rehabilitación Parque D
-                </option>
-                <option value="Sistema de Riego E">Sistema de Riego E</option>
-                <option value="Renovación Plaza F">Renovación Plaza F</option>
-                <option value="Centro Comercial G">Centro Comercial G</option>
-                <option value="Paneles Solares H">Paneles Solares H</option>
-                <option value="Construcción de Piscina I">
-                  Construcción de Piscina I
-                </option>
-                <option value="Gimnasio J">Gimnasio J</option>
-              </select>
-            </div>
-          </li>
-          <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
-
-          <li className="flex  justify-between text-blackText font-sans text-[14px] px-6  ">
-            <div className="mb-4 w-[49%]">
-              <label htmlFor="actualState" className="mb-[4px] font-bold">
-                Estado Actual
-              </label>
-              <select
-                id="actualState"
-                defaultValue={props.budgetData.estadoActual}
-                onChange={(e) => handleActualStateChange(e.target.value)}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer`}
-              >
-                <option value="iniciado">iniciado</option>
-                <option value="en proceso">en proceso</option>
-                <option value="finalizado">finalizado</option>
-              </select>
-            </div>
-          </li>
-          <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
-
-          <li className=" px-[23px] ">
-            <div className="flex items-center justify-end ">
-              <button
-                className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-                onClick={props.hideBudgetFunction}
-              >
-                Atrás
-              </button>
-
-              <button
-                className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
-                onClick={handleDelete}
-              >
-                Eliminar
-              </button>
-            </div>
-          </li>
-        </ul>
       </div>
 
       {/* Tuve que poner ambos afuera porque sino, el cartel estaba contenido en el DIV padre que tiene un Z-30 y si z-50 se veia pisado por eso. Entonces al sacar este afuera, le puede hacer competencia al z-40 del modal.
@@ -274,21 +233,30 @@ const BudgetDetail = (props) => {
           <h4 className="font-bold">
             ¿Está seguro de que desea eliminar este presupuesto?
           </h4>
-          <div className="flex w-full items-center justify-between mt-5 ">
-            <button
-              className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-              onClick={handleClickHideDelete}
-            >
-              Atrás
-            </button>
 
-            <button
-              className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
-              onClick={handleConfirmDelete}
-            >
-              Eliminar
-            </button>
-          </div>
+          {budgetCtx.isLoadingDeleteItem && (
+            <div className="h-[40px] mt-5 w-full flex items-center justify-center">
+              <Loader></Loader>
+            </div>
+          )}
+
+          {!budgetCtx.isLoadingDeleteItem && (
+            <div className="flex w-full items-center justify-between mt-5 ">
+              <button
+                className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                onClick={handleClickHideDelete}
+              >
+                Atrás
+              </button>
+
+              <button
+                className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
+                onClick={handleConfirmDelete}
+              >
+                Eliminar
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -303,3 +271,5 @@ const BudgetDetail = (props) => {
 };
 
 export default BudgetDetail;
+
+//Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)

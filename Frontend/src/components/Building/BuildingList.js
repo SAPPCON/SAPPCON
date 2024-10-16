@@ -4,6 +4,8 @@ import BuildingContext from "@/store/BuildingContext";
 import Loader from "../UI/Loader";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
+import PopUpError from "../UI/PopUpError";
+import PopUpSuccess from "../UI/PopUpSuccess";
 
 const BuildingList = (props) => {
   const [building, setBuilding] = useState(null);
@@ -60,8 +62,9 @@ const BuildingList = (props) => {
           </div>
         )}
         {buildingCtx.error && (
-          <div className="h-full justify-center flex items-center">
-            {buildingCtx.error}
+          <div className="h-full justify-center flex flex-col items-center">
+            <p>{buildingCtx.error.message}</p>
+            <small>{buildingCtx.error.messageinfo}</small>
           </div>
         )}
 
@@ -102,48 +105,20 @@ const BuildingList = (props) => {
       {/*El aceptar: va a estar con respecto al contenedor en Service que es Relativo, no lo dejo esto en Service Detail porque cuando se cierra la planilla de detalle el componente deja de renderizarse */}
 
       {buildingCtx.successDeleteItem && !buildingCtx.errorDeleteItem && (
-        <div
-          className=" flex flex-col h-[97px] w-[250px]  items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px]  pt-[14px] font-sans text-[14px] text-blackText z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2  -translate-y-1/2 
-               "
-        >
-          <div className="flex">
-            <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Obra Eliminada.
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={handleClickAccept}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpSuccess
+          message="Obra Eliminada."
+          onAccept={handleClickAccept}
+          icon={FaCheckCircle}
+        />
       )}
 
       {!buildingCtx.successDeleteItem && buildingCtx.errorDeleteItem && (
-        <div
-          className="flex flex-col items-center h-fit w-[250px]   rounded-xl border border-red5 bg-white  ring-4 ring-inset 	
-          ring-red2 ring-opacity-20 absolute z-50  top-1/2 left-1/2 transform -translate-x-1/2  -translate-y-1/2   px-[18px]  py-[14px]    "
-        >
-          <div className="flex w-full ">
-            <div className="flex items-center mr-3">
-              <HiOutlineExclamationTriangle className="text-[25px] text-red5"></HiOutlineExclamationTriangle>
-            </div>
-            <div className="flex flex-col justify-center font-sans   ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
-              <h2 className="  text-xs h-[30px] text-blackText line-clamp-2 ">
-                {buildingCtx.errorDeleteItem}
-              </h2>
-            </div>
-          </div>
-
-          <button
-            className=" flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mt-2"
-            onClick={handleClickAccept}
-          >
-            Aceptar
-          </button>
-        </div>
+        <PopUpError
+          message={buildingCtx.errorDeleteItem.message}
+          messageinfo={buildingCtx.errorDeleteItem.messageinfo}
+          onAccept={handleClickAccept}
+          icon={HiOutlineExclamationTriangle}
+        />
       )}
     </div>
   );

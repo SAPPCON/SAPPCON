@@ -3,16 +3,20 @@ import StatsNav from "../Navigation/StatsNav";
 import HomeNav from "../Navigation/HomeNav";
 import ServiceNav from "../Navigation/ServiceNav";
 import ProfileNav from "../Navigation/ProfileNav";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import CustomerNav from "../Navigation/CustomerNav";
 import BuildingNav from "../Navigation/BuildingNav";
 import NewBudget from "./NewBudget";
 import BudgetList from "./BudgetList";
+import BudgetContext from "@/store/BudgetContext";
 
 const Budget = (props) => {
+  const { budgetContext: budgetCtx, dispatchBudgetsAction } =
+    useContext(BudgetContext);
   const [showNewBudget, setShowNewBudget] = useState(false);
   const handleClick = () => {
     setShowNewBudget(!showNewBudget);
+    dispatchBudgetsAction({ type: "SET_RESTART_ALL_NEW_ITEM" });
   };
 
   return (

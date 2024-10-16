@@ -73,9 +73,11 @@ const ServiceDetail = (props) => {
           >
             <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
             <div className="flex flex-col justify-center font-sans    ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
+              <h1 className="text-lg  text-red5 ">
+                {serviceCtx.errorUpdateCategory.message}
+              </h1>
               <h2 className="  text-xs text-blackText ">
-                {serviceCtx.errorUpdateCategory}
+                {serviceCtx.errorUpdateCategory.messageinfo}
               </h2>
             </div>
           </div>
@@ -98,9 +100,11 @@ const ServiceDetail = (props) => {
           >
             <HiOutlineExclamationTriangle className="mr-4  align-top text-[30px] text-red5"></HiOutlineExclamationTriangle>
             <div className="flex flex-col justify-center font-sans    ">
-              <h1 className="text-lg  text-red5 ">Hubo un problema</h1>
+              <h1 className="text-lg  text-red5 ">
+                {serviceCtx.errorUpdateMeasureUnit.message}
+              </h1>
               <h2 className="  text-xs text-blackText ">
-                {serviceCtx.errorUpdateMeasureUnit}
+                {serviceCtx.errorUpdateMeasureUnit.messageinfo}
               </h2>
             </div>
           </div>
@@ -155,7 +159,10 @@ const ServiceDetail = (props) => {
                 </div>
               )}
               {categoryCtx.error && (
-                <div className="h-[31px]">{categoryCtx.error}</div>
+                <div className="flex flex-col justify-center items-center h-auto border   border-gray-500 rounded-md">
+                  <p>{categoryCtx.error.message}</p>
+                  <small>{categoryCtx.error.messageinfo}</small>
+                </div>
               )}
 
               {!categoryCtx.error && !categoryCtx.isLoading && (
@@ -186,10 +193,13 @@ const ServiceDetail = (props) => {
                 </div>
               )}
               {measureUnitCtx.error && (
-                <div className="h-[31px]">{measureUnitCtx.error}</div>
+                <div className="flex flex-col justify-center items-center h-auto border   border-gray-500 rounded-md">
+                  <p>{measureUnitCtx.error.message}</p>
+                  <small>{measureUnitCtx.error.messageinfo}</small>
+                </div>
               )}
 
-              {!measureUnits.error && !measureUnits.isLoading && (
+              {!measureUnitCtx.error && !measureUnitCtx.isLoading && (
                 <select
                   id="unitOfMeasurement"
                   defaultValue={props.serviceData.measure_unit_id}
