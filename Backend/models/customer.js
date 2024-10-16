@@ -47,7 +47,6 @@ const customerSchema = new Schema({
 },
 {
     timestamps: true,
-}
-);
+});
 
 export default mongoose.model("Customer", customerSchema);

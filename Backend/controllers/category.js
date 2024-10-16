@@ -7,11 +7,11 @@ export const NewCategory = async (req, res) => {
 
         // User exists
         if (!req.user || !req.user.id) {
-          return res.status(401).json({
-            message: "Usuario no autorizado.",
-            messageinfo:
-              "No se ha proporcionado un token válido para un usuario.",
-          });
+            return res.status(401).json({
+                message: "Usuario no autorizado.",
+                messageinfo:
+                "No se ha proporcionado un token válido para un usuario.",
+            });
         }
         var user_id = req.user.id;
         // const UserRec = User.findById(userId);
@@ -61,69 +61,68 @@ export const GetCategories = async (req, res) => {
 }
 
 export const GetCategory = async (req, res) => {
-  try {
-    // User exists
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({
-        message: "Usuario no autorizado.",
-        messageinfo: "No se ha proporcionado un token válido para un usuario.",
-      });
-    }
+    try {
+        // User exists
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
+                message: "Usuario no autorizado.",
+                messageinfo: "No se ha proporcionado un token válido para un usuario.",
+            });
+        }
 
-    //Find and get category
-    const userId = req.user.id;
-    const category = await Category.findOne({user_id: userId,_id: req.params.id,})
-    
-    if (!category) {
-        return res.status(404).json({
-            message: "Categoría no encontrada.",
-            messageinfo: "No se ha encontrado la categoría con el id proporcionado.",
-        });
-    };
+        //Find and get category
+        const userId = req.user.id;
+        const category = await Category.findOne({user_id: userId,_id: req.params.id,})
 
+        if (!category) {
+            return res.status(404).json({
+                message: "Categoría no encontrada.",
+                messageinfo: "No se ha encontrado la categoría con el id proporcionado.",
+            });
+        };
     // Response OK
     res.status(200).json(category);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({
-      error: "Error en el servidor.",
-      errorinfo: error.message,
-    });
-  }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({
+            error: "Error en el servidor.",
+            errorinfo: error.message,
+        });
+    }
 };
 
 export const UpdateCategory = async (req, res) => {
     try {
-      // User exists
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({
-          message: "Usuario no autorizado.",
-          messageinfo:
-            "No se ha proporcionado un token válido para un usuario.",
+        // User exists
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
+            message: "Usuario no autorizado.",
+            messageinfo:
+                "No se ha proporcionado un token válido para un usuario.",
+            });
+        }
+
+        //Find and update category
+        const userId = req.user.id;
+        const category = await Category.findOneAndUpdate(
+            { user_id: userId, _id: req.params.id },
+            req.body,
+            { new: true }
+        );
+
+        if (!category) {
+            return res.status(404).json({
+            message: "Categoría no encontrada.",
+            messageinfo:
+                "No se ha encontrado la categoría con el id proporcionado.",
+            });
+        }
+
+        // Response OK
+        res.status(200).json({
+            message: "Categoría actualizada.",
+            messageinfo: category,
         });
-      }
-
-      //Find and update category
-      const userId = req.user.id;
-      const category = await Category.findOneAndUpdate(
-        { user_id: userId, _id: req.params.id },
-        req.body,
-        { new: true }
-      );
-
-      if (!category) {
-        return res.status(404).json({
-          message: "Categoría no encontrada.",
-          messageinfo:
-            "No se ha encontrado la categoría con el id proporcionado.",
-        });
-      }
-
-      // Response OK
-      res.status(200).json({
-        message: "Categoría actualizada.",
-        messageinfo: category,
-      });
     } catch (error) {
         console.error(error.message);
         res.status(500).json(
@@ -137,35 +136,35 @@ export const UpdateCategory = async (req, res) => {
 
 export const DeleteCategory = async (req, res) => {
     try {
-      // User exists
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({
-          message: "Usuario no autorizado.",
-          messageinfo:
-            "No se ha proporcionado un token válido para un usuario.",
+        // User exists
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
+            message: "Usuario no autorizado.",
+            messageinfo:
+                "No se ha proporcionado un token válido para un usuario.",
+            });
+        }
+
+        //Find and delete category
+        const userId = req.user.id;
+        const category = await Category.findOneAndDelete({
+            user_id: userId,
+            _id: req.params.id,
         });
-      }
 
-      //Find and delete category
-      const userId = req.user.id;
-      const category = await Category.findOneAndDelete({
-        user_id: userId,
-        _id: req.params.id,
-      });
+        if (!category) {
+            return res.status(404).json({
+            message: "Categoría no encontrada.",
+            messageinfo:
+                "No se ha encontrado la categoría con el id proporcionado.",
+            });
+        }
 
-      if (!category) {
-        return res.status(404).json({
-          message: "Categoría no encontrada.",
-          messageinfo:
-            "No se ha encontrado la categoría con el id proporcionado.",
+        // Response OK
+        res.status(200).json({
+            message: "Categoría eliminada.",
+            messageinfo: "Category id: " + req.params.id,
         });
-      }
-
-      // Response OK
-      res.status(200).json({
-        message: "Categoría eliminada.",
-        messageinfo: "Category id: " + req.params.id,
-      });
     } catch (error) {
         console.error(error.message);
         res.status(500).json(

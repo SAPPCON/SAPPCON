@@ -7,6 +7,7 @@ import {
   UpdateBudget,
   UpdateBudgetLine,
   DeleteBudget,
+  DeleteBudgetLine,
 } from "../controllers/budget.js";
 import { auth } from '../middlewares/auth.js';
 const router = express.Router();
@@ -25,16 +26,16 @@ router.get("/:id", auth, GetBudget);
 
 // -- PUT
 // Update Budget Header
-router.put("/:id", auth, UpdateBudget);
+router.put("/modify/:id", auth, UpdateBudget);
 // Update Budget Line
-router.put("/line/:id", auth, UpdateBudgetLine);
+router.put("/modify/:budgetId/:lineId", auth, UpdateBudgetLine);
 
 
 
 // -- DELETE
-router.delete("/:id", auth, DeleteBudget);
-
-
-
+// Delete Budget
+router.delete("/delete/:id", auth, DeleteBudget);
+// Delete only a Budget Line
+router.delete("/delete/:budgetId/:lineId", auth, DeleteBudgetLine);
 
 export default router;

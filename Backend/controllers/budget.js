@@ -190,7 +190,7 @@ export const GetBudget = async (req, res) => {
 }
 
 export const UpdateBudget = async (req, res) => {
-    const { building_id, status, date } = req.body;
+    var { building_id, status, date } = req.body;
     try {
         // User exists
         if (!req.user || !req.user.id) {
@@ -222,6 +222,8 @@ export const UpdateBudget = async (req, res) => {
             );
         }
 
+        building_id = budget.building_id;
+
         const building = await Building.findById(building_id);
         const customer_id = building.customer_id;
         const customer = await Customer.findById(customer_id);
@@ -249,7 +251,7 @@ export const UpdateBudget = async (req, res) => {
 }
 
 export const UpdateBudgetLine = async (req, res) => {
-    const { budget_id, budgetLine_id, service_id, quantity } = req.body;
+    var { service_id, quantity } = req.body;
 
     try {
         // User exists
@@ -261,8 +263,10 @@ export const UpdateBudgetLine = async (req, res) => {
           });
         }
         const userId = req.user.id;
+        const budgetId = req.params.budgetId;
+        const budgetLineId = req.params.lineId;
         
-        const budget = await Budget.findOne({ user_id: userId, _id: budget_id });
+        const budget = await Budget.findOne({ user_id: userId, _id: budgetId });
         if (!budget) {
             return res.status(404).json(
                 {
@@ -272,7 +276,7 @@ export const UpdateBudgetLine = async (req, res) => {
             );
         }
 
-        const budgetLine = await BudgetLine.findOne({ user_id: userId, _id: budgetLine_id, budget_id: budget_id });
+        const budgetLine = await BudgetLine.findOne({ user_id: userId, _id: budgetLineId, budget_id: budgetId });
         if (!budgetLine) {
             return res.status(404).json(
                 {
@@ -282,6 +286,9 @@ export const UpdateBudgetLine = async (req, res) => {
             );
         }
 
+        if (!service_id) {
+            service_id = budgetLine.service_id;
+        }
         // Get related
         const service = await Service.findById(service_id);
         if (!service) {
@@ -310,6 +317,7 @@ export const UpdateBudgetLine = async (req, res) => {
         const service_name = service.name;
         const measure_unit_name = measure_unit.name;
         
+        var previousAmount = budgetLine.amount;
         budgetLine.service_id = service_id;
         budgetLine.service_name = service_name;
         budgetLine.measure_unit_id = measure_unit_id;
@@ -318,11 +326,15 @@ export const UpdateBudgetLine = async (req, res) => {
         budgetLine.price = price;
         budgetLine.amount = amount;
         budgetLine.save();
+
+        // Update Amount in Budget
+        budget.amount -= previousAmount + budgetLine.amount;
+        budget.save();
         
         res.status(200).json(
             {
-                message: "Presupuesto actualizado.",
-                messageinfo: budget
+                message: "Linea de Presupuesto actualizada.",
+                messageinfo: budgetLine
             }
         );
     } catch(error) {
@@ -380,5 +392,40 @@ export const DeleteBudget = async (req, res) => {
                 errorinfo: error.message
             }
         );
+    }
+}
+
+export const DeleteBudgetLine = async (req, res) => {
+    try {
+      // User exists
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          message: "Usuario no autorizado.",
+          messageinfo:
+            "No se ha proporcionado un token válido para un usuario.",
+        });
+      }
+
+      const userId = req.user.id;
+      const budgetId = req.params.budgetId;
+      const budgetLineId = req.params.lineId;
+      const budgetLine = await BudgetLine.findOneAndDelete({ user_id: userId, _id: budgetLineId, budget_id: budgetId });
+      if (!budgetLine) {
+        return res.status(404).json({
+          message: "Linea de Presupuesto no encontrada.",
+          messageinfo: "No existe una línea de presupuesto para la combinación de Línea de Presupuesto y Presupuesto.",
+        });
+      }
+
+      res.json({
+        message: "Linea de Presupuesto eliminada.",
+        messageinfo: budgetLine,
+      });
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({
+        error: "Error en el servidor.",
+        errorinfo: error.message,
+      });
     }
 }

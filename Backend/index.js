@@ -10,6 +10,7 @@ import customerRoutes from './routes/customer.js'
 import serviceRoutes from './routes/service.js'
 import buildingRoutes from './routes/building.js';
 import budgetRoutes from './routes/budget.js';
+import reporterRoutes from './routes/reporter.js';
 import helmet from 'helmet';
 import cors from 'cors'
 
@@ -32,6 +33,7 @@ app.use('/customer', customerRoutes)
 app.use('/service', serviceRoutes)
 app.use('/building', buildingRoutes)
 app.use('/budget', budgetRoutes)
+app.use("/reporter", reporterRoutes);
 
 
 /* ---- INITIALIZATION ---- */

@@ -139,7 +139,7 @@ export const getUser = async (req, res) => {
 
 
   export const updateUser = async (req, res) => {
-    const { name, email, password: plainPassword, alias, address } = req.body;
+    const { name, email, password: plainPassword, alias, address, surname } = req.body;
   
     try {
       // Verifica si el usuario está autorizado
@@ -163,7 +163,7 @@ export const getUser = async (req, res) => {
         }
       }
   
-      let updatedFields = { name, email, alias, address };
+      let updatedFields = { name, email, alias, address, surname };
   
       // Si se proporciona una nueva contraseña, la encripta
       if (plainPassword) {

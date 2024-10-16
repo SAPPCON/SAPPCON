@@ -40,10 +40,10 @@ export const GetCustomers = async (req, res) => {
   try {
     // User exists
     if (!req.user || !req.user.id) {
-      return res.status(401).json({
-        message: "Usuario no autorizado.",
-        messageinfo: "No se ha proporcionado un token válido para un usuario.",
-      });
+        return res.status(401).json({
+            message: "Usuario no autorizado.",
+            messageinfo: "No se ha proporcionado un token válido para un usuario.",
+        });
     }
 
     const userId = req.user.id;
@@ -52,8 +52,8 @@ export const GetCustomers = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send({
-      error: "Error en el servidor.",
-      errorinfo: error.message,
+        error: "Error en el servidor.",
+        errorinfo: error.message,
     });
   }
 };
@@ -119,11 +119,10 @@ export const UpdateCustomer = async (req, res) => {
         });
 
         if (!customer) {
-          return res.status(404).json({
-            message: "Cliente no encontrado.",
-            messageinfo:
-              "No se ha encontrado el cliente con el id proporcionado.",
-          });
+            return res.status(404).json({
+                message: "Cliente no encontrado.",
+                messageinfo: "No se ha encontrado el cliente con el id proporcionado.",
+            });
         }
 
         // Response OK
@@ -141,44 +140,43 @@ export const UpdateCustomer = async (req, res) => {
 
 export const DeleteCustomer = async (req, res) => {
     try {
-      // User exists
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({
-          message: "Usuario no autorizado.",
-          messageinfo:
-            "No se ha proporcionado un token válido para un usuario.",
+        // User exists
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
+                message: "Usuario no autorizado.",
+                messageinfo: "No se ha proporcionado un token válido para un usuario.",
+            });
+        }
+        const userId = req.user.id;
+
+        // If Customer have buildings cannot delete
+        const customerBuildings = await Building.find({
+            user_id: userId,
+            customer_id: req.params.id,
         });
-      }
-      const userId = req.user.id;
+        if (customerBuildings.length > 0) {
+            return res.status(400).json({
+                message: "Cliente no eliminado.",
+                messageinfo: "El cliente tiene construcciones asociadas, no se puede eliminar."
+            });
+        }
 
-      // If Customer have buildings cannot delete
-      const customerBuildings = await Building.find({
-        user_id: userId,
-        customer_id: req.params.id,
-      });
-      if (customerBuildings.length > 0) {
-        return res.status(400).json({
-          message: "Cliente no eliminado.",
-          messageinfo: "El cliente tiene construcciones asociadas, no se puede eliminar."
+        //Find and delete customer
+        const customer = await Customer.findOneAndDelete({
+            user_id: userId,
+            _id: req.params.id,
         });
-      }
 
-      //Find and delete customer
-      const customer = await Customer.findOneAndDelete({
-        user_id: userId,
-        _id: req.params.id,
-      });
+        if (!customer) {
+            return res.status(404).json({
+            message: "Cliente no encontrado.",
+            messageinfo:
+                "No se ha encontrado el cliente con el id proporcionado.",
+            });
+        }
 
-      if (!customer) {
-        return res.status(404).json({
-          message: "Cliente no encontrado.",
-          messageinfo:
-            "No se ha encontrado el cliente con el id proporcionado.",
-        });
-      }
-
-      // Response OK
-      res.json({ message: "Cliente eliminado.", messageinfo: customer });
+        // Response OK
+        res.json({ message: "Cliente eliminado.", messageinfo: customer });
     } catch (error) {
         console.error(error.message);
         res.status(500).json(
