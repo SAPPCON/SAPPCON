@@ -36,8 +36,8 @@ export const NewBudget = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -113,8 +113,8 @@ export const NewBudgetLine = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message,
+                message: "Error en el servidor.",
+                messageinfo: error.message,
                 extra: error.line_no
             }
         );
@@ -142,8 +142,8 @@ export const GetBudgetsHeaders = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -182,8 +182,8 @@ export const GetBudget = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -243,8 +243,8 @@ export const UpdateBudget = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -341,8 +341,8 @@ export const UpdateBudgetLine = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -388,8 +388,8 @@ export const DeleteBudget = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -424,8 +424,8 @@ export const DeleteBudgetLine = async (req, res) => {
     } catch (error) {
       console.error(error.message);
       res.status(500).json({
-        error: "Error en el servidor.",
-        errorinfo: error.message,
+        message: "Error en el servidor.",
+        messageinfo: error.message,
       });
     }
 }

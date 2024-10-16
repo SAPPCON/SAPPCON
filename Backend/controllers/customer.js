@@ -29,8 +29,8 @@ export const NewCustomer = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -52,8 +52,8 @@ export const GetCustomers = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send({
-        error: "Error en el servidor.",
-        errorinfo: error.message,
+        message: "Error en el servidor.",
+        messageinfo: error.message,
     });
   }
 };
@@ -83,8 +83,8 @@ export const GetCustomer = async (req, res) => {
     } catch(error) {
         console.error(error.message);
         res.status(500).send({
-            error: "Error en el servidor.",
-            errorinfo: error.message
+            message: "Error en el servidor.",
+            messageinfo: error.message
         });
     }
 }
@@ -131,8 +131,8 @@ export const UpdateCustomer = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -181,8 +181,8 @@ export const DeleteCustomer = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }

@@ -19,7 +19,7 @@ export const NewService = async (req, res) => {
         res.status(500).json(
             { 
                 error : "Error en el servidor.",
-                errorinfo: error.message
+                messageinfo: error.message
             }
         );
     }
@@ -40,8 +40,8 @@ export const GetServices = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -72,8 +72,8 @@ export const GetService = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -122,8 +122,8 @@ export const UpdateService = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -175,8 +175,8 @@ export const DeleteService = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }

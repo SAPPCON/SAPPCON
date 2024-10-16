@@ -44,8 +44,8 @@ export const newUser = async (req, res) => {
         console.error(err.message);
         res.status(500).json(
             {
-            error: "Error en el servidor.",
-            errorinfo: err.message
+            message: "Error en el servidor.",
+            messageinfo: err.message
             }
         );
     }
@@ -60,8 +60,8 @@ export const login = async (req, res) => {
         if (!user) {
             return res.status(404).json(
                 { 
-                    error: "El usuario no existe.",
-                    errorinfo: "El email proporcionado no está registrado."}
+                    message: "El usuario no existe.",
+                    messageinfo: "El email proporcionado no está registrado."}
                 );
         }
 
@@ -70,8 +70,8 @@ export const login = async (req, res) => {
         if (!isMatch) {
             return res.status(403).json(
                 { 
-                    error: "Contraseña incorrecta.",
-                    errorinfo: "La contraseña proporcionada no es correcta."}
+                    message: "Contraseña incorrecta.",
+                    messageinfo: "La contraseña proporcionada no es correcta."}
                 );
         }
 
@@ -95,8 +95,8 @@ export const login = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -109,7 +109,7 @@ export const getUser = async (req, res) => {
   
     // Verificar si no hay token
     if (!token) {
-      return res.status(401).json({ error: "No hay token." });
+      return res.status(401).json({ message: "No hay token." });
     }
   
     try {
@@ -120,7 +120,7 @@ export const getUser = async (req, res) => {
       const user = await User.findById(decoded.user.id);
   
       if (!user) {
-        return res.status(404).json({ error: "Usuario no encontrado." });
+        return res.status(404).json({ message: "Usuario no encontrado." });
       }
   
       // Retornar el usuario encontrado
@@ -131,8 +131,8 @@ export const getUser = async (req, res) => {
   
     } catch (error) {
       return res.status(500).json({
-        error: "Error en el servidor.",
-        errorinfo: error.message,
+        message: "Error en el servidor.",
+        messageinfo: error.message,
       });
     }
   };
@@ -198,8 +198,8 @@ export const getUser = async (req, res) => {
     } catch (error) {
       console.error(error.message);
       res.status(500).send({
-        error: "Error en el servidor.",
-        errorinfo: error.message
+        message: "Error en el servidor.",
+        messageinfo: error.message
       });
     }
   };
@@ -208,7 +208,7 @@ export const logout = async (req, res) => {
     const token = req.header("Authorization").split(" ")[1];
 
     if (!token) {
-        return res.status(401).json({ error: "No hay token." });
+        return res.status(401).json({ message: "No hay token." });
     }
 
     try{
@@ -231,8 +231,8 @@ export const logout = async (req, res) => {
         )
         .catch((err) =>
           res.status(500).json({
-            error: "Error en el logout.",
-            errorinfo: err.message,
+            message: "Error en el logout.",
+            messageinfo: err.message,
           })
         );
         
@@ -240,8 +240,8 @@ export const logout = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     } 

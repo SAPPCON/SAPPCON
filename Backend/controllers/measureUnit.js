@@ -30,8 +30,8 @@ export const NewMeasureUnit = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -52,8 +52,8 @@ export const GetMeasureUnits = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -86,8 +86,8 @@ export const GetMeasureUnit = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -150,8 +150,8 @@ export const DeleteMeasureUnit = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }

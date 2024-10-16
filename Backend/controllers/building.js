@@ -36,8 +36,8 @@ export const NewBuilding = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -59,8 +59,8 @@ export const GetBuildings = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).send({
-        error: "Error en el servidor.",
-        errorinfo: error.message,
+        message: "Error en el servidor.",
+        messageinfo: error.message,
         });
     }
 }
@@ -88,8 +88,8 @@ export const GetBuilding = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).send({
-            error: "Error en el servidor.",
-            errorinfo: error.message,
+            message: "Error en el servidor.",
+            messageinfo: error.message,
         });
     }
 }
@@ -137,8 +137,8 @@ export const UpdateBuilding = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -187,8 +187,8 @@ export const DeleteBuilding = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }

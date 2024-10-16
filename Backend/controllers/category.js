@@ -31,8 +31,8 @@ export const NewCategory = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -53,8 +53,8 @@ export const GetCategories = async (req, res) => {
         console.error(error.message);
         res.status(500).send(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -85,8 +85,8 @@ export const GetCategory = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).json({
-            error: "Error en el servidor.",
-            errorinfo: error.message,
+            message: "Error en el servidor.",
+            messageinfo: error.message,
         });
     }
 };
@@ -127,8 +127,8 @@ export const UpdateCategory = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             { 
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
@@ -169,8 +169,8 @@ export const DeleteCategory = async (req, res) => {
         console.error(error.message);
         res.status(500).json(
             {
-                error: "Error en el servidor.",
-                errorinfo: error.message
+                message: "Error en el servidor.",
+                messageinfo: error.message
             }
         );
     }
