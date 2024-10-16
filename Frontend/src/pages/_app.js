@@ -5,21 +5,24 @@ import { MeasureUnitContextProvider } from "@/store/MeasureUnitContext";
 import { AuthenticationContextProvider } from "@/store/AuthenticationContext";
 import { ProfileContextProvider } from "@/store/ProfileContext";
 import { CustomerContextProvider } from "@/store/CustomerContext";
+import { BuildingContextProvider } from "@/store/BuildingContext";
 
 export default function App({ Component, pageProps }) {
   return (
     <AuthenticationContextProvider>
-      <MeasureUnitContextProvider>
-        <CategoryContextProvider>
-          <ServiceContextProvider>
-            <CustomerContextProvider>
-            <ProfileContextProvider>
-            <Component {...pageProps} />
-            </ProfileContextProvider>
-            </CustomerContextProvider>
-          </ServiceContextProvider>
-        </CategoryContextProvider>
-      </MeasureUnitContextProvider>
+      <BuildingContextProvider>
+        <MeasureUnitContextProvider>
+          <CategoryContextProvider>
+            <ServiceContextProvider>
+              <CustomerContextProvider>
+                <ProfileContextProvider>
+                  <Component {...pageProps} />
+                </ProfileContextProvider>
+              </CustomerContextProvider>
+            </ServiceContextProvider>
+          </CategoryContextProvider>
+        </MeasureUnitContextProvider>
+      </BuildingContextProvider>
     </AuthenticationContextProvider>
   );
 }

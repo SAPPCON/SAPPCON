@@ -8,7 +8,6 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 const CustomerList = (props) => {
   const [client, setClient] = useState(null);
   const [showClient, setShowClient] = useState(false);
-  const [showAccept, setShowAccept] = useState(false);
   const [showBackgroundCustomer, setShowBackgroundCustomer] = useState(false);
 
   const { customerContext: customerCtx, dispatchCustomersAction } =
