@@ -14,6 +14,7 @@ import ServiceContext from "@/store/ServiceContext";
 
 const Service = (props) => {
   const [showNewService, setShowNewService] = useState(false);
+  const [filterText, setFilterText] = useState("");
 
   const { serviceContext: serviceCtx, dispatchServicesAction } =
     useContext(ServiceContext);
@@ -22,6 +23,10 @@ const Service = (props) => {
   const handleClick = () => {
     setShowNewService(!showNewService);
     dispatchServicesAction({ type: "SET_RESTART_ALL_ADD_ITEM" });
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value.toLowerCase());
   };
 
   return (
@@ -53,9 +58,13 @@ const Service = (props) => {
           <div className="rounded-[8px] border border-solid border-grayBorder flex flex-col  ">
             <div className="border-b border-b-grayBorder px-[18px] py-[14px]">
               <div className="flex justify-evenly items-center">
-                <button className=" h-[29px] w-40 w-  cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-                  Buscar
-                </button>
+                <input
+                  className=" h-[29px] w-40 cursor-pointer  rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none focus:outline-none active:ring focus:border-blue6 focus:ring focus:ring-blue5 pl-1"
+                  type="text"
+                  placeholder="Buscar servicio..."
+                  value={filterText}
+                  onChange={handleFilterChange}
+                ></input>
 
                 <button
                   onClick={handleClick}
@@ -65,7 +74,7 @@ const Service = (props) => {
                 </button>
               </div>
             </div>
-            <ServiceList></ServiceList>
+            <ServiceList filterText={filterText}></ServiceList>
           </div>
           {showNewService && (
             <NewService hideNewServiceFunction={handleClick}></NewService>

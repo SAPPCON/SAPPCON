@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
 import { BiAccessibility } from "react-icons/bi";
+import { RiImageAddFill } from "react-icons/ri";
 import { useState, Fragment, useContext } from "react";
 import CustomerContext from "@/store/CustomerContext";
 import Loader from "../UI/Loader";
@@ -33,6 +34,26 @@ const CustomerProfile = (props) => {
     props.hideClientFunctionBackground();
   };
 
+  const [base64Image, setBase64Image] = useState(null); // Imagen en base64
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const base64 = await convertToBase64(file);
+      setBase64Image(base64); // Guardar la imagen en base64
+    }
+  };
+
+  //File Reader es asincrono entonces es necesario una promesa. Que si se resuelve bien nos da la imagen convertida y sino el error.
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   return (
     <Fragment>
       <div className=" absolute top-12 left-1/2 transform -translate-x-1/2  z-40 bg-gray-100 rounded-[8px] border border-solid border-grayBorder w-[600px] ">
@@ -46,8 +67,28 @@ const CustomerProfile = (props) => {
 
         {/* Quito el px-6  del ul porque sino el borde inferior no llega hasta el contenedor padre, y coloco el px-6  en los elementos individuales menos el borde */}
         <ul className="flex flex-col  pt-6 pb-2 relative">
-          <div className="absolute right-[24px] top-[24px] w-[150px] h-[150px] bg-gray-300 flex justify-center items-center truncate ">
-            <BiAccessibility className="text-[130px] "></BiAccessibility>
+          <div
+            className="absolute right-[24px] top-[24px] w-[150px] h-[150px] bg-gray-300 flex justify-center items-center truncate cursor-pointer hover:bg-gray-400 hover:opacity-70 transition duration-300 ease-in-out "
+            onClick={() => document.getElementById("imageUpload").click()}
+          >
+            {base64Image ? (
+              <img
+                src={base64Image}
+                alt="Profile"
+                className="w-full h-full object-cover "
+              />
+            ) : (
+              <>
+                <RiImageAddFill className="text-[130px] " />
+              </>
+            )}
+            <input
+              id="imageUpload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
           </div>
           <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
             <div className="pl-6 mb-[12px] w-full truncate">

@@ -7,7 +7,7 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 
-const CustomerList = (props) => {
+const CustomerList = ({ filterText }) => {
   const [client, setClient] = useState(null);
   const [showClient, setShowClient] = useState(false);
   const [showBackgroundCustomer, setShowBackgroundCustomer] = useState(false);
@@ -46,6 +46,11 @@ const CustomerList = (props) => {
     dispatchCustomersAction({ type: "SET_RESTART_ALL_DELETE_ITEM" }); //Esto saca los carteles de aceptar exito u error.
   };
 
+  //Funcion para filtrar
+  const filteredCustomers = Customers.filter((customer) =>
+    customer.name.toLowerCase().includes(filterText)
+  );
+
   if (
     Customers.length === 0 &&
     !customerCtx.error &&
@@ -73,11 +78,10 @@ const CustomerList = (props) => {
             <small>{customerCtx.error.messageinfo}</small>
           </div>
         )}
-
         {!customerCtx.error &&
           !customerCtx.isLoading &&
-          Customers.map((customer, index) => {
-            return (
+          (filteredCustomers.length > 0 ? (
+            filteredCustomers.map((customer, index) => (
               <li
                 key={customer._id}
                 onClick={() => handleClick(customer)}
@@ -89,8 +93,12 @@ const CustomerList = (props) => {
               >
                 <strong>{customer.name}</strong>
               </li>
-            );
-          })}
+            ))
+          ) : (
+            <li className="font-sans text-blackText font-medium flex justify-center items-center h-full w-full">
+              No hay coincidencias con el filtro.
+            </li>
+          ))}
       </ul>
 
       {/* Planilla para mostrar los detalles del cliente */}

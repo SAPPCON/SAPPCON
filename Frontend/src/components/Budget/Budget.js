@@ -13,10 +13,15 @@ import BudgetContext from "@/store/BudgetContext";
 const Budget = (props) => {
   const { budgetContext: budgetCtx, dispatchBudgetsAction } =
     useContext(BudgetContext);
+  const [filterText, setFilterText] = useState("");
   const [showNewBudget, setShowNewBudget] = useState(false);
   const handleClick = () => {
     setShowNewBudget(!showNewBudget);
     dispatchBudgetsAction({ type: "SET_RESTART_ALL_NEW_ITEM" });
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value.toLowerCase());
   };
 
   return (
@@ -48,9 +53,13 @@ const Budget = (props) => {
           <div className="rounded-[8px] border border-solid border-grayBorder flex flex-col  ">
             <div className="border-b border-b-grayBorder px-[18px] py-[14px]">
               <div className="flex justify-evenly items-center">
-                <button className=" h-[29px] w-40 w-  cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-                  Buscar
-                </button>
+                <input
+                  className=" h-[29px] w-40 cursor-pointer  rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none focus:outline-none active:ring focus:border-blue6 focus:ring focus:ring-blue5 pl-1"
+                  type="text"
+                  placeholder="Buscar presupuesto..."
+                  value={filterText}
+                  onChange={handleFilterChange}
+                ></input>
 
                 <button
                   onClick={handleClick}
@@ -60,7 +69,7 @@ const Budget = (props) => {
                 </button>
               </div>
             </div>
-            <BudgetList></BudgetList>
+            <BudgetList filterText={filterText}></BudgetList>
           </div>
           {showNewBudget && (
             <NewBudget hideNewBudgetFunction={handleClick}></NewBudget>

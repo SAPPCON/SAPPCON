@@ -9,7 +9,7 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 
-const BudgetList = (props) => {
+const BudgetList = ({ filterText }) => {
   const [budget, setBudget] = useState(null);
   const [showBudget, setShowBudget] = useState(false);
   const [showBackgroundBudget, setShowBackgroundBudget] = useState(false);
@@ -48,6 +48,31 @@ const BudgetList = (props) => {
     dispatchBudgetsAction({ type: "SET_RESTART_ALL_DELETE_ITEM" });
   };
 
+  const filteredBudgets = Budgets.filter((budget) => {
+    // Encuentra el edificio y el cliente asociados al presupuesto
+
+    const building = Buildings.find(
+      (building) => building._id === budget.building_id
+    );
+
+    const customer = Customers.find(
+      (customer) => customer._id === budget.customer_id
+    );
+
+    const customerNameMatch = customer
+      ? customer.name.toLowerCase().includes(filterText.toLowerCase())
+      : false;
+    const buildingNameMatch = building
+      ? building.name.toLowerCase().includes(filterText.toLowerCase())
+      : false;
+    const budgetStatusMatch = budget.status
+      ? budget.status.toLowerCase().includes(filterText.toLowerCase())
+      : false;
+
+    // Retorna true si alguna de las coincidencias se encuentra
+    return customerNameMatch || buildingNameMatch || budgetStatusMatch;
+  });
+
   if (
     Budgets.length === 0 &&
     !budgetCtx.error &&
@@ -79,39 +104,45 @@ const BudgetList = (props) => {
 
         {!budgetCtx.error &&
           !budgetCtx.isLoading &&
-          Budgets.map((budget, index) => {
-            // Encuentra el edificio correspondiente al building_id del budget
-            const building = Buildings.find(
-              (building) => building._id === budget.building_id
-            );
-            // Encuentra el edificio correspondiente al building_id del budget
-            const customer = Customers.find(
-              (customer) => customer._id === budget.customer_id
-            );
+          (filteredBudgets.length > 0 ? (
+            filteredBudgets.map((budget, index) => {
+              // Encuentra el edificio correspondiente al building_id del budget
+              const building = Buildings.find(
+                (building) => building._id === budget.building_id
+              );
+              // Encuentra el cliente correspondiente al customer_id del budget
+              const customer = Customers.find(
+                (customer) => customer._id === budget.customer_id
+              );
 
-            return (
-              <li
-                key={budget._id}
-                onClick={() => handleClick(budget)}
-                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 ${
-                  index !== Budgets.length - 1
-                    ? "border-b border-b-grayBorder"
-                    : "border-b border-b-grayBorder"
-                }`}
-              >
-                <p>
-                  <strong>Obra: </strong>
-                  {building ? building.name : ""}
-                  {building && customer ? " - " : ""}
-                  <strong>Cliente: </strong>
-                  {customer ? customer.name : ""}
-                  {customer && budget.status ? " - " : ""}
-                  <strong>Estado: </strong>
-                  {budget.status ? budget.status : ""}
-                </p>
-              </li>
-            );
-          })}
+              return (
+                <li
+                  key={budget._id}
+                  onClick={() => handleClick(budget)}
+                  className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 ${
+                    index !== filteredBudgets.length - 1
+                      ? "border-b border-b-grayBorder"
+                      : "border-b border-b-grayBorder"
+                  }`}
+                >
+                  <p>
+                    <strong>Obra: </strong>
+                    {building ? building.name : ""}
+                    {building && customer ? " - " : ""}
+                    <strong>Cliente: </strong>
+                    {customer ? customer.name : ""}
+                    {customer && budget.status ? " - " : ""}
+                    <strong>Estado: </strong>
+                    {budget.status ? budget.status : ""}
+                  </p>
+                </li>
+              );
+            })
+          ) : (
+            <li className="font-sans text-blackText font-medium flex justify-center items-center h-full w-full">
+              No hay coincidencias con el filtro.
+            </li>
+          ))}
       </ul>
 
       {showBudget && budget && (

@@ -13,11 +13,16 @@ const Building = (props) => {
   const { buildingContext: buildingCtx, dispatchBuildingsAction } =
     useContext(BuildingContext);
   const [showNewBuilding, setShowNewBuilding] = useState(false);
+  const [filterText, setFilterText] = useState("");
 
   //La funcion que le paso al boton atras, la cruz, y aceptar de exito o error de nuevo cliente y al fondo negro, tambien lo que hacen ademas de dejar de mostrar la planilla, tambien resetean los valores de si hubo error o exito en el nuevo registro de cliente.
   const handleClick = () => {
     setShowNewBuilding(!showNewBuilding);
     dispatchBuildingsAction({ type: "SET_RESTART_ALL_NEW_ITEM" });
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value.toLowerCase());
   };
 
   return (
@@ -49,9 +54,13 @@ const Building = (props) => {
           <div className="rounded-[8px] border border-solid border-grayBorder flex flex-col  ">
             <div className="border-b border-b-grayBorder px-[18px] py-[14px]">
               <div className="flex justify-evenly items-center">
-                <button className=" h-[29px] w-40 w-  cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-                  Buscar
-                </button>
+                <input
+                  className=" h-[29px] w-40 cursor-pointer  rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none focus:outline-none active:ring focus:border-blue6 focus:ring focus:ring-blue5 pl-1"
+                  type="text"
+                  placeholder="Buscar obra..."
+                  value={filterText}
+                  onChange={handleFilterChange}
+                ></input>
 
                 <button
                   onClick={handleClick}
@@ -61,7 +70,7 @@ const Building = (props) => {
                 </button>
               </div>
             </div>
-            <BuildingList></BuildingList>
+            <BuildingList filterText={filterText}></BuildingList>
           </div>
           {showNewBuilding && (
             <NewBuilding hideNewBuildingFunction={handleClick}></NewBuilding>

@@ -11,6 +11,7 @@ import CustomerContext from "@/store/CustomerContext";
 
 const Customer = (props) => {
   const [showNewClient, setShowNewClient] = useState(false);
+  const [filterText, setFilterText] = useState(""); // Estado para almacenar el texto de búsqueda
   const { customerContext: customerCtx, dispatchCustomersAction } =
     useContext(CustomerContext);
 
@@ -18,6 +19,11 @@ const Customer = (props) => {
   const handleClick = () => {
     setShowNewClient(!showNewClient);
     dispatchCustomersAction({ type: "SET_RESTART_ALL_NEW_ITEM" });
+  };
+
+  // Manejar el cambio en el input de búsqueda
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value.toLowerCase()); // Actualizar el estado con el texto ingresado
   };
 
   return (
@@ -50,9 +56,13 @@ const Customer = (props) => {
           <div className="rounded-[8px] border border-solid border-grayBorder flex flex-col  ">
             <div className="border-b border-b-grayBorder px-[18px] py-[14px]">
               <div className="flex justify-evenly items-center">
-                <button className=" h-[29px] w-40 w-  cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-                  Buscar
-                </button>
+                <input
+                  className=" h-[29px] w-40 cursor-pointer  rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none focus:outline-none active:ring focus:border-blue6 focus:ring focus:ring-blue5 pl-1"
+                  type="text"
+                  placeholder="Buscar cliente..."
+                  value={filterText}
+                  onChange={handleFilterChange}
+                ></input>
 
                 <button
                   onClick={handleClick}
@@ -63,7 +73,7 @@ const Customer = (props) => {
               </div>
             </div>
             {/*CustomerList es un DIV que tiene la lista, la planilla y el fondo negro. La planilla quiero que se posicione de manera absoluta al mismo div relativo que newCustomer, y para hacer esto solamente a la planilla la hago absoluta y entonces en lugar de posicionarse respecto al DIV que la contiene lo hara respecto al primer padre que tenga que sea diferente a estatico, en este caso es el div de aca relative y asi se posiciona de la misma manera que la planilla de newCustomer */}
-            <CustomerList></CustomerList>
+            <CustomerList filterText={filterText}></CustomerList>
           </div>
           {/**NewCustomer es absoluto, y el padre es relativo, entonces se posiciona respecto al div padre que es relativo porque es el primer padre no estatico que tiene */}
           {showNewClient && (

@@ -8,7 +8,7 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 
-const ServiceList = (props) => {
+const ServiceList = ({ filterText }) => {
   const [service, setService] = useState(null);
   const [showService, setShowService] = useState(false);
   const [showBackgroundService, setShowBackgroundService] = useState(false);
@@ -45,6 +45,10 @@ const ServiceList = (props) => {
 
   const Services = serviceCtx.items;
 
+  const filteredServices = Services.filter((service) =>
+    service.name.toLowerCase().includes(filterText)
+  );
+
   if (
     Services.length === 0 &&
     !serviceCtx.error &&
@@ -76,8 +80,8 @@ const ServiceList = (props) => {
 
         {!serviceCtx.error &&
           !serviceCtx.isLoading &&
-          Services.map((service, index) => {
-            return (
+          (filteredServices.length > 0 ? (
+            filteredServices.map((service, index) => (
               <li
                 key={service._id}
                 onClick={() => handleClick(service)}
@@ -89,8 +93,12 @@ const ServiceList = (props) => {
               >
                 <strong>{service.name}</strong>
               </li>
-            );
-          })}
+            ))
+          ) : (
+            <li className="font-sans text-blackText font-medium flex justify-center items-center h-full w-full">
+              No hay coincidencias con el filtro.
+            </li>
+          ))}
       </ul>
 
       {showService && service && (

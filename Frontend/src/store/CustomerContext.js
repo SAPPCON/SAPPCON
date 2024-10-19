@@ -8,11 +8,14 @@ const CustomerContext = React.createContext({
   isLoading: false,
   isLoadingAddItem: false,
   isLoadingDeleteItem: false,
+  isLoadingAddImage: false,
   error: "",
   errorAddItem: "",
   errorDeleteItem: "",
+  errorAddImage: "",
   successDeleteItem: false,
   successAddItem: false,
+  successAddImage: false,
 });
 
 const defaultCustomerState = {
@@ -32,6 +35,38 @@ const fetchData = async (token) => {
       const responseData = await response.json();
       throw {
         message: responseData.message || "Error al cargar clientes",
+        messageinfo: responseData.messageinfo || "Detalles no disponibles",
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const addImage = async (customerId, image) => {
+  try {
+    const token = localStorage.getItem("token");
+    //const token = localStorage.getItem("sadasdasd12312");
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_UPDATE_CUSTOMER_URL}${customerId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ image: image }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const responseData = await response.json();
+      throw {
+        message: responseData.message || "Error al agregar imagen del cliente",
         messageinfo: responseData.messageinfo || "Detalles no disponibles",
       };
     }
@@ -154,6 +189,13 @@ const customerReducer = (state, action) => {
         successAddItem: false,
         successDeleteItem: false,
       };
+    case "SET_LOADING_ADD_IMAGE":
+      return {
+        ...state,
+        isLoadingAddImage: true,
+        errorAddImage: "",
+        successAddImage: false,
+      };
     case "SET_ERROR":
       return {
         ...state,
@@ -199,6 +241,16 @@ const customerReducer = (state, action) => {
         successAddItem: false,
         successDeleteItem: false,
       };
+    case "SET_ERROR_ADD_IMAGE":
+      return {
+        ...state,
+        isLoadingAddImage: false,
+        errorAddImage: {
+          message: action.error.message,
+          messageinfo: action.error.messageinfo,
+        },
+        successAddImage: false,
+      };
     case "SET_SUCCESS_ADD_ITEM":
       return {
         ...state,
@@ -222,6 +274,13 @@ const customerReducer = (state, action) => {
         errorDeleteItem: "",
         successAddItem: false,
         successDeleteItem: true,
+      };
+    case "SET_SUCCESS_ADD_IMAGE":
+      return {
+        ...state,
+        isLoadingAddImage: false,
+        errorAddImage: "",
+        successAddImage: true,
       };
     case "ADD_ITEM":
       return {
@@ -250,6 +309,17 @@ const customerReducer = (state, action) => {
         successAddItem: false,
         successDeleteItem: false,
       };
+    case "ADD_IMAGE":
+      const updatedImageItems = state.items.map((item) =>
+        item._id === action.id ? { ...item, image: action.image } : item
+      );
+      return {
+        ...state,
+        items: updatedImageItems,
+        isLoadingAddImage: false,
+        errorAddImage: "",
+        successAddImage: false,
+      };
     case "SET_RESTART_ALL_NEW_ITEM":
       return {
         ...state,
@@ -263,6 +333,13 @@ const customerReducer = (state, action) => {
         isLoadingDeleteItem: false,
         errorDeleteItem: "",
         successDeleteItem: false,
+      };
+    case "SET_RESTART_ALL_ADD_IMAGE":
+      return {
+        ...state,
+        isLoadingAddImage: false,
+        errorAddImage: "",
+        successAddImage: false,
       };
     default:
       return defaultCustomerState;
@@ -335,6 +412,31 @@ export const CustomerContextProvider = (props) => {
     }
   };
 
+  //"SET_ERROR_ADD_IMAGE": SET_LOADING_ADD_IMAGE SET_SUCCESS_ADD_IMAGE": "ADD_IMAGE":
+
+  //Este es para agregar una imagen cuando el usuario modifique.
+  const addImageHandler = async (customerId, image) => {
+    dispatchCustomersAction({ type: "SET_LOADING_ADD_IMAGE" });
+    try {
+      await addImage(customerId, image);
+
+      dispatchCustomersAction({
+        type: "ADD_IMAGE",
+        id: customerId,
+        image: image,
+      });
+      dispatchCustomersAction({ type: "SET_SUCCESS_ADD_IMAGE" });
+    } catch (error) {
+      dispatchCustomersAction({
+        type: "SET_ERROR_ADD_IMAGE",
+        error: {
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        },
+      });
+    }
+  };
+
   const deleteItemHandler = async (id) => {
     try {
       dispatchCustomersAction({ type: "SET_LOADING_DELETE_ITEM" });
@@ -356,14 +458,18 @@ export const CustomerContextProvider = (props) => {
     items: customerState.items,
     addItem: addItemHandler,
     deleteItem: deleteItemHandler,
+    addImage: addImageHandler,
     isLoading: customerState.isLoading,
     isLoadingAddItem: customerState.isLoadingAddItem,
     isLoadingDeleteItem: customerState.isLoadingDeleteItem,
+    isLoadingAddImage: customerState.isLoadingAddItem,
     error: customerState.error,
     errorAddItem: customerState.errorAddItem,
     errorDeleteItem: customerState.errorDeleteItem,
+    errorAddImage: customerState.errorAddImage,
     successDeleteItem: customerState.successDeleteItem,
     successAddItem: customerState.successAddItem,
+    successAddImage: customerState.successAddImage,
   };
 
   return (

@@ -7,7 +7,7 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 
-const BuildingList = (props) => {
+const BuildingList = ({ filterText }) => {
   const [building, setBuilding] = useState(null);
   const [showBuilding, setShowBuilding] = useState(false);
   const [showBackgroundBuilding, setShowBackgroundBuilding] = useState(false);
@@ -40,6 +40,10 @@ const BuildingList = (props) => {
     dispatchBuildingsAction({ type: "SET_RESTART_ALL_DELETE_ITEM" });
   };
 
+  const filteredBuildings = Buildings.filter((building) =>
+    building.name.toLowerCase().includes(filterText)
+  );
+
   if (
     Buildings.length === 0 &&
     !buildingCtx.error &&
@@ -70,8 +74,8 @@ const BuildingList = (props) => {
 
         {!buildingCtx.error &&
           !buildingCtx.isLoading &&
-          Buildings.map((building, index) => {
-            return (
+          (filteredBuildings.length > 0 ? (
+            filteredBuildings.map((building, index) => (
               <li
                 key={building._id}
                 onClick={() => handleClick(building)}
@@ -83,8 +87,12 @@ const BuildingList = (props) => {
               >
                 <strong>{building.name}</strong>
               </li>
-            );
-          })}
+            ))
+          ) : (
+            <li className="font-sans text-blackText font-medium flex justify-center items-center h-full w-full">
+              No hay coincidencias con el filtro.
+            </li>
+          ))}
       </ul>
 
       {showBuilding && building && (
