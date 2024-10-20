@@ -2,7 +2,7 @@ import Image from '../models/image.js';
 
 // Método para subir una imagen
 export const UploadImage = async (req, res) => {
-    const { type, objectId, base64 } = req.body;
+    const { object_type, object_id, image_b64 } = req.body;
 
     try {
         // User exists
@@ -14,15 +14,15 @@ export const UploadImage = async (req, res) => {
             });
         }
         var user_id = req.user.id;
-        let image = await Image.findOne({ user, type, objectId });
+        let image = await Image.findOne({ user_id, object_type, object_id });
 
         if (image) {
             // Si la imagen ya existe, actualiza el base64
-            image.base64 = base64;
+            image.image_b64 = image_b64;
             await image.save();
         } else {
             // Si la imagen no existe, crea un nuevo registro
-            image = new Image({ user, type, objectId, base64 });
+            image = new Image({ user_id, object_type, object_id, image_b64 });
             await image.save();
         }
 
@@ -42,7 +42,7 @@ export const UploadImage = async (req, res) => {
 
 // Método para descargar una imagen
 export const DownloadImage = async (req, res) => {
-    const { type, objectId } = req.body;
+    const { object_type, object_id } = req.body;
 
     try {
         // User exists
@@ -55,13 +55,12 @@ export const DownloadImage = async (req, res) => {
         }
         var user_id = req.user.id;
 
-        const image = await Image.findOne({ user, type, objectId });
+        const image = await Image.findOne({ user_id, object_type, object_id });
 
         if (image) {
-            res.status(200).json(
-                { 
-                    base64: image.base64 
-                });
+            res.status(200).json({
+                image_b64: image.image_b64,
+            });
         } else {
             res.status(404).json(
                 { 

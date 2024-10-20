@@ -8,6 +8,6 @@ const router = express.Router();
 router.post("/upload", auth, UploadImage);
 
 // Download Image   
-router.post("/download", auth, DownloadImage);
+router.get("/download", auth, DownloadImage);
 
 export default router;
