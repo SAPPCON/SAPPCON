@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import AuthenticationContext from "./AuthenticationContext";
 
 const ProfileContext = React.createContext({
+  id: "",
   name: "",
   email: "",
   surname: "",
@@ -42,6 +43,7 @@ export const ProfileContextProvider = (props) => {
   //const token = "sadasdasd12312";
   const [error, setError] = useState(null);
   const [profileData, setProfileData] = useState({
+    id: "",
     name: "",
     email: "",
     surname: "",
@@ -54,8 +56,10 @@ export const ProfileContextProvider = (props) => {
       setLoading(true);
       try {
         const data = await fetchData();
+        console.log(data.user._id);
         if (data) {
           setProfileData({
+            id: data.user._id,
             name: data.user.name,
             email: data.user.email,
             surname: data.user.surname,
@@ -80,6 +84,7 @@ export const ProfileContextProvider = (props) => {
   }, [token]);
 
   const contextValue = {
+    id: profileData.id,
     name: profileData.name,
     email: profileData.email,
     surname: profileData.surname,

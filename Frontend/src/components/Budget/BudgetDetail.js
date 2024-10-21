@@ -408,13 +408,6 @@ const BudgetDetail = (props) => {
 
             <ul className="flex flex-col  pt-3 pb-2 ">
               <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
-                <div className="pl-6 mb-[12px] w-full truncate">
-                  <h1 className="mb-[4px] font-bold">ID</h1>
-                  <h1>{budgetData.budget._id}</h1>
-                </div>
-              </li>
-
-              <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
                 <div className="pl-6 mb-[12px] w-[49%] ">
                   <label htmlFor="date" className="text-sm font-bold block">
                     Fecha

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
 import { BiAccessibility } from "react-icons/bi";
 import { RiImageAddFill } from "react-icons/ri";
-import { useState, Fragment, useContext, useEffect} from "react";
+import { useState, Fragment, useContext, useEffect } from "react";
 import CustomerContext from "@/store/CustomerContext";
 import Loader from "../UI/Loader";
 
@@ -12,9 +12,8 @@ const CustomerProfile = (props) => {
   const [showDelete, setShowDelete] = useState(false);
   const [errorRequest, setErrorRequest] = useState("");
   const [errorRequestAdd, setErrorRequestAdd] = useState("");
-  const [isLoadingAdd, setIsLoadingAdd] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageData, setImageData] = useState(null);
+  const [bigImageError, setBigImageError] = useState("");
   const { customerContext: customerCtx } = useContext(CustomerContext);
 
   //Muestra el modal y confirmacion de eliminacion. Este esta en el boton de eliminar original.
@@ -39,22 +38,90 @@ const CustomerProfile = (props) => {
     props.hideClientFunctionBackground();
   };
 
+  const [base64Image, setBase64Image] = useState(null); // Imagen en base64
 
+  //Cuando se abre el perfil, se hace la request para la imagen.
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        setErrorRequest("");
+        const token = localStorage.getItem("token");
+        setIsLoading(true);
 
-const [base64Image, setBase64Image] = useState(null); // Imagen en base64
+        const response = await fetch(
+          process.env.NEXT_PUBLIC_DOWNLOAD_IMAGE_URL,
+          {
+            method: "POST", // Especifica el método POST (u otro adecuado)
+            body: JSON.stringify({
+              object_type: "Customer",
+              object_id: props.clientData._id,
+            }),
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-//Cuando se abre el perfil, se hace la request para la imagen.
-useEffect(() => {
-  const fetchImage = async () => {
+        if (!response.ok) {
+          const responseData = await response.json();
+          throw {
+            message: responseData.message || "Error al cargar la imagen",
+            messageinfo: responseData.messageinfo || "Detalles no disponibles",
+          };
+        }
+
+        const data = await response.json();
+        setBase64Image(data.image_b64 || null); // Usar el base64 recibido
+      } catch (error) {
+        setErrorRequest({
+          message: error.message || "Error desconocido",
+          messageinfo: error.messageinfo || "Detalles no disponibles",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchImage();
+  }, []);
+
+  // File Reader es asincrónico, entonces es necesario una promesa.
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // Esta es para mandar la request para cargar una imagen.
+  const handleAddImage = async (e) => {
+    setBigImageError("");
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    // Verificar si el archivo ya es menor a 200KB antes de comprimir
+    if (file.size > 50 * 1024) {
+      // 200KB en bytes
+      setBigImageError("Tamaño máximo permitido: 50KB");
+      return;
+    }
+
     try {
+      const imageBase64 = await convertToBase64(file);
       const token = localStorage.getItem("token");
-      setIsLoading(true);
 
-      const response = await fetch(process.env.NEXT_PUBLIC_DOWNLOAD_IMAGE_URL, {
+      setIsLoading(true);
+      const response = await fetch(process.env.NEXT_PUBLIC_UPLOAD_IMAGE_URL, {
         method: "POST",
         body: JSON.stringify({
-          type: "Customer",
-          objectId: props.clientData._id,
+          object_type: "Customer",
+          object_id: props.clientData._id,
+          image_b64: imageBase64,
         }),
         headers: {
           Authorization: `Bearer ${token}`,
@@ -65,16 +132,16 @@ useEffect(() => {
       if (!response.ok) {
         const responseData = await response.json();
         throw {
-          message: responseData.message || "Error al cargar la imagen",
+          message:
+            responseData.message || "Error al agregar imagen del cliente",
           messageinfo: responseData.messageinfo || "Detalles no disponibles",
         };
       }
 
-      const data = await response.json();
-      setBase64Image(data.base64 || null); // Usar el base64 recibido
-      setErrorRequest("");
+      //const data = await response.json();
+      setBase64Image(imageBase64); // Actualiza la imagen subida
     } catch (error) {
-      setErrorRequest({
+      setErrorRequestAdd({
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
@@ -82,82 +149,6 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
-
-  fetchImage();
-}, []);
-
-
-// File Reader es asincrónico, entonces es necesario una promesa. 
-const convertToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-};
-
-// Esta es para mandar la request para cargar una imagen.
-const handleAddImage = async (e) => {
-  console.log("handleAddImage triggered:", e); // Verificar que la función es llamada
-
-  const file = e.target.files[0];
-  if (!file) {
-    console.log("No file selected");
-    return;
-  }
-
-  console.log("Selected file:", file);
-
-  try {
-    const imageBase64 = await convertToBase64(file);
-    console.log("Base64 image:", imageBase64);
-
-    console.log("DATA ENVIADA:",    {
-      object_type: "Customer",
-      object_id: props.clientData._id,
-      image_b64: imageBase64,
-    }
-);
- 
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(process.env.NEXT_PUBLIC_UPLOAD_IMAGE_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        type: "Customer",
-        objectId: props.clientData._id,
-        base64: imageBase64,
-      }),
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const responseData = await response.json();
-      throw {
-        message: responseData.message || "Error al agregar imagen del cliente",
-        messageinfo: responseData.messageinfo || "Detalles no disponibles",
-      };
-    }
-
-    const data = await response.json();
-    console.log("Response data:", data);
-    setBase64Image(imageBase64); // Actualiza la imagen subida
-  } catch (error) {
-    setErrorRequestAdd({
-      message: error.message || "Error desconocido",
-      messageinfo: error.messageinfo || "Detalles no disponibles",
-    });
-    console.log("Error:", error);
-  }
-};
-
-
-
-
 
   return (
     <Fragment>
@@ -172,38 +163,34 @@ const handleAddImage = async (e) => {
 
         {/* Quito el px-6  del ul porque sino el borde inferior no llega hasta el contenedor padre, y coloco el px-6  en los elementos individuales menos el borde */}
         <ul className="flex flex-col  pt-6 pb-2 relative">
-        <div
-          className="absolute right-[24px] top-[24px] w-[150px] h-[150px] bg-gray-300 flex justify-center items-center truncate cursor-pointer hover:bg-gray-400 hover:opacity-70 transition duration-300 ease-in-out"
-          onClick={() => document.getElementById("imageUpload").click()}
-        >
-          {isLoading ? (
-            <Loader /> // Reemplazar por un ícono de carga si lo prefieres
-          ) : base64Image ? (
-            <img
-              src={base64Image}
-              alt="Profile"
-              className="w-full h-full object-cover"
+          <div
+            className="absolute right-[24px] top-[24px] w-[150px] h-[150px] bg-gray-300 flex justify-center items-center truncate cursor-pointer hover:bg-gray-400 hover:opacity-70 transition duration-300 ease-in-out"
+            onClick={() => document.getElementById("imageUpload").click()}
+          >
+            {isLoading ? (
+              <Loader /> // Reemplazar por un ícono de carga si lo prefieres
+            ) : base64Image ? (
+              <img
+                src={base64Image}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <RiImageAddFill className="text-[130px]" />
+            )}
+            <input
+              id="imageUpload"
+              type="file"
+              accept="image/*"
+              onChange={handleAddImage}
+              className="hidden"
             />
-          ) : (
-            <RiImageAddFill className="text-[130px]" />
+          </div>
+          {bigImageError && (
+            <h1 className="text-xs  text-red5 absolute top-[180px] right-[10px] ">
+              {bigImageError}
+            </h1>
           )}
-          <input
-            id="imageUpload"
-            type="file"
-            accept="image/*"
-            onChange={handleAddImage}
-            className="hidden"
-          />
-        </div>
-          <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
-            <div className="pl-6 mb-[12px] w-full truncate">
-              <h1 className="mb-[4px] font-bold">ID</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.clientData._id}
-              </h1>
-            </div>
-          </li>
 
           <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
             <div className="pl-6 mb-[12px] w-full truncate">
@@ -223,7 +210,7 @@ const handleAddImage = async (e) => {
             </Link>
           </li>
 
-          <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
+          <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Apellido</h1>
               <h1>
@@ -240,7 +227,6 @@ const handleAddImage = async (e) => {
               </button>
             </Link>
           </li>
-          <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
