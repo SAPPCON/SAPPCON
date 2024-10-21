@@ -112,7 +112,10 @@ export const getUser = async (req, res) => {
   
     // Verificar si no hay token
     if (!token) {
-      return res.status(401).json({ message: "No hay token." });
+      return res.status(401).json({
+        message: "No Autorizado.",
+        messageinfo: "No se ha proporcionado token.",
+      });
     }
   
     try {
