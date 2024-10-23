@@ -170,9 +170,13 @@ const UnitCost = ({ serviceId }) => {
                 </div>
                 <div className="mb-[22px]">
                   <input
+                    id="unitCost"
+                    type="number"
+                    step="0.01"
+                    min="0"
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newUnitCostInputRef}
-                    placeholder={serviceUnitCost}
+                    placeholder={`$${serviceUnitCost}`}
                   ></input>
                 </div>
 

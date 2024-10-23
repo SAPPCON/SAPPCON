@@ -212,8 +212,7 @@ const ServiceDetail = (props) => {
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Coste Unitario</h1>
               <h1>
-                {/* {profileCtx.name} */}
-                {props.serviceData.cost}
+                {/* {profileCtx.name} */}${props.serviceData.cost}
               </h1>
             </div>
             <Link
@@ -230,8 +229,7 @@ const ServiceDetail = (props) => {
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Precio Unitario</h1>
               <h1>
-                {/* {profileCtx.name} */}
-                {props.serviceData.price}
+                {/* {profileCtx.name} */}${props.serviceData.price}
               </h1>
             </div>
             <Link

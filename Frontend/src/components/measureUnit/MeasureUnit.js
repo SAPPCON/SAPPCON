@@ -2,27 +2,26 @@ import BudgetNav from "../Navigation/BudgetNav";
 import BuildingNav from "../Navigation/BuildingNav";
 import StatsNav from "../Navigation/StatsNav";
 import HomeNav from "../Navigation/HomeNav";
-import ServiceNav from "../Navigation/ServiceNav";
 import Link from "next/link";
 import ProfileNav from "../Navigation/ProfileNav";
-import { IoIosArrowForward } from "react-icons/io";
 import { useState, useContext } from "react";
 import CustomerNav from "../Navigation/CustomerNav";
-import ServiceList from "./ServiceList";
-import NewService from "./NewService";
-import ServiceContext from "@/store/ServiceContext";
+import { IoIosArrowForward } from "react-icons/io";
+import MeasureUnitContext from "@/store/MeasureUnitContext";
+import MeasureUnitList from "./MeasureUnitList";
+import NewMeasureUnit from "./NewMeasureUnit";
 
-const Service = (props) => {
-  const [showNewService, setShowNewService] = useState(false);
+const MeasureUnit = () => {
+  const [showNewMeasureUnit, setShowNewMeasureUnit] = useState(false);
   const [filterText, setFilterText] = useState("");
 
-  const { serviceContext: serviceCtx, dispatchServicesAction } =
-    useContext(ServiceContext);
+  const { dispatchMeasureUnitsAction } = useContext(MeasureUnitContext);
 
-  //Esta funcion es la que uso para sacar el cartel de exito o error de agregar nuevo servicio.
   const handleClick = () => {
-    setShowNewService(!showNewService);
-    dispatchServicesAction({ type: "SET_RESTART_ALL_ADD_ITEM" });
+    setShowNewMeasureUnit(!showNewMeasureUnit);
+    dispatchMeasureUnitsAction({
+      type: "SET_RESTART_ALL_ADD_ITEM_MEASUREUNIT",
+    });
   };
 
   const handleFilterChange = (e) => {
@@ -52,8 +51,17 @@ const Service = (props) => {
 
       <div className=" pt-[14px]">
         <div className="flex flex-col mx-auto max-w-[90%] relative ">
+          <div className="mb-[16px] mt-[8px] flex w-full  items-center text-[14px] ">
+            <Link href="/service">
+              <p className="cursor-pointer font-sans text-blueText hover:text-orangeText hover:underline">
+                Tus Servicios
+              </p>
+            </Link>
+            <IoIosArrowForward className=" mx-1 text-[12px] text-[#555555]"></IoIosArrowForward>
+            <p className="font-sans text-[#C45500]">Unidades de medida</p>
+          </div>
           <h1 className="mb-[8px] font-sans text-[28px] font-normal text-blackText mx-auto">
-            Servicios
+            Unidades de medida
           </h1>
           <div className="rounded-[8px] border border-solid border-grayBorder flex flex-col  ">
             <div className="border-b border-b-grayBorder px-[18px] py-[14px]">
@@ -61,7 +69,7 @@ const Service = (props) => {
                 <input
                   className=" h-[29px] w-40 cursor-pointer  rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none focus:outline-none active:ring focus:border-blue6 focus:ring focus:ring-blue5 pl-1"
                   type="text"
-                  placeholder="Buscar servicio..."
+                  placeholder="Buscar unidad de medida..."
                   value={filterText}
                   onChange={handleFilterChange}
                 ></input>
@@ -72,30 +80,19 @@ const Service = (props) => {
                 >
                   Nuevo
                 </button>
-
-                <Link href={`/categories`} className="pr-6">
-                  <button className=" h-[29px] w-40 cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-                    Categorías
-                  </button>
-                </Link>
-
-                <Link href={`/measureUnits`} className="pr-6">
-                  <button className=" h-[29px] w-40 cursor-pointer truncate rounded-[8px] border border-solid border-grayBorder bg-grayBg1 font-sans text-[13px] text-blackText shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
-                    Unidades de Medida
-                  </button>
-                </Link>
               </div>
             </div>
-            <ServiceList filterText={filterText}></ServiceList>
+            <MeasureUnitList filterText={filterText}></MeasureUnitList>
           </div>
-          {showNewService && (
-            <NewService hideNewServiceFunction={handleClick}></NewService>
+          {showNewMeasureUnit && (
+            <NewMeasureUnit
+              hideNewMeasureUnitFunction={handleClick}
+            ></NewMeasureUnit>
           )}
         </div>
       </div>
 
-      {/* Este es fixed, se ubica respecto al primer padre que no sea estatico, en este caso se ubica directo al vieeport. */}
-      {showNewService && (
+      {showNewMeasureUnit && (
         <div
           onClick={handleClick}
           className=" fixed top-0 z-30  h-full  w-full  bg-black opacity-80  transition-opacity duration-1000"
@@ -105,4 +102,4 @@ const Service = (props) => {
   );
 };
 
-export default Service;
+export default MeasureUnit;

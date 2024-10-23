@@ -54,8 +54,8 @@ const UnitPrice = ({ serviceId }) => {
     setIsLoading(true);
 
     try {
-      //const token = localStorage.getItem("token");
-      const token = localStorage.getItem("sadasdasd12312");
+      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("sadasdasd12312");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_UPDATE_SERVICE_URL}${serviceId}`,
         {
@@ -170,9 +170,13 @@ const UnitPrice = ({ serviceId }) => {
                 </div>
                 <div className="mb-[22px]">
                   <input
+                    id="unitPrice"
+                    type="number"
+                    step="0.01"
+                    min="0"
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newUnitPriceInputRef}
-                    placeholder={serviceUnitPrice}
+                    placeholder={`$${serviceUnitPrice}`}
                   ></input>
                 </div>
 

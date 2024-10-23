@@ -56,7 +56,6 @@ export const ProfileContextProvider = (props) => {
       setLoading(true);
       try {
         const data = await fetchData();
-        console.log(data.user._id);
         if (data) {
           setProfileData({
             id: data.user._id,

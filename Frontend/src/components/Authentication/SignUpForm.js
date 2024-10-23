@@ -232,7 +232,7 @@ const SignUpForm = (props) => {
               type="address"
               id="address"
               ref={addressRef}
-              placeholder="Avenida de las Camelias 1915"
+              placeholder="Balcarce 50"
               className="w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    "
             />
           </div>

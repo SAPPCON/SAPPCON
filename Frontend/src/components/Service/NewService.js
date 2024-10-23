@@ -32,7 +32,6 @@ const NewService = (props) => {
   const [unitCostError, setUnitCostError] = useState("");
   const [unitPriceError, setUnitPriceError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
-  const [showLoading, setShowLoading] = useState(false);
 
   const nameRef = useRef();
   const categoryRef = useRef();
@@ -57,6 +56,8 @@ const NewService = (props) => {
     const enteredUnitCost = unitCostRef.current.value;
     const enteredUnitPrice = unitPriceRef.current.value;
     const enteredDescription = descriptionRef.current.value;
+
+    console.log(enteredUnitPrice, parseFloat(enteredUnitPrice));
 
     if (!noEmptyValidate(enteredName)) {
       setNameError("Ingrese el nombre.");
@@ -365,9 +366,11 @@ const NewService = (props) => {
               </label>
               <input
                 id="unitCost"
-                type="unitCost"
+                type="number"
+                step="0.01"
+                min="0"
                 ref={unitCostRef}
-                placeholder="15,99"
+                placeholder="15.99"
                 className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
                   unitCostError !== ""
                     ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
@@ -390,9 +393,11 @@ const NewService = (props) => {
               </label>
               <input
                 id="unitPrice"
-                type="unitPrice"
                 ref={unitPriceRef}
-                placeholder="192,24"
+                placeholder="192.24"
+                type="number" // Input de tipo número, solo permite numero y punto (separador decimal)
+                step="0.01" // Permite decimales (solo 1 punto)
+                min="0" // Evita que el valor sea negativo
                 className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5  focus:border focus:border-blue6 focus:outline-none    ${
                   unitPriceError !== ""
                     ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
@@ -484,7 +489,7 @@ const NewService = (props) => {
           className={`absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  bg-gray-100 rounded-[8px] border border-solid border-grayBorder w-[300px]  `}
         >
           <h1 className="font-sans text-[22px] font-normal text-blackText text-center border-b border-b-grayBorder">
-            Registar Categoria
+            Registar Categoría
           </h1>
           <form className="flex flex-col px-6 pt-6 pb-2 relative ">
             <div className="mb-4 w-full relative">

@@ -113,10 +113,6 @@ const NewCustomer = (props) => {
 
         {/*El form es relativo para asi la imagen ubicarla absolutamnete en referencia a el*/}
         <form className="flex flex-col px-6 pt-6 pb-2 relative ">
-          <div className="absolute right-[24px] top-[24px] w-[150px] h-[150px] bg-gray-300 flex justify-center items-center truncate ">
-            <BiAccessibility className="text-[130px] "></BiAccessibility>
-          </div>
-
           <div className="mb-4 max-w-[50%] relative">
             <label htmlFor="name" className="text-sm font-semibold block w-72">
               Nombre

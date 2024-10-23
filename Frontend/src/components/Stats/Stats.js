@@ -8,13 +8,6 @@ import { Chart } from "react-google-charts";
 import { useState, useEffect, Fragment } from "react";
 import Loader from "../UI/Loader";
 
-/*
-NEXT_PUBLIC_BUDGETSTATUS_URL=http://localhost:3000/stats/budgetStatus
-NEXT_PUBLIC_BUDGETAMOUNT_URL=http://localhost:3000/stats/budgetAmount
-NEXT_PUBLIC_TOPSERVICES_URL=http://localhost:3000/stats/topServices
-NEXT_PUBLIC_SERVICESPERCATEGORY_URL=http://localhost:3000/stats/servicesPerCategory 
-*/
-
 const Stats = (props) => {
   const [budgetStatus, setBudgetStatus] = useState([]);
   const [budgetStatusError, setBudgetStatusError] = useState("");
@@ -88,6 +81,10 @@ const Stats = (props) => {
     };
 
     fetchAllStats();
+    console.log("BUDGESTATUS", budgetStatus);
+    console.log("BUDGEAMOUNT", budgetAmount);
+    console.log("TOPSERVICES", topServices);
+    console.log("PERCATEGORY", servicesPerCategory);
   }, []);
 
   // Convertir los datos para gráficos una vez estén cargados
@@ -163,26 +160,36 @@ const Stats = (props) => {
             </div>
           )}
 
-          {!isLoading && !budgetStatusError && (
-            <Fragment>
-              {" "}
-              <h1 className="text-center text-lg font-semibold mb-4">
-                Distribución del Estado del Presupuesto
-              </h1>
-              <Chart
-                chartType="BarChart"
-                data={chartDataBudgetStatus} // Ajusta a los datos correspondientes
-                width="100%"
-                height="400px"
-                options={{
-                  title: "Cantidad de presupuestos por estado",
-                  hAxis: { title: "Cantidad" },
-                  vAxis: { title: "Estado" },
-                }}
-                legendToggle
-              />{" "}
-            </Fragment>
+          {budgetStatus?.statusList?.every((item) => item.count === 0) && (
+            <div className="w-full flex justify-center items-center">
+              <h2 className="text-xs text-blackText">
+                No hay información disponible aún.
+              </h2>
+            </div>
           )}
+
+          {!isLoading &&
+            !budgetStatusError &&
+            !budgetStatus?.statusList?.every((item) => item.count === 0) && (
+              <Fragment>
+                {" "}
+                <h1 className="text-center text-lg font-semibold mb-4">
+                  Distribución del Estado del Presupuesto
+                </h1>
+                <Chart
+                  chartType="BarChart"
+                  data={chartDataBudgetStatus} // Ajusta a los datos correspondientes
+                  width="100%"
+                  height="400px"
+                  options={{
+                    title: "Cantidad de presupuestos por estado",
+                    hAxis: { title: "Cantidad" },
+                    vAxis: { title: "Estado" },
+                  }}
+                  legendToggle
+                />{" "}
+              </Fragment>
+            )}
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-lg">
@@ -203,23 +210,33 @@ const Stats = (props) => {
             </div>
           )}
 
-          {!isLoading && !budgetStatusError && (
-            <Fragment>
-              <h1 className="text-center text-lg font-semibold mb-4">
-                Distribución del Estado del Presupuesto
-              </h1>
-              <Chart
-                chartType="PieChart"
-                data={chartDataBudgetStatus}
-                width="100%"
-                height="400px"
-                options={{
-                  title: "Cantidad de presupuestos por estado",
-                  is3D: true,
-                }}
-              />
-            </Fragment>
+          {budgetStatus?.statusList?.every((item) => item.count === 0) && (
+            <div className="w-full flex justify-center items-center">
+              <h2 className="text-xs text-blackText">
+                No hay información disponible aún.
+              </h2>
+            </div>
           )}
+
+          {!isLoading &&
+            !budgetStatusError &&
+            !budgetStatus?.statusList?.every((item) => item.count === 0) && (
+              <Fragment>
+                <h1 className="text-center text-lg font-semibold mb-4">
+                  Distribución del Estado del Presupuesto
+                </h1>
+                <Chart
+                  chartType="PieChart"
+                  data={chartDataBudgetStatus}
+                  width="100%"
+                  height="400px"
+                  options={{
+                    title: "Cantidad de presupuestos por estado",
+                    is3D: true,
+                  }}
+                />
+              </Fragment>
+            )}
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-lg">
@@ -240,7 +257,15 @@ const Stats = (props) => {
             </div>
           )}
 
-          {!isLoading && !topServicesError && (
+          {topServices.length == 0 && (
+            <div className="w-full flex justify-center items-center">
+              <h2 className="  text-xs text-blackText ">
+                No hay información disponible aún.
+              </h2>
+            </div>
+          )}
+
+          {!isLoading && !topServicesError && topServices.length !== 0 && (
             <Fragment>
               <h1 className="text-center text-lg font-semibold mb-4">
                 Top de Servicios
@@ -278,7 +303,15 @@ const Stats = (props) => {
             </div>
           )}
 
-          {!isLoading && !topServicesError && (
+          {topServices.length == 0 && (
+            <div className="w-full flex justify-center items-center">
+              <h2 className="  text-xs text-blackText ">
+                No hay información disponible aún.
+              </h2>
+            </div>
+          )}
+
+          {!isLoading && !topServicesError && topServices.length !== 0 && (
             <Fragment>
               <h1 className="text-center text-lg font-semibold mb-4">
                 Top de Servicios
@@ -315,24 +348,34 @@ const Stats = (props) => {
             </div>
           )}
 
-          {!isLoading && !servicesPerCategoryError && (
-            <Fragment>
-              <h1 className="text-center text-lg font-semibold mb-4">
-                Servicios por cada Categoría
-              </h1>
-              <Chart
-                chartType="ColumnChart"
-                data={chartDataCategoryServices}
-                width="100%"
-                height="400px"
-                options={{
-                  title: "Cantidad de servicios en cada categoría",
-                  hAxis: { title: "Servicio" },
-                  vAxis: { title: "Cantidad" },
-                }}
-              />
-            </Fragment>
+          {servicesPerCategory.length == 0 && (
+            <div className="w-full h-full flex justify-center items-center">
+              <h2 className="  text-xs text-blackText ">
+                No hay información disponible aún.
+              </h2>
+            </div>
           )}
+
+          {!isLoading &&
+            !servicesPerCategoryError &&
+            servicesPerCategory.length !== 0 && (
+              <Fragment>
+                <h1 className="text-center text-lg font-semibold mb-4">
+                  Servicios por cada Categoría
+                </h1>
+                <Chart
+                  chartType="ColumnChart"
+                  data={chartDataCategoryServices}
+                  width="100%"
+                  height="400px"
+                  options={{
+                    title: "Cantidad de servicios en cada categoría",
+                    hAxis: { title: "Servicio" },
+                    vAxis: { title: "Cantidad" },
+                  }}
+                />
+              </Fragment>
+            )}
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-lg">
@@ -353,24 +396,43 @@ const Stats = (props) => {
             </div>
           )}
 
-          {!isLoading && !budgetAmountError && (
-            <Fragment>
-              <h1 className="text-center text-lg font-semibold mb-4">
-                Análisis de Montos de Presupuesto
-              </h1>
-              <Chart
-                chartType="ColumnChart"
-                data={chartDataBudgetValues}
-                width="100%"
-                height="400px"
-                options={{
-                  title: "Valores: mínimo, máximo,  promedio y mediana",
-                  hAxis: { title: "Variable" },
-                  vAxis: { title: "Valor ($)" },
-                }}
-              />
-            </Fragment>
-          )}
+          {budgetAmount &&
+            budgetAmount.minAmount === 0 &&
+            budgetAmount.maxAmount === 0 &&
+            budgetAmount.avgAmount === 0 &&
+            budgetAmount.medianAmount === 0 && (
+              <div className="w-full flex justify-center items-center">
+                <h2 className="text-xs text-blackText">
+                  No hay información disponible aún.
+                </h2>
+              </div>
+            )}
+
+          {!isLoading &&
+            !budgetAmountError &&
+            !(
+              budgetAmount.minAmount === 0 &&
+              budgetAmount.maxAmount === 0 &&
+              budgetAmount.avgAmount === 0 &&
+              budgetAmount.medianAmount === 0
+            ) && (
+              <Fragment>
+                <h1 className="text-center text-lg font-semibold mb-4">
+                  Análisis de Montos de Presupuesto
+                </h1>
+                <Chart
+                  chartType="ColumnChart"
+                  data={chartDataBudgetValues}
+                  width="100%"
+                  height="400px"
+                  options={{
+                    title: "Valores: mínimo, máximo,  promedio y mediana",
+                    hAxis: { title: "Variable" },
+                    vAxis: { title: "Valor ($)" },
+                  }}
+                />
+              </Fragment>
+            )}
         </div>
       </div>
     </div>

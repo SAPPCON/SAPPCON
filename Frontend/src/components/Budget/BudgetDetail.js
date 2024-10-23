@@ -296,6 +296,59 @@ const BudgetDetail = (props) => {
     }
   };
 
+  const [errorGenerateReport, setErrorGenerateReport] = useState("");
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
+
+  const handleReport = async (budgetId) => {
+    try {
+      setIsLoadingReport(true);
+      setErrorGenerateReport("");
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_GENERATE_BUDGET_REPORT_URL.replace(
+          ":budgetId",
+          budgetData.budget._id
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Omitir este header, ya que no es necesario para descargar archivos.
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw {
+          message: "Error al generar reporte",
+        };
+      }
+
+      // Convertir la respuesta a un Blob (representación binaria del PDF)
+      const blob = await response.blob();
+
+      // Crear un URL temporario para el Blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Crear un enlace temporal para descargar el PDF
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "budget.pdf"); // Nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+
+      // Remover el enlace después de la descarga
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      setErrorGenerateReport({
+        message: error.message || "Error desconocido",
+      });
+    } finally {
+      setIsLoadingReport(false);
+    }
+  };
+
   //Todos los otros carteles de exito estan a 5px del titulo. Este mide 56px de ancho entonces se sube 56 + 5 = 61.
   return (
     <Fragment>
@@ -499,7 +552,19 @@ const BudgetDetail = (props) => {
               <div>
                 {isLoadingUpdateLineService && (
                   // Le doy una altura de 130 al div del loader de manera tal que sea similar a cuando no hay servicios registrados
-                  <div className="w-full flex justify-center items-center h-[130px] ">
+                  <div
+                    className={`w-full flex justify-center items-center ${
+                      budgetLines.length === 2
+                        ? "h-[249px]"
+                        : budgetLines.length === 1
+                        ? "h-[218px]"
+                        : budgetLines.length === 3
+                        ? "h-[280px]"
+                        : budgetLines.length >= 4
+                        ? "h-[285px]"
+                        : "h-[200px]"
+                    }`}
+                  >
                     <Loader></Loader>
                   </div>
                 )}
@@ -639,21 +704,45 @@ const BudgetDetail = (props) => {
 
               <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
-              <li className=" px-[23px] ">
-                <div className="flex items-center justify-end ">
-                  <button
-                    className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-                    onClick={props.hideBudgetFunctionBoth}
-                  >
-                    Atrás
-                  </button>
+              <li className=" px-[23px] mb-[3px] ">
+                <div className="flex items-center justify-between ">
+                  <div className="flex items-center justify-center h-[40px] relative">
+                    {isLoadingReport && (
+                      <div className="w-[102px] flex justify-center items-center">
+                        <Loader></Loader>
+                      </div>
+                    )}
 
-                  <button
-                    className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
-                    onClick={handleDelete}
-                  >
-                    Eliminar
-                  </button>
+                    {errorGenerateReport && (
+                      <h1 className="text-xs  text-red5 absolute bottom-[-11px] whitespace-nowrap  ">
+                        {errorGenerateReport.message}
+                      </h1>
+                    )}
+
+                    {!isLoadingReport && (
+                      <button
+                        className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring justify-center"
+                        onClick={handleReport}
+                      >
+                        Imprimir
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex">
+                    <button
+                      className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
+                      onClick={props.hideBudgetFunctionBoth}
+                    >
+                      Atrás
+                    </button>
+
+                    <button
+                      className=" flex h-[36px] w-[102px] text-sm items-center  font-sans text-[13px]  cursor-pointer  text-white  p-2 rounded-[8px] border  border-white bg-darkred  ring-red3  hover:bg-opacity-90 active:border active:border-red5 active:outline-none active:ring justify-center"
+                      onClick={handleDelete}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               </li>
             </ul>
