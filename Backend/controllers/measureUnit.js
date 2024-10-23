@@ -130,7 +130,7 @@ export const DeleteMeasureUnit = async (req, res) => {
     const userId = req.user.id;
 
     const associatedServices = await Service.find({
-      category_id: req.params.id,
+      measure_unit_id: req.params.id,
     });
 
     if (associatedServices.length > 0) {
