@@ -1,4 +1,5 @@
 import Building from "../models/building.js";
+import Budget from "../models/budget.js";
 
 export const NewBuilding = async (req, res) => {
   const { customer_id, name, alias, address, description } = req.body;
@@ -148,8 +149,9 @@ export const DeleteBuilding = async (req, res) => {
     }
     const userId = req.user.id;
 
-    const Budget = await Budget.find({ building_id: req.params.id });
-    if (Budget) {
+    const associatedBudgets = await Budget.find({ building_id: req.params.id });
+
+    if (associatedBudgets.length > 0) {
       return res.status(400).json({
         message: "Construcción no eliminada.",
         messageinfo:
