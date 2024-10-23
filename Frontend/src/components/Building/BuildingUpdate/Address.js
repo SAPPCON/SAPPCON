@@ -1,5 +1,4 @@
 import BudgetNav from "../../Navigation/BudgetNav";
-import BuildingNav from "../../Navigation/BuildingNav";
 import CustomerNav from "../../Navigation/CustomerNav";
 import StatsNav from "../../Navigation/StatsNav";
 import HomeNav from "../../Navigation/HomeNav";
@@ -16,12 +15,15 @@ import BuildingContext from "@/store/BuildingContext";
 import { useRouter } from "next/router";
 
 const Address = ({ buildingId }) => {
-  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { buildingContext: buildingCtx } = useContext(BuildingContext);
+
   const newAddressInputRef = useRef();
+
+  const { buildingContext: buildingCtx } = useContext(BuildingContext);
+
+  const router = useRouter();
 
   const building = buildingCtx.items.find((item) => item._id === buildingId);
   const buildingAddress = building
@@ -29,11 +31,9 @@ const Address = ({ buildingId }) => {
     : "Dirección no encontrada";
 
   useEffect(() => {
-    // Verificar si el reload se hizo a través del router
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
 
     if (reloadViaRouter) {
-      // Limpia la marca de recarga del sessionStorage
       sessionStorage.removeItem("reloadViaRouter");
       setCorrectRequest(true);
     }
@@ -95,6 +95,8 @@ const Address = ({ buildingId }) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

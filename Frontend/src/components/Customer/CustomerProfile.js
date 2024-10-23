@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
-import { BiAccessibility } from "react-icons/bi";
 import { RiImageAddFill } from "react-icons/ri";
 import { useState, Fragment, useContext, useEffect } from "react";
 import CustomerContext from "@/store/CustomerContext";
@@ -14,6 +13,7 @@ const CustomerProfile = (props) => {
   const [errorRequestAdd, setErrorRequestAdd] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [bigImageError, setBigImageError] = useState("");
+
   const { customerContext: customerCtx } = useContext(CustomerContext);
 
   //Muestra el modal y confirmacion de eliminacion. Este esta en el boton de eliminar original.
@@ -51,7 +51,7 @@ const CustomerProfile = (props) => {
         const response = await fetch(
           process.env.NEXT_PUBLIC_DOWNLOAD_IMAGE_URL,
           {
-            method: "POST", // Especifica el método POST (u otro adecuado)
+            method: "POST",
             body: JSON.stringify({
               object_type: "Customer",
               object_id: props.clientData._id,
@@ -168,7 +168,7 @@ const CustomerProfile = (props) => {
             onClick={() => document.getElementById("imageUpload").click()}
           >
             {isLoading ? (
-              <Loader /> // Reemplazar por un ícono de carga si lo prefieres
+              <Loader />
             ) : base64Image ? (
               <img
                 src={base64Image}
@@ -195,10 +195,7 @@ const CustomerProfile = (props) => {
           <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
             <div className="pl-6 mb-[12px] w-full truncate">
               <h1 className="mb-[4px] font-bold">Nombre</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.clientData.name}
-              </h1>
+              <h1>{props.clientData.name}</h1>
             </div>
             <Link
               href={`/customer/name/${props.clientData._id}`}
@@ -213,10 +210,7 @@ const CustomerProfile = (props) => {
           <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Apellido</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.clientData.surname}
-              </h1>
+              <h1>{props.clientData.surname}</h1>
             </div>
             <Link
               href={`/customer/lastname/${props.clientData._id}`}
@@ -231,10 +225,7 @@ const CustomerProfile = (props) => {
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Alias</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.clientData.alias}
-              </h1>
+              <h1>{props.clientData.alias}</h1>
             </div>
             <Link
               href={`/customer/alias/${props.clientData._id}`}
@@ -250,10 +241,7 @@ const CustomerProfile = (props) => {
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Dirección</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.clientData.address}
-              </h1>
+              <h1>{props.clientData.address}</h1>
             </div>
             <Link
               href={`/customer/address/${props.clientData._id}`}
@@ -268,10 +256,7 @@ const CustomerProfile = (props) => {
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Teléfono</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.clientData.phone}
-              </h1>
+              <h1>{props.clientData.phone}</h1>
             </div>
             <Link
               href={`/customer/phone/${props.clientData._id}`}
@@ -286,10 +271,7 @@ const CustomerProfile = (props) => {
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Correo Electrónico</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.clientData.email}
-              </h1>
+              <h1>{props.clientData.email}</h1>
             </div>
             <Link
               href={`/customer/email/${props.clientData._id}`}
@@ -371,5 +353,3 @@ const CustomerProfile = (props) => {
 };
 
 export default CustomerProfile;
-
-//border-red5 ring-red3  focus:border-red5 focus:bg-white

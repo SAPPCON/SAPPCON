@@ -1,14 +1,11 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
-import { BiAccessibility } from "react-icons/bi";
-import { useState, useRef, Fragment, useContext } from "react";
+import { useState, Fragment, useContext } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import BuildingContext from "@/store/BuildingContext";
 import CustomerContext from "@/store/CustomerContext";
 import Loader from "../UI/Loader";
-
-//Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)
 
 const BuildingDetail = (props) => {
   const [showDelete, setShowDelete] = useState(false);
@@ -36,13 +33,9 @@ const BuildingDetail = (props) => {
     props.hideBuildingFunctionBackground();
   };
 
-  //Todos los otros carteles de exito estan a 5px del titulo. Este mide 56px de ancho entonces se sube 56 + 5 = 61.
   return (
     <Fragment>
       <div className=" absolute top-12 left-1/2 transform -translate-x-1/2  z-40 bg-gray-100 rounded-[8px] border border-solid border-grayBorder w-[600px] ">
-        {/*TODO lo relacionado a exito o error de la actualizacion de cliente esta aca. Es absoluto respecto al contenedor padre (este div absoluto de arriba) 
-        ESTOS DOS MENSAJES DE DEJAN DE VER CUANDO SE VA HACIA ATRAS, PORQUE ESE METODO HACIA ATRAS EJECUTA LA ACCION EN EL CONTEXTO DE RESETEAR A FALSO TODO LO RELACIONADO A UPDATE CUSTOMER*/}
-
         {buildingCtx.successUpdateCustomer && (
           <div
             className=" flex h-[56px] w-full   items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px] pb-[18px] pt-[14px] font-sans text-[14px] text-blackText absolute left-0 top-[-61px]
@@ -78,7 +71,6 @@ const BuildingDetail = (props) => {
           Datos de la Obra
         </h1>
 
-        {/* Quito el px-6  del ul porque sino el borde inferior no llega hasta el contenedor padre, y coloco el px-6  en los elementos individuales menos el borde */}
         <ul className="flex flex-col  pt-3 pb-2 ">
           <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
             <div className="pl-6 mb-[12px] w-full truncate">
@@ -182,9 +174,6 @@ const BuildingDetail = (props) => {
           </li>
         </ul>
       </div>
-
-      {/* Tuve que poner ambos afuera porque sino, el cartel estaba contenido en el DIV padre que tiene un Z-30 y si z-50 se veia pisado por eso. Entonces al sacar este afuera, le puede hacer competencia al z-40 del modal.
-      Osea este cartel de chequear borrado y el modal estan posicionados respecto al contenedor de Servicio.js al igual que el Div de ServicioDetail*/}
 
       {showDelete && (
         <div

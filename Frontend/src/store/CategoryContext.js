@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useReducer } from "react";
+import React, { useEffect, useContext, useReducer } from "react";
 import AuthenticationContext from "./AuthenticationContext";
 
 const CategoryContext = React.createContext({
@@ -23,7 +23,6 @@ const defaultCategoryState = {
   items: [],
 };
 
-// Función que obtiene los datos del backend
 const fetchData = async (token) => {
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_GET_CATEGORIES_URL, {
@@ -326,7 +325,6 @@ export const CategoryContextProvider = (props) => {
       }
     };
 
-    // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
       loadCategories();
     }

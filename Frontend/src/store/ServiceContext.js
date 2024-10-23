@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useContext, useState } from "react";
+import React, { useReducer, useEffect, useContext } from "react";
 import AuthenticationContext from "./AuthenticationContext";
 
 const ServiceContext = React.createContext({
@@ -178,8 +178,6 @@ const updateMeasureUnitService = async (service_id, newMeasureUnitId) => {
   }
 };
 
-// State es el último estado manejado. Action es determinada por nosotros.
-// La función retorna el nuevo y último estado.
 const servicesReducer = (state, action) => {
   switch (action.type) {
     case "LOAD_SERVICES":
@@ -465,7 +463,6 @@ export const ServiceContextProvider = (props) => {
       }
     };
 
-    // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
       loadServices();
     }
@@ -488,7 +485,7 @@ export const ServiceContextProvider = (props) => {
 
       dispatchServicesAction({
         type: "ADD_ITEM",
-        item: newItem, // El servicio a agregar
+        item: newItem,
       });
       dispatchServicesAction({ type: "SET_SUCCESS_ADD_ITEM" });
     } catch (error) {

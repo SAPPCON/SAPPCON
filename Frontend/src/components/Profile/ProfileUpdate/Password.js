@@ -13,12 +13,14 @@ import Loader from "@/components/UI/Loader";
 import { useRouter } from "next/router";
 import { validatePassword } from "@/utils/validationFunctions";
 
-const Password = (props) => {
+const Password = () => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+
   const newPasswordInputRef = useRef();
+
+  const router = useRouter();
 
   useEffect(() => {
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
@@ -82,6 +84,8 @@ const Password = (props) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

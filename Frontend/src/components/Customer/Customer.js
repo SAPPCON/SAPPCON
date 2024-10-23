@@ -12,8 +12,8 @@ import CustomerContext from "@/store/CustomerContext";
 const Customer = (props) => {
   const [showNewClient, setShowNewClient] = useState(false);
   const [filterText, setFilterText] = useState(""); // Estado para almacenar el texto de búsqueda
-  const { customerContext: customerCtx, dispatchCustomersAction } =
-    useContext(CustomerContext);
+
+  const { dispatchCustomersAction } = useContext(CustomerContext);
 
   //La funcion que le paso al boton atras, la cruz, y aceptar de exito o error de nuevo cliente y al fondo negro, tambien lo que hacen ademas de dejar de mostrar la planilla, tambien resetean los valores de si hubo error o exito en el nuevo registro de cliente.
   const handleClick = () => {

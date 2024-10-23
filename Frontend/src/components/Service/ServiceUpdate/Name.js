@@ -15,12 +15,15 @@ import ServiceContext from "@/store/ServiceContext";
 import { useRouter } from "next/router";
 
 const Name = ({ serviceId }) => {
-  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+
   const newNameInputRef = useRef();
+
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+
+  const router = useRouter();
 
   // Busca el servicio con el _id que coincide
   const service = serviceCtx.items.find((item) => item._id === serviceId);
@@ -29,11 +32,9 @@ const Name = ({ serviceId }) => {
   const serviceName = service ? service.name : "Nombre no encontrado";
 
   useEffect(() => {
-    // Verificar si el reload se hizo a través del router
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
 
     if (reloadViaRouter) {
-      // Limpia la marca de recarga del sessionStorage
       sessionStorage.removeItem("reloadViaRouter");
       setCorrectRequest(true);
     }
@@ -95,6 +96,8 @@ const Name = ({ serviceId }) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

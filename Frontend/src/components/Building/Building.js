@@ -10,12 +10,11 @@ import BuildingList from "./BuildingList";
 import BuildingContext from "@/store/BuildingContext";
 
 const Building = (props) => {
-  const { buildingContext: buildingCtx, dispatchBuildingsAction } =
-    useContext(BuildingContext);
   const [showNewBuilding, setShowNewBuilding] = useState(false);
   const [filterText, setFilterText] = useState("");
 
-  //La funcion que le paso al boton atras, la cruz, y aceptar de exito o error de nuevo cliente y al fondo negro, tambien lo que hacen ademas de dejar de mostrar la planilla, tambien resetean los valores de si hubo error o exito en el nuevo registro de cliente.
+  const { dispatchBuildingsAction } = useContext(BuildingContext);
+
   const handleClick = () => {
     setShowNewBuilding(!showNewBuilding);
     dispatchBuildingsAction({ type: "SET_RESTART_ALL_NEW_ITEM" });

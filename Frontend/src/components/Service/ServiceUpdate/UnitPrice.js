@@ -15,22 +15,23 @@ import { numberFormatValidate } from "@/utils/validationFunctions";
 import { useRouter } from "next/router";
 
 const UnitPrice = ({ serviceId }) => {
-  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+
   const newUnitPriceInputRef = useRef();
+
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+
+  const router = useRouter();
 
   const service = serviceCtx.items.find((item) => item._id === serviceId);
   const serviceUnitPrice = service ? service.price : "Precio no encontrado";
 
   useEffect(() => {
-    // Verificar si el reload se hizo a través del router
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
 
     if (reloadViaRouter) {
-      // Limpia la marca de recarga del sessionStorage
       sessionStorage.removeItem("reloadViaRouter");
       setCorrectRequest(true);
     }
@@ -92,6 +93,8 @@ const UnitPrice = ({ serviceId }) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

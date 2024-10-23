@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useContext, useState } from "react";
+import React, { useReducer, useEffect, useContext } from "react";
 import AuthenticationContext from "./AuthenticationContext";
 
 const BudgetContext = React.createContext({
@@ -31,7 +31,6 @@ const defaultBudgetState = {
   items: [],
 };
 
-// Función que obtiene los datos del backend, en el caso del presupuesto solo los headers.
 const fetchData = async (token) => {
   try {
     const response = await fetch(
@@ -479,7 +478,6 @@ export const BudgetContextProvider = (props) => {
       }
     };
 
-    // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
       loadBudgets();
     }

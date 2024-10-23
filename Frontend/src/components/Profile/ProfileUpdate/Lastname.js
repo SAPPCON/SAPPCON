@@ -18,9 +18,12 @@ const Lastname = (props) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const profileCtx = useContext(ProfileContext);
-  const router = useRouter();
+
   const newlastNmeInputRef = useRef();
+
+  const profileCtx = useContext(ProfileContext);
+
+  const router = useRouter();
 
   useEffect(() => {
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
@@ -84,6 +87,8 @@ const Lastname = (props) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 

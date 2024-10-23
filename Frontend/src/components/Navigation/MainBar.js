@@ -5,9 +5,8 @@ import CustomerNav from "./CustomerNav";
 import ServiceNav from "./ServiceNav";
 import StatsNav from "./StatsNav";
 import HomeNav from "./HomeNav";
-import Link from "next/link";
 
-const MainBar = (props) => {
+const MainBar = () => {
   return (
     <div className=" min-h-screen flex flex-col  bg-gray-100 text-black font-sans min-w-[1200px] ">
       <div className="flex bg-white h-20 ">

@@ -1,9 +1,6 @@
 import Link from "next/link";
-//import { useContext } from "react";
-//import ProfileContext from "@/store/profile-context";
 
 const HomeNav = () => {
-  //const profileCtx = useContext(ProfileContext);
   return (
     <Link
       href="/"

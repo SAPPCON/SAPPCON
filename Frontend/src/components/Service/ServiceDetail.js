@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
-import { BiAccessibility } from "react-icons/bi";
-import { useState, useRef, useEffect, useContext, Fragment } from "react";
+import { useState, useContext, Fragment } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import ServiceContext from "@/store/ServiceContext";
 import CategoryContext from "@/store/CategoryContext";
 import MeasureUnitContext from "@/store/MeasureUnitContext";
 import Loader from "../UI/Loader";
-
-//Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)
 
 const ServiceDetail = (props) => {
   const [showDelete, setShowDelete] = useState(false);
@@ -29,33 +26,23 @@ const ServiceDetail = (props) => {
     serviceCtx.updateCategory(props.serviceData, newCategoryId);
   };
 
-  //Muestra el modal y confirmacion de eliminacion.
   const handleDelete = () => {
     setShowDelete(true);
   };
 
-  //Esconde el modal y confirmacion de eliminacion.
   const handleClickHideDelete = () => {
     setShowDelete(false);
   };
 
   const handleConfirmDelete = () => {
-    //Una vez borrado saco el modal de confirmacion de borrado
     setShowDelete(false);
-
     serviceCtx.deleteItem(props.serviceData._id);
-
-    //Una vez borrado saco la planilla pero dejo el fondo negro
     props.hideServiceFunctionBackground();
   };
 
-  //Todos los otros carteles de exito estan a 5px del titulo. Este mide 56px de ancho entonces se sube 56 + 5 = 61.
   return (
     <Fragment>
       <div className=" absolute top-12 left-1/2 transform -translate-x-1/2  z-40 bg-gray-100 rounded-[8px] border border-solid border-grayBorder w-[600px] ">
-        {/*TODO lo relacionado a exito o error de las 2 actualizaciones de Select estan en estos 4 pedazos de codigo. Ambos absolutos respecto al contenedor padre (este div absoluto de arriba) 
-        ESTOS DOS MENSAJES DE DEJAN DE VER CUANDO SE VA HACIA ATRAS, PORQUE ESE METODO HACIA ATRAS EJECUTA LA ACCION EN EL CONTEXTO DE RESETEAR A FALSO TODO LO RELACIONADO A UPDATE CATEGORY*/}
-
         {serviceCtx.successUpdateCategory && (
           <div
             className=" flex h-[56px] w-full   items-center rounded-xl border-[2px] border-l-[12px] border-solid border-greenBorder bg-white px-[18px] pb-[18px] pt-[14px] font-sans text-[14px] text-blackText absolute left-0 top-[-61px]
@@ -118,15 +105,11 @@ const ServiceDetail = (props) => {
           Datos del Servicio
         </h1>
 
-        {/* Quito el px-6  del ul porque sino el borde inferior no llega hasta el contenedor padre, y coloco el px-6  en los elementos individuales menos el borde */}
         <ul className="flex flex-col  pt-3 pb-2 ">
           <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
             <div className="pl-6 mb-[12px] w-full truncate">
               <h1 className="mb-[4px] font-bold">Nombre</h1>
-              <h1>
-                {/* {profileCtx.name} */}
-                {props.serviceData.name}
-              </h1>
+              <h1>{props.serviceData.name}</h1>
             </div>
             <Link
               href={`/service/name/${props.serviceData._id}`}
@@ -161,7 +144,7 @@ const ServiceDetail = (props) => {
                   defaultValue={props.serviceData.category_id}
                   onChange={(e) => handleCategoryChange(e.target.value)}
                   className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
-                  disabled={categoryCtx.isLoadingUpdateCategory} // Deshabilitar si está actualizando
+                  disabled={categoryCtx.isLoadingUpdateCategory}
                 >
                   {Categories.map((category) => (
                     <option key={category._id} value={category._id}>
@@ -195,7 +178,7 @@ const ServiceDetail = (props) => {
                   defaultValue={props.serviceData.measure_unit_id}
                   onChange={(e) => handleUnitChange(e.target.value)}
                   className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
-                  disabled={measureUnitCtx.isLoadingUpdateMeasureUnit} // Deshabilitar si está actualizando
+                  disabled={measureUnitCtx.isLoadingUpdateMeasureUnit}
                 >
                   {measureUnits.map((measureUnit) => (
                     <option key={measureUnit._id} value={measureUnit._id}>
@@ -211,9 +194,7 @@ const ServiceDetail = (props) => {
           <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Coste Unitario</h1>
-              <h1>
-                {/* {profileCtx.name} */}${props.serviceData.cost}
-              </h1>
+              <h1>${props.serviceData.cost}</h1>
             </div>
             <Link
               href={`/service/unitcost/${props.serviceData._id}`}
@@ -228,9 +209,7 @@ const ServiceDetail = (props) => {
           <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] truncate">
               <h1 className="mb-[4px] font-bold">Precio Unitario</h1>
-              <h1>
-                {/* {profileCtx.name} */}${props.serviceData.price}
-              </h1>
+              <h1>${props.serviceData.price}</h1>
             </div>
             <Link
               href={`/service/unitprice/${props.serviceData._id}`}
@@ -246,10 +225,7 @@ const ServiceDetail = (props) => {
           <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
             <div className="pl-6 mb-[12px] line-clamp-5 overflow-y-auto">
               <h1 className="mb-[4px] font-bold">Descripción</h1>
-              <h1 className="mr-1">
-                {/* {profileCtx.name} */}
-                {props.serviceData.description}
-              </h1>
+              <h1 className="mr-1">{props.serviceData.description}</h1>
             </div>
             <Link
               href={`/service/description/${props.serviceData._id}`}
@@ -281,9 +257,6 @@ const ServiceDetail = (props) => {
           </li>
         </ul>
       </div>
-
-      {/* Tuve que poner ambos afuera porque sino, el cartel estaba contenido en el DIV padre que tiene un Z-30 y si z-50 se veia pisado por eso. Entonces al sacar este afuera, le puede hacer competencia al z-40 del modal.
-      Osea este cartel de chequear borrado y el modal estan posicionados respecto al contenedor de Servicio.js al igual que el Div de ServicioDetail*/}
 
       {showDelete && (
         <div

@@ -1,5 +1,4 @@
 import { useState, useRef, useContext, Fragment } from "react";
-import { BiAccessibility } from "react-icons/bi";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { RxCross1 } from "react-icons/rx";
@@ -11,22 +10,22 @@ import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 
 const NewBuilding = (props) => {
+  const [nameError, setNameError] = useState("");
+  const [aliasError, setAliasError] = useState("");
+  const [clientError, setClientError] = useState("");
+  const [addressError, setAddressError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [zNewBuilding, setZNewBuilding] = useState("z-40");
+
+  const nameRef = useRef();
+  const aliasRef = useRef();
+  const clientRef = useRef();
+  const addressRef = useRef();
+  const descriptionRef = useRef();
+
   const { customerContext: customerCtx } = useContext(CustomerContext);
   const { buildingContext: buildingCtx } = useContext(BuildingContext);
   const Customers = customerCtx.items;
-
-  const [nameError, setNameError] = useState("");
-  const nameRef = useRef();
-  const [aliasError, setAliasError] = useState("");
-  const aliasRef = useRef();
-  const [clientError, setClientError] = useState("");
-  const clientRef = useRef();
-  const [addressError, setAddressError] = useState("");
-  const addressRef = useRef();
-  const [descriptionError, setDescriptionError] = useState("");
-  const descriptionRef = useRef();
-
-  const [zNewBuilding, setZNewBuilding] = useState("z-40");
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -79,12 +78,10 @@ const NewBuilding = (props) => {
       description: enteredDescription,
     };
 
-    // Agregar la nueva obra
     buildingCtx.addItem(newBuilding);
     setZNewBuilding("z-20");
   };
 
-  //Absoluto al contenedor padre que es relativo (Customer)
   return (
     <Fragment>
       <div
@@ -100,7 +97,7 @@ const NewBuilding = (props) => {
 
         <form className="flex flex-col px-6 pt-6 pb-2 relative ">
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="name" className="text-sm font-semibold block w-72">
+            <label htmlFor="name" className="text-sm font-bold block w-72">
               Nombre
             </label>
             <input
@@ -120,7 +117,7 @@ const NewBuilding = (props) => {
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="alias" className="text-sm font-semibold block w-72">
+            <label htmlFor="alias" className="text-sm font-bold block w-72">
               Alias
             </label>
             <input
@@ -140,7 +137,7 @@ const NewBuilding = (props) => {
           </div>
 
           <div className="mb-4 w-[50%] relative">
-            <label htmlFor="client" className="text-sm font-semibold block">
+            <label htmlFor="client" className="text-sm font-bold block">
               Cliente
             </label>
 
@@ -159,8 +156,6 @@ const NewBuilding = (props) => {
             {!customerCtx.error && !customerCtx.isLoading && (
               <select
                 id="category"
-                //defaultValue={props.serviceData.categoria}
-                //onChange={(e) => handleCategoryChange(e.target.value)}
                 ref={clientRef}
                 className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
               >
@@ -171,14 +166,13 @@ const NewBuilding = (props) => {
                 ))}
               </select>
             )}
-            {/*Lo hago absoluto y al div relativo asi el msg no entra en el flujo html y el boton + me queda siempre bien puesto */}
             {clientError !== "" && (
               <p className="text-xs text-red5 absolute">{clientError}</p>
             )}
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="address" className="text-sm font-semibold block">
+            <label htmlFor="address" className="text-sm font-bold block">
               Dirección
             </label>
             <input
@@ -198,10 +192,7 @@ const NewBuilding = (props) => {
           </div>
 
           <div className="mb-4 w-full relative">
-            <label
-              htmlFor="description"
-              className="text-sm font-semibold block"
-            >
+            <label htmlFor="description" className="text-sm font-bold block">
               Descripción
             </label>
             <input
@@ -247,8 +238,6 @@ const NewBuilding = (props) => {
           )}
         </form>
       </div>
-
-      {/*Aca van los 2 carteles que van a ser absolutos respecto a su contenedor padre (este div). Algo absoluto se hace referencia al padre mas cercano que tenga que no sea static, en este caso este es absoluto */}
 
       {buildingCtx.errorAddItem && (
         <PopUpError

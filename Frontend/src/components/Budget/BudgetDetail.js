@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
-import { BiAccessibility } from "react-icons/bi";
 import { useState, useRef, Fragment, useEffect, useContext } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
@@ -12,20 +10,17 @@ import { FaTrashAlt } from "react-icons/fa";
 import MeasureUnitContext from "@/store/MeasureUnitContext";
 
 const BudgetDetail = (props) => {
-  const { measureUnitContext: measureUnitCtx } = useContext(MeasureUnitContext);
   //Cosas de Renderizar el detalle de presupuesto:
-
   //Almaceno la data del presupuesto, incluidas las lineas de presupuesto.
   const [budgetData, setBudgetData] = useState({});
-
   //Este estado por separado, para poder modificarlo cuando se cambia alguna lines de servicio y poder reflfejarlo en la lista que se renderiza a partir de esto.
   const [budgetLines, setBudgetLines] = useState([]);
-
   //Error para renderizaar en caso de no poder obtener la data del presupuesto.
   const [errorRequest, setErrorRequest] = useState("");
   //Mientras esta cargando la request, renderizo el loader.
   //Hago que sea TRUE desde un principio, para que se haga false cuando salga bien la request y asi evitar tener problema de la data de budger undefined.
   const [isLoading, setIsLoading] = useState(true);
+
   //Para renderizar las obras
   const { buildingContext: buildingCtx } = useContext(BuildingContext);
   const Buildings = buildingCtx.items;
@@ -67,7 +62,6 @@ const BudgetDetail = (props) => {
         const data = await response.json();
         setBudgetData(data);
         setBudgetLines(data.budgetLines);
-        console.log("DATA DEL PRESUPUESTO: ", data);
         setIsLoading(false);
         setErrorRequest("");
       } catch (error) {
@@ -147,7 +141,6 @@ const BudgetDetail = (props) => {
       return;
     }
 
-    //{ budget_id, service_id, quantity }
     const newBudgetLine = {
       service_id: e.target.value,
       quantity: 1,
@@ -799,5 +792,3 @@ const BudgetDetail = (props) => {
 };
 
 export default BudgetDetail;
-
-//Si bien CustomerProfile esta contenido dentro de su padre CustomerList, al ser Absolute --> Customer Profile se va a ubicar en referencia al primer padre no estatico que haya. En este caso, como CustomerList que es el primer padre es Estatico, sube un nivel mas, es decir al padre de CustomerList y llega a Customer el cual es RELATIVE, entonces se va ubicar en referencia a ese (al igual que hace NewCustomer, y asi tanto NewCustomer y CustomerProfile estan en referencia al mismo contenedor y puedo ubicarlos igual y seguir un disenio similar)

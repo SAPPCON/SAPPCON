@@ -2,7 +2,6 @@ import { useState, useContext } from "react";
 import ServiceDetail from "./ServiceDetail";
 import ServiceContext from "@/store/ServiceContext";
 import { FaCheckCircle } from "react-icons/fa";
-import CategoryContext from "@/store/CategoryContext";
 import Loader from "../UI/Loader";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import PopUpError from "../UI/PopUpError";
@@ -12,18 +11,16 @@ const ServiceList = ({ filterText }) => {
   const [service, setService] = useState(null);
   const [showService, setShowService] = useState(false);
   const [showBackgroundService, setShowBackgroundService] = useState(false);
-  const [showAccept, setShowAccept] = useState(false);
 
   const { serviceContext: serviceCtx, dispatchServicesAction } =
     useContext(ServiceContext);
 
   const handleClick = (service) => {
-    setService(service); // Guardo el servicio seleccionado (sus datos para la planilla)
-    setShowService(true); // Muestro la planilla con los datos del servicio
-    setShowBackgroundService(true); //Muestro el fondo negro
+    setService(service);
+    setShowService(true);
+    setShowBackgroundService(true);
   };
 
-  //Saca tanto planilla como modal. Agrege tambien el boton de aceptar que lo ponga en falso x mas que en la mayoria de los casos que se activa esto el boton no esta presente, pero es necesario solamente para el caso donde esta el fondo activado y el boton de aceptar.
   const handleClickHideServiceBoth = () => {
     setShowService(false);
     setShowBackgroundService(false);
@@ -32,12 +29,10 @@ const ServiceList = ({ filterText }) => {
     dispatchServicesAction({ type: "SET_RESTART_ALL_UPDATE_MEASUREUNIT" });
   };
 
-  //Saca solo la planilla
   const handleClickHideServiceBackground = () => {
     setShowService(false);
   };
 
-  //Saca el cartel de aceptar y el fondo negro
   const handleClickAccept = () => {
     setShowBackgroundService(false);
     dispatchServicesAction({ type: "SET_RESTART_ALL_DELETE_ITEM" });
@@ -62,7 +57,6 @@ const ServiceList = ({ filterText }) => {
     );
   }
 
-  //Le digo que directamente mida 420 cosa de que si hay menos de 10 elementos, el tamanio sea el mismo y todos los carteles q se ubican relativamente a esto no tengan drama xq sino empeizan a aparecer en funcion de la cantidad de elementos q hay
   return (
     <div>
       <ul className="h-[420px] overflow-y-auto font-sans text-blackText">
@@ -115,8 +109,6 @@ const ServiceList = ({ filterText }) => {
           className=" fixed top-0 left-0 z-30  h-full  w-full  bg-black opacity-80  transition-opacity duration-1000"
         ></div>
       )}
-
-      {/*El aceptar: va a estar con respecto al contenedor en Service que es Relativo, no lo dejo esto en Service Detail porque cuando se cierra la planilla de detalle el componente deja de renderizarse */}
 
       {serviceCtx.successDeleteItem && !serviceCtx.errorDeleteItem && (
         <PopUpSuccess

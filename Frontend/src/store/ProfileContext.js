@@ -65,7 +65,7 @@ export const ProfileContextProvider = (props) => {
             alias: data.user.alias,
             address: data.user.address,
           });
-          setError(null); // Resetea el error cuando la carga es exitosa
+          setError(null);
         }
       } catch (error) {
         setError({
@@ -90,7 +90,7 @@ export const ProfileContextProvider = (props) => {
     alias: profileData.alias,
     address: profileData.address,
     isLoading: loading,
-    error: error, // Incluir error en el contexto
+    error: error,
   };
 
   return (

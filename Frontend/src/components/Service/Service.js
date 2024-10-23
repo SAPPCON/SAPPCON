@@ -2,10 +2,8 @@ import BudgetNav from "../Navigation/BudgetNav";
 import BuildingNav from "../Navigation/BuildingNav";
 import StatsNav from "../Navigation/StatsNav";
 import HomeNav from "../Navigation/HomeNav";
-import ServiceNav from "../Navigation/ServiceNav";
 import Link from "next/link";
 import ProfileNav from "../Navigation/ProfileNav";
-import { IoIosArrowForward } from "react-icons/io";
 import { useState, useContext } from "react";
 import CustomerNav from "../Navigation/CustomerNav";
 import ServiceList from "./ServiceList";
@@ -16,8 +14,7 @@ const Service = (props) => {
   const [showNewService, setShowNewService] = useState(false);
   const [filterText, setFilterText] = useState("");
 
-  const { serviceContext: serviceCtx, dispatchServicesAction } =
-    useContext(ServiceContext);
+  const { dispatchServicesAction } = useContext(ServiceContext);
 
   //Esta funcion es la que uso para sacar el cartel de exito o error de agregar nuevo servicio.
   const handleClick = () => {
@@ -94,7 +91,6 @@ const Service = (props) => {
         </div>
       </div>
 
-      {/* Este es fixed, se ubica respecto al primer padre que no sea estatico, en este caso se ubica directo al vieeport. */}
       {showNewService && (
         <div
           onClick={handleClick}

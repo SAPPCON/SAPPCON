@@ -17,10 +17,13 @@ import { validateEmail } from "@/utils/validationFunctions";
 const Email = ({ customerId }) => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { customerContext: customerCtx } = useContext(CustomerContext);
+
   const newEmailInputRef = useRef();
+
+  const { customerContext: customerCtx } = useContext(CustomerContext);
+
+  const router = useRouter();
 
   // Busca el cliente con el _id que coincide
   const customer = customerCtx.items.find((item) => item._id === customerId);
@@ -96,6 +99,8 @@ const Email = ({ customerId }) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 

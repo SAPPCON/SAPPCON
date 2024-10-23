@@ -3,18 +3,17 @@ import { validateEmail, validatePassword } from "@/utils/validationFunctions";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import Loader from "../UI/Loader";
 import AuthenticationContext from "@/store/AuthenticationContext";
-import { useRouter } from "next/router";
 
 const LogInForm = (props) => {
   const [emailError, setEmailError] = useState("");
-  const emailRef = useRef();
   const [passwordError, setPasswordError] = useState("");
-  const passwordRef = useRef();
   const [passwordErrorNoMsg, setPasswordErrorNoMsg] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [requestError, setRequestError] = useState("");
 
-  const router = useRouter();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
   const authenticationCtx = useContext(AuthenticationContext);
 
   const submitHandler = async (event) => {
@@ -36,7 +35,6 @@ const LogInForm = (props) => {
       return;
     } else {
       setPasswordError("");
-      //props.liftUpPassword(enteredPassword);
     }
 
     setIsLoading(true);
@@ -69,7 +67,6 @@ const LogInForm = (props) => {
             break;
           //Password incorrecta
           case 403:
-            //setRequestError(responseData.error);
             setRequestError({
               message: responseData.message || "Error desconocido",
               messageinfo:
@@ -80,7 +77,6 @@ const LogInForm = (props) => {
             break;
           case 500:
             //Error del servidor
-            //setRequestError(responseData.error);
             setRequestError({
               message: responseData.message || "Error desconocido",
               messageinfo:
@@ -88,7 +84,6 @@ const LogInForm = (props) => {
             });
             break;
           default:
-            // setRequestError("Ocurrió un error desconocido.");
             setRequestError({
               message: responseData.message || "Error desconocido",
               messageinfo:
@@ -113,6 +108,8 @@ const LogInForm = (props) => {
         message: error.message || "Hubo un problema",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -189,7 +186,6 @@ const LogInForm = (props) => {
           {!isLoading && (
             <button
               className="w-full mt-7 p-2 text-sm font-bold rounded-md   text-white   border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring  transition  hover:duration-150"
-              //onClick={props.onButtonClick}
               onClick={submitHandler}
             >
               Iniciar Sesión

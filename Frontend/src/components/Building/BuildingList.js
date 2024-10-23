@@ -14,7 +14,6 @@ const BuildingList = ({ filterText }) => {
 
   const { buildingContext: buildingCtx, dispatchBuildingsAction } =
     useContext(BuildingContext);
-
   const Buildings = buildingCtx.items;
 
   const handleClick = (building) => {
@@ -109,8 +108,6 @@ const BuildingList = ({ filterText }) => {
           className=" fixed top-0 left-0 z-30  h-full  w-full  bg-black opacity-80  transition-opacity duration-1000"
         ></div>
       )}
-
-      {/*El aceptar: va a estar con respecto al contenedor en Service que es Relativo, no lo dejo esto en Service Detail porque cuando se cierra la planilla de detalle el componente deja de renderizarse */}
 
       {buildingCtx.successDeleteItem && !buildingCtx.errorDeleteItem && (
         <PopUpSuccess

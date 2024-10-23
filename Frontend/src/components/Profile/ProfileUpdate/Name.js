@@ -14,13 +14,16 @@ import { noEmptyValidate } from "@/utils/validationFunctions";
 import { useRouter } from "next/router";
 import ProfileContext from "@/store/ProfileContext";
 
-const Name = (props) => {
+const Name = () => {
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const profileCtx = useContext(ProfileContext);
-  const router = useRouter();
+
   const newNameInputRef = useRef();
+
+  const profileCtx = useContext(ProfileContext);
+
+  const router = useRouter();
 
   useEffect(() => {
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
@@ -84,6 +87,8 @@ const Name = (props) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 

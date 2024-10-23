@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useContext, useState } from "react";
+import React, { useReducer, useEffect, useContext } from "react";
 import AuthenticationContext from "./AuthenticationContext";
 
 const BuildingContext = React.createContext({
@@ -23,7 +23,6 @@ const defaultBuildingState = {
   items: [],
 };
 
-// Función que obtiene los datos del backend
 const fetchData = async (token) => {
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_GET_BUILDING_URL, {
@@ -318,7 +317,6 @@ export const BuildingContextProvider = (props) => {
       }
     };
 
-    // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
       loadServices();
     }
@@ -341,7 +339,7 @@ export const BuildingContextProvider = (props) => {
 
       dispatchBuildingsAction({
         type: "ADD_ITEM",
-        item: newItem, // La obra a agregar
+        item: newItem,
       });
       dispatchBuildingsAction({ type: "SET_SUCCESS_ADD_ITEM" });
     } catch (error) {

@@ -5,8 +5,6 @@ import StatsNav from "../Navigation/StatsNav";
 import HomeNav from "../Navigation/HomeNav";
 import ServiceNav from "../Navigation/ServiceNav";
 import Link from "next/link";
-import { IoIosArrowForward } from "react-icons/io";
-import { BiAccessibility } from "react-icons/bi";
 import AuthenticationContext from "@/store/AuthenticationContext";
 import { useContext, useEffect } from "react";
 import ProfileContext from "@/store/ProfileContext";
@@ -14,17 +12,16 @@ import Loader from "../UI/Loader";
 import { useState } from "react";
 import { RiImageAddFill } from "react-icons/ri";
 
-const Profile = (props) => {
-  const authenticationCtx = useContext(AuthenticationContext);
-  const profileCtx = useContext(ProfileContext);
+const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorRequest, setErrorRequest] = useState(false);
-
-  //
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [errorRequestAdd, setErrorRequestAdd] = useState("");
   const [base64Image, setBase64Image] = useState(null); // Imagen en base64
   const [bigImageError, setBigImageError] = useState("");
+
+  const authenticationCtx = useContext(AuthenticationContext);
+  const profileCtx = useContext(ProfileContext);
 
   const logoutHandler = async (event) => {
     event.preventDefault();
@@ -58,6 +55,8 @@ const Profile = (props) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,7 +71,7 @@ const Profile = (props) => {
         const response = await fetch(
           process.env.NEXT_PUBLIC_DOWNLOAD_IMAGE_URL,
           {
-            method: "POST", // Especifica el método POST (u otro adecuado)
+            method: "POST",
             body: JSON.stringify({
               object_type: "User",
               object_id: profileCtx.id,
@@ -194,20 +193,17 @@ const Profile = (props) => {
         </div>
       </div>
 
-      {/* El max es porque por defecto el div ocupara todo el w del div padre, no lo hago max fit porque sino queda todo muy apretado. Si lo hago asi, deberia a los bototnes y texto ponerle margenes asi se separan */}
       <div className="flex flex-col mx-auto w-[600px] pb-[130px] pt-[14px]">
         <h1 className="mb-[8px] font-sans text-[28px] font-normal text-blackText">
           Tú Perfil
         </h1>
 
-        {/* Le hago el contenedor para que el borde quede identico al borde cuando estan los datos */}
         {profileCtx.isLoading && (
           <div className="flex  pt-6 pb-2 relative rounded-[8px] w-[600px] h-[520px] border border-solid border-grayBorder justify-center items-center ">
             <Loader></Loader>
           </div>
         )}
 
-        {/* Le hago el contenedor para que el borde quede identico al borde cuando estan los datos */}
         {profileCtx.error && (
           <div className="flex  pt-6 pb-2 relative rounded-[8px] w-[600px] h-[520px] border border-solid border-grayBorder justify-center items-center">
             <div>
@@ -224,7 +220,7 @@ const Profile = (props) => {
               onClick={() => document.getElementById("imageUpload").click()}
             >
               {isLoadingImage ? (
-                <Loader /> // Reemplazar por un ícono de carga si lo prefieres
+                <Loader />
               ) : base64Image ? (
                 <img
                   src={base64Image}
@@ -248,7 +244,6 @@ const Profile = (props) => {
               </h1>
             )}
 
-            {/* Quito el px-6  del ul porque sino el borde inferior no llega hasta el contenedor padre, y coloco el px-6  en los elementos individuales menos el borde */}
             <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
               <div className="pl-6 mb-[12px] w-full truncate">
                 <h1 className="mb-[4px] font-bold">Nombre</h1>
@@ -328,16 +323,11 @@ const Profile = (props) => {
             </li>
             <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
-            {/* le hago h-40 para q coincida con el alto del loader. Los botones ademas de depender de q se cargue bien el context depende tambien desp de q se haga bien o mal la request. Si hay error se renderiza igual para q pueda volver a intentar */}
-
             {!isLoading && (
               <li className="h-[40px] px-[18px]  ">
                 <div className="flex items-center justify-end ">
                   <Link href="/" className="">
-                    <button
-                      className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2"
-                      //onClick={props.hideNewServiceFunction}
-                    >
+                    <button className="flex h-[36px] w-[102px] text-sm items-center font-sans text-[13px] cursor-pointer text-gray-700 p-2 rounded-[8px] border border-solid border-gray-500 bg-gray-300 hover:bg-opacity-70 active:border active:border-gray-500 active:outline-none active:ring ring-blue-200  justify-center mr-2">
                       Atrás
                     </button>
                   </Link>
@@ -353,7 +343,6 @@ const Profile = (props) => {
               </li>
             )}
 
-            {/* Esto es para mostrar el Loader mientras se esta haciendo la request del logout */}
             {isLoading && (
               <div className="flex justify-center items-center ">
                 <Loader></Loader>

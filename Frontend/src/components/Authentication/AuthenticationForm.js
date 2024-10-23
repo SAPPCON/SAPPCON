@@ -1,19 +1,11 @@
-import { useState, useRef, useContext, Fragment } from "react";
-import Image from "next/image";
-import logoSiteBlack from "../../../public/logoSiteBlack.png";
-import { HiOutlineExclamationTriangle } from "react-icons/hi2";
+import { useState } from "react";
 import LogInForm from "./LogInForrm";
 import SignUpForm from "./SignUpForm";
 
 const AuthenticationForm = () => {
-  //const router = useRouter();
-
   const [isLogin, setIsLogin] = useState(true);
-
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-
-  //const authCtx = useContext(AuthContext);
 
   const switchAuthModeHandler2 = () => {
     setIsLogin((prevState) => !prevState);

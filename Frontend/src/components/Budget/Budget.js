@@ -1,4 +1,3 @@
-import BudgetNav from "../Navigation/BudgetNav";
 import StatsNav from "../Navigation/StatsNav";
 import HomeNav from "../Navigation/HomeNav";
 import ServiceNav from "../Navigation/ServiceNav";
@@ -10,11 +9,12 @@ import NewBudget from "./NewBudget";
 import BudgetList from "./BudgetList";
 import BudgetContext from "@/store/BudgetContext";
 
-const Budget = (props) => {
-  const { budgetContext: budgetCtx, dispatchBudgetsAction } =
-    useContext(BudgetContext);
+const Budget = () => {
   const [filterText, setFilterText] = useState("");
   const [showNewBudget, setShowNewBudget] = useState(false);
+
+  const { dispatchBudgetsAction } = useContext(BudgetContext);
+
   const handleClick = () => {
     setShowNewBudget(!showNewBudget);
     dispatchBudgetsAction({ type: "SET_RESTART_ALL_NEW_ITEM" });

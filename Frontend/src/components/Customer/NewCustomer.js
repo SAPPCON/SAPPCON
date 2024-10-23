@@ -1,5 +1,4 @@
 import { useState, useRef, useContext, Fragment } from "react";
-import { BiAccessibility } from "react-icons/bi";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { RxCross1 } from "react-icons/rx";
@@ -9,27 +8,27 @@ import {
   numberFormatValidate,
 } from "@/utils/validationFunctions";
 import CustomerContext from "@/store/CustomerContext";
-import Link from "next/link";
 import Loader from "../UI/Loader";
 import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 
 const NewCustomer = (props) => {
-  const { customerContext: customerCtx } = useContext(CustomerContext);
   const [nameError, setNameError] = useState("");
-  const nameRef = useRef();
   const [lastNameError, setlastNameError] = useState("");
-  const lastNameRef = useRef();
   const [aliasError, setAliasError] = useState("");
-  const aliasRef = useRef();
   const [addressError, setaddressError] = useState("");
-  const addressRef = useRef();
   const [emailError, setEmailError] = useState("");
-  const emailRef = useRef();
   const [phoneError, setPhoneError] = useState("");
-  const phoneRef = useRef();
-
   const [zNewSCustomer, setZNewSCustomer] = useState("z-40");
+
+  const phoneRef = useRef();
+  const emailRef = useRef();
+  const addressRef = useRef();
+  const aliasRef = useRef();
+  const lastNameRef = useRef();
+  const nameRef = useRef();
+
+  const { customerContext: customerCtx } = useContext(CustomerContext);
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -114,7 +113,7 @@ const NewCustomer = (props) => {
         {/*El form es relativo para asi la imagen ubicarla absolutamnete en referencia a el*/}
         <form className="flex flex-col px-6 pt-6 pb-2 relative ">
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="name" className="text-sm font-semibold block w-72">
+            <label htmlFor="name" className="text-sm font-bold block w-72">
               Nombre
             </label>
             <input
@@ -134,7 +133,7 @@ const NewCustomer = (props) => {
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="lastName" className="text-sm font-semibold block">
+            <label htmlFor="lastName" className="text-sm font-bold block">
               Apellido
             </label>
             <input
@@ -156,7 +155,7 @@ const NewCustomer = (props) => {
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="alias" className="text-sm font-semibold block">
+            <label htmlFor="alias" className="text-sm font-bold block">
               Alias
             </label>
             <input
@@ -176,7 +175,7 @@ const NewCustomer = (props) => {
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="address" className="text-sm font-semibold block">
+            <label htmlFor="address" className="text-sm font-bold block">
               Dirección
             </label>
             <input
@@ -196,7 +195,7 @@ const NewCustomer = (props) => {
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="phone" className="text-sm font-semibold block">
+            <label htmlFor="phone" className="text-sm font-bold block">
               Teléfono
             </label>
             <input
@@ -216,7 +215,7 @@ const NewCustomer = (props) => {
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="email" className="text-sm font-semibold block">
+            <label htmlFor="email" className="text-sm font-bold block">
               Correo Electrónico
             </label>
             <input

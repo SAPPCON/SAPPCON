@@ -101,9 +101,6 @@ const NewService = (props) => {
       setDescriptionError("");
     }
 
-    //Si la request sale mal:
-    //setShowAcceptFail(true);
-
     //Una vez que los chequeos estan bien, se hace la request a la BD y si esta bien nos retorna el objeto creado. Y ESE OBJETO AGREGAMOS AL CONTEXTO asi seguimos trabajando con info actualizada. Pero como aun no esta la parte del back, creo uno aca y agrego eso para simular.
     //De todas maneras, el agregar al contexto hace que se vea reflejado automaticamente en el componente porque se renderizan nuevamente aquellos componentes que usan el contexto que recien tuvo un cambio. Y luego, al hacer f5 o algo, siempre se ejecuta el LOADDATA y ya esta el nuevo elemento siempre.
 
@@ -156,12 +153,8 @@ const NewService = (props) => {
       setNameNewCategoryError("Ingrese el nombre.");
       return;
     } else {
-      //Si el campo es correcto se manda la request.
       setNameNewCategoryError("");
-      //Se quita la planilla de nueva categoria.
       setShowAddCategory(false);
-
-      //Suponiendo que sale todo bien, se agrega la categoria a el contexto
       categoryCtx.addItem(enteredNewCategory);
     }
   };
@@ -176,23 +169,20 @@ const NewService = (props) => {
     /* ESTADOS Y FUNCIONES DE NUEVA CATEGORIA */
   }
   const [showAddMeasureUnit, setShowAddMeasureUnit] = useState(false);
-  const [nameNewMeasureUnitError, setNameNewMeasureUnitError] = useState(""); //Estado para renderizar el error de nueva categoria si el campo es incrrecto
-  const nameNewMeasureUnitRef = useRef(); //Referencia al input de nueva categoria.
+  const [nameNewMeasureUnitError, setNameNewMeasureUnitError] = useState("");
+  const nameNewMeasureUnitRef = useRef();
 
-  //Esta funcion responde al boton (+) y renderiza el fondo y el form de categoria.
   const handleNewMeasureUnit = () => {
     setShowAddMeasureUnit(true);
     setshowfondonegro(true);
   };
 
-  //Esta funcion responde al boton atras o tocar el fondo negro y saca el fondo y el form de nuevo categoria.
   const handleNewMeasureUnitBack = () => {
     setShowAddMeasureUnit(false);
     setshowfondonegro(false);
-    setNameNewMeasureUnitError(""); //Reseteamos el error en caso de que se equivoque y vuelva atras y vuelva a tocar para registrar categoria y no siga estando el error.
+    setNameNewMeasureUnitError("");
   };
 
-  //Esta funcion se encarga de hacer la request para registrar el servicio. Si la request sale bien muestra cartel de exito y sino de error.
   const submitHandlerNewMeasureUnit = (event) => {
     event.preventDefault();
     const enteredNewMeasureUnit = nameNewMeasureUnitRef.current.value;
@@ -201,16 +191,13 @@ const NewService = (props) => {
       setNameNewMeasureUnitError("Ingrese el nombre.");
       return;
     } else {
-      //Si el campo es correcto se manda la request.
       setNameNewMeasureUnitError("");
-      //Se quita la planilla de nueva categoria.
       setShowAddMeasureUnit(false);
 
       measureUnitCtx.addItem(enteredNewMeasureUnit);
     }
   };
 
-  //Esta funcion es para quitar el cartel de aceptar exito u error y quitar el nuevo fondo negro.
   const handleAcceptMeasureUnit = () => {
     setshowfondonegro(false);
     dispatchMeasureUnitsAction({
@@ -227,8 +214,6 @@ const NewService = (props) => {
     });
   };
 
-  //Absoluto al contenedor padre que es relativo
-
   return (
     <Fragment>
       <div
@@ -244,7 +229,7 @@ const NewService = (props) => {
 
         <form className="flex flex-col px-6 pt-6 pb-2 relative ">
           <div className="mb-4 max-w-[49%] relative">
-            <label htmlFor="name" className="text-sm font-semibold block w-72">
+            <label htmlFor="name" className="text-sm font-bold block w-72">
               Nombre
             </label>
             <input
@@ -265,7 +250,7 @@ const NewService = (props) => {
 
           <div className="mb-4 w-full flex relative  ">
             <div className="w-[49%]">
-              <label htmlFor="category" className="text-sm font-semibold block">
+              <label htmlFor="category" className="text-sm font-bold block">
                 Categoria
               </label>
               {categoryCtx.isLoading && (
@@ -283,8 +268,6 @@ const NewService = (props) => {
               {!categoryCtx.error && !categoryCtx.isLoading && (
                 <select
                   id="category"
-                  //defaultValue={props.serviceData.categoria}
-                  //onChange={(e) => handleCategoryChange(e.target.value)}
                   ref={categoryRef}
                   className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
                 >
@@ -295,7 +278,6 @@ const NewService = (props) => {
                   ))}
                 </select>
               )}
-              {/*Lo hago absoluto y al div relativo asi el msg no entra en el flujo html y el boton + me queda siempre bien puesto */}
               {categoryError !== "" && (
                 <p className="text-xs text-red5 absolute">{categoryError}</p>
               )}
@@ -312,10 +294,7 @@ const NewService = (props) => {
 
           <div className="mb-4 w-full flex relative">
             <div className="w-[49%]">
-              <label
-                htmlFor="measureUnit"
-                className="text-sm font-semibold block"
-              >
+              <label htmlFor="measureUnit" className="text-sm font-bold block">
                 Unidad de Medida
               </label>
               {measureUnitCtx.isLoading && (
@@ -334,8 +313,6 @@ const NewService = (props) => {
                 <select
                   id="unitOfMeasurement"
                   ref={measureUnitRef}
-                  //defaultValue={props.serviceData.unidadDeMedida}
-                  //onChange={(e) => handleUnitChange(e.target.value)}
                   className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
                 >
                   {measureUnits.map((measureUnit) => (
@@ -361,7 +338,7 @@ const NewService = (props) => {
 
           <div className="flex justify-between relative">
             <div className="mb-4 w-[49%]">
-              <label htmlFor="unitCost" className="text-sm font-semibold block">
+              <label htmlFor="unitCost" className="text-sm font-bold block">
                 Coste Unitario
               </label>
               <input
@@ -385,10 +362,7 @@ const NewService = (props) => {
             </div>
 
             <div className="mb-4 w-[49%] relative">
-              <label
-                htmlFor="unitPrice"
-                className="text-sm font-semibold block"
-              >
+              <label htmlFor="unitPrice" className="text-sm font-bold block">
                 Precio Unitario
               </label>
               <input
@@ -413,10 +387,7 @@ const NewService = (props) => {
           </div>
 
           <div className="mb-4 w-full relative">
-            <label
-              htmlFor="description"
-              className="text-sm font-semibold block"
-            >
+            <label htmlFor="description" className="text-sm font-bold block">
               Descripción
             </label>
             <input
@@ -437,7 +408,6 @@ const NewService = (props) => {
             )}
           </div>
 
-          {/* Min h - 40 para que coincida con el alto del loader */}
           {!serviceCtx.isLoadingAddItem && (
             <div className="flex items-center justify-end min-h-[40px] ">
               <button
@@ -495,7 +465,7 @@ const NewService = (props) => {
             <div className="mb-4 w-full relative">
               <label
                 htmlFor="newcategory"
-                className="text-sm font-semibold block w-72"
+                className="text-sm font-bold block w-72"
               >
                 Nombre
               </label>
@@ -576,7 +546,7 @@ const NewService = (props) => {
             <div className="mb-4 w-full relative">
               <label
                 htmlFor="newmeasureunit"
-                className="text-sm font-semibold block w-72"
+                className="text-sm font-bold block w-72"
               >
                 Nombre
               </label>

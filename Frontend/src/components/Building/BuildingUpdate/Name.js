@@ -16,22 +16,23 @@ import BuildingContext from "@/store/BuildingContext";
 import { useRouter } from "next/router";
 
 const Name = ({ buildingId }) => {
-  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { buildingContext: buildingCtx } = useContext(BuildingContext);
+
   const newNameInputRef = useRef();
+
+  const { buildingContext: buildingCtx } = useContext(BuildingContext);
+
+  const router = useRouter();
 
   const building = buildingCtx.items.find((item) => item._id === buildingId);
   const buildingName = building ? building.name : "Nombre no encontrado";
 
   useEffect(() => {
-    // Verificar si el reload se hizo a través del router
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
 
     if (reloadViaRouter) {
-      // Limpia la marca de recarga del sessionStorage
       sessionStorage.removeItem("reloadViaRouter");
       setCorrectRequest(true);
     }
@@ -93,6 +94,8 @@ const Name = ({ buildingId }) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 

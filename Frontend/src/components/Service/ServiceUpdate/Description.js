@@ -15,12 +15,15 @@ import { useRouter } from "next/router";
 import { noEmptyValidate } from "@/utils/validationFunctions";
 
 const Description = ({ serviceId }) => {
-  const router = useRouter();
   const [errorRequest, setErrorRequest] = useState("");
   const [correctRequest, setCorrectRequest] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+
   const newDescriptionInputRef = useRef();
+
+  const { serviceContext: serviceCtx } = useContext(ServiceContext);
+
+  const router = useRouter();
 
   const service = serviceCtx.items.find((item) => item._id === serviceId);
   const serviceDescription = service
@@ -28,11 +31,9 @@ const Description = ({ serviceId }) => {
     : "Descripcion no encontrada";
 
   useEffect(() => {
-    // Verificar si el reload se hizo a través del router
     const reloadViaRouter = sessionStorage.getItem("reloadViaRouter");
 
     if (reloadViaRouter) {
-      // Limpia la marca de recarga del sessionStorage
       sessionStorage.removeItem("reloadViaRouter");
       setCorrectRequest(true);
     }
@@ -93,6 +94,8 @@ const Description = ({ serviceId }) => {
         message: error.message || "Error desconocido",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

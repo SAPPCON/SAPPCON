@@ -2,23 +2,21 @@ import { useState, useRef, useContext } from "react";
 import { noEmptyValidate } from "@/utils/validationFunctions";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import AuthenticationContext from "@/store/AuthenticationContext";
-import { useRouter } from "next/router";
 import Loader from "../UI/Loader";
 
 const SignUpForm = (props) => {
   const [nameError, setNameError] = useState("");
-  const nameRef = useRef();
   const [lastNameError, setlastNameError] = useState("");
-  const lastNameRef = useRef();
-  const aliasRef = useRef();
   const [password2Error, setPassword2Error] = useState("");
-  const password2Ref = useRef();
-  const addressRef = useRef();
-
   const [isLoading, setIsLoading] = useState(false);
   const [requestError, setRequestError] = useState("");
 
-  const router = useRouter();
+  const nameRef = useRef();
+  const lastNameRef = useRef();
+  const aliasRef = useRef();
+  const password2Ref = useRef();
+  const addressRef = useRef();
+
   const authenticationCtx = useContext(AuthenticationContext);
 
   const submitHandler = async (event) => {
@@ -120,6 +118,8 @@ const SignUpForm = (props) => {
         message: error.message || "Hubo un problema",
         messageinfo: error.messageinfo || "Detalles no disponibles",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -238,10 +238,7 @@ const SignUpForm = (props) => {
           </div>
 
           {!isLoading && (
-            <button
-              className="w-full mt-7 p-2 text-sm font-bold rounded-md   text-white   border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring  transition  hover:duration-150"
-              //onClick={props.onButtonClick}
-            >
+            <button className="w-full mt-7 p-2 text-sm font-bold rounded-md   text-white   border border-solid border-white bg-darkblue  ring-blue5  hover:bg-opacity-90 active:border active:border-blue6 active:outline-none active:ring  transition  hover:duration-150">
               Registrarse
             </button>
           )}

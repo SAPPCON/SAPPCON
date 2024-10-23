@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useContext, useState } from "react";
+import React, { useReducer, useEffect, useContext } from "react";
 import AuthenticationContext from "./AuthenticationContext";
 
 const CustomerContext = React.createContext({
@@ -19,7 +19,6 @@ const defaultCustomerState = {
   items: [],
 };
 
-// Función que obtiene los datos del backend
 const fetchData = async (token) => {
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_GET_CUSTOMER_URL, {
@@ -42,7 +41,6 @@ const fetchData = async (token) => {
     throw error;
   }
 };
-
 
 const newCustomer = async (item) => {
   try {
@@ -299,7 +297,6 @@ export const CustomerContextProvider = (props) => {
       }
     };
 
-    // Ejecutar la carga cuando se monta el componente o cambia el token
     if (token) {
       loadCustomers();
     }

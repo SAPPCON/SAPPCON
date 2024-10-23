@@ -1,10 +1,8 @@
 import { useState, useRef, useContext, Fragment } from "react";
-import { BiAccessibility } from "react-icons/bi";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import { RxCross1 } from "react-icons/rx";
 import { FaTrashAlt } from "react-icons/fa";
-import Link from "next/link";
 import ServiceContext from "@/store/ServiceContext";
 import BuildingContext from "@/store/BuildingContext";
 import BudgetContext from "@/store/BudgetContext";
@@ -13,21 +11,20 @@ import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 import MeasureUnitContext from "@/store/MeasureUnitContext";
 import { IoAlertCircleSharp } from "react-icons/io5";
-import { IoIosAlert } from "react-icons/io";
 
 const NewBudget = (props) => {
   const [stateError, setStateError] = useState("");
-  const stateRef = useRef();
   const [buildingError, setBuildingError] = useState("");
-  const buildingRef = useRef();
   const [dateError, setDateError] = useState("");
-  const dateRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [errorRequestAddServiceLines, setErrorRequestAddServiceLines] =
     useState("");
-
   const [zNewBuilding, setZNewBuilding] = useState("z-40");
   const [selectedServicies, setSelectedServicies] = useState([]);
+
+  const stateRef = useRef();
+  const buildingRef = useRef();
+  const dateRef = useRef();
 
   //Para mandar alguna request.
   const { budgetContext: budgetCtx } = useContext(BudgetContext);
@@ -164,15 +161,8 @@ const NewBudget = (props) => {
     setZNewBuilding("z-20");
     const budgetId = await budgetCtx.addItem(newBudget);
 
-    /*
-    selectedServicies.forEach((service) => {
-      console.log(service.line_no);
-    });
-    */
-
     //Al usar budgetId si falla la creacion, no se define y entonces no se envian las request estas al pepe xq tambien van a fallar.
     //Si se crea el servicio, va a aparecer el cartel de exito... pero le tengo que agregar que para que aparezca se condicione con el exito de las lineas, sino que aparezca error.
-
     if (selectedServicies.length !== 0 && budgetId) {
       try {
         const token = localStorage.getItem("token");
@@ -228,7 +218,6 @@ const NewBudget = (props) => {
     }
   };
 
-  //Absoluto al contenedor padre que es relativo (Customer)
   return (
     <Fragment>
       <div
@@ -244,7 +233,7 @@ const NewBudget = (props) => {
 
         <form className="flex flex-col px-6 pt-6 pb-2 relative ">
           <div className="mb-4 w-[50%] relative">
-            <label htmlFor="building" className="text-sm font-semibold block">
+            <label htmlFor="building" className="text-sm font-bold block">
               Obra
             </label>
 
@@ -285,10 +274,7 @@ const NewBudget = (props) => {
           </div>
 
           <div className="mb-4 w-[50%] relative">
-            <label
-              htmlFor="initialState"
-              className="text-sm font-semibold block"
-            >
+            <label htmlFor="initialState" className="text-sm font-bold block">
               Estado
             </label>
             <select
@@ -312,7 +298,7 @@ const NewBudget = (props) => {
           </div>
 
           <div className="mb-4 max-w-[50%] relative">
-            <label htmlFor="date" className="text-sm font-semibold block">
+            <label htmlFor="date" className="text-sm font-bold block">
               Fecha
             </label>
             <input
@@ -333,7 +319,7 @@ const NewBudget = (props) => {
           </div>
 
           <div className="mb-4 w-full">
-            <label htmlFor="addService" className="text-sm font-semibold block">
+            <label htmlFor="addService" className="text-sm font-bold block">
               Agregar Servicio
             </label>
 
@@ -368,7 +354,7 @@ const NewBudget = (props) => {
 
           {/* Contenedor que lista los servicios seleccionados */}
           <div className="mb-4">
-            <h4 className="text-base font-semibold block">
+            <h4 className="text-base font-bold block">
               Servicios Seleccionados:
             </h4>
             {selectedServicies.length === 0 && (
