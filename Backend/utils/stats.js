@@ -3,9 +3,17 @@ import BudgetLine from "../models/budgetLine.js";
 import Service from "../models/service.js";
 import Category from "../models/category.js";
 
-export async function getBudgetStatusStats() {
+export async function getBudgetStatusStats(req) {
+    // User exists
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({
+            message: "Usuario no autorizado.",
+            messageinfo: "No se ha proporcionado un token válido para un usuario.",
+        });
+    }
+    const userId = req.user.id;
     // Fetch all budgets from the database
-    const budgets = await Budget.find();
+    const budgets = await Budget.find({user_id: userId});
 
     // Define all possible statuses
     const allStatuses = [
@@ -53,9 +61,17 @@ export async function getBudgetStatusStats() {
     };
 }
 
-export async function getBudgetAmountStats() {
+export async function getBudgetAmountStats(req) {
+    // User exists
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({
+            message: "Usuario no autorizado.",
+            messageinfo: "No se ha proporcionado un token válido para un usuario.",
+        });
+    }
+    const userId = req.user.id;
     // Fetch all budgets from the database
-    const budgets = await Budget.find();
+    const budgets = await Budget.find({user_id: userId});
 
     if (budgets.length === 0) {
         return {
@@ -94,9 +110,17 @@ export async function getBudgetAmountStats() {
     };
 }
 
-export async function getTopServices() {
+export async function getTopServices(req) {
+    // User exists
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({
+            message: "Usuario no autorizado.",
+            messageinfo: "No se ha proporcionado un token válido para un usuario.",
+        });
+    }
+    const userId = req.user.id;
     // Fetch all budget lines from the database
-    const budgetLines = await BudgetLine.find();
+    const budgetLines = await BudgetLine.find({user_id: userId});
 
     // Initialize a dictionary to sum quantities of services
     const serviceQuantities = {};
@@ -136,9 +160,17 @@ export async function getTopServices() {
     return topServices;
 }
 
-export async function getServiceCountByCategory() {
+export async function getServiceCountByCategory(req) {
+    // User exists
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({
+        message: "Usuario no autorizado.",
+        messageinfo: "No se ha proporcionado un token válido para un usuario.",
+        });
+    }
+    const userId = req.user.id;
     // Fetch all services from the database
-    const services = await Service.find();
+    const services = await Service.find({user_id: userId});
 
     // Initialize a dictionary to count services by category ID
     const categoryCounts = {};
@@ -176,8 +208,8 @@ export async function getServiceCountByCategory() {
 }
 
 export default {
-  getBudgetStatusStats,
-  getBudgetAmountStats,
-  getTopServices,
-  getServiceCountByCategory,
+    getBudgetStatusStats,
+    getBudgetAmountStats,
+    getTopServices,
+    getServiceCountByCategory,
 };

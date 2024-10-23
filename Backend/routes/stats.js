@@ -6,7 +6,7 @@ const router = express.Router();
 // -- GET
 // Get Budget Status Stats
 router.get("/budgetStatus", auth, (req, res) => {
-    stats.getBudgetStatusStats()
+    stats.getBudgetStatusStats(req)
         .then((result) => {
             res.status(200).json(result);
         })
@@ -19,7 +19,7 @@ router.get("/budgetStatus", auth, (req, res) => {
 });
 // Get Budget Amount Stats
 router.get("/budgetAmount", auth, (req, res) => {
-    stats.getBudgetAmountStats()
+    stats.getBudgetAmountStats(req)
         .then((result) => {
             res.status(200).json(result);
         })
@@ -32,7 +32,7 @@ router.get("/budgetAmount", auth, (req, res) => {
 });
 // Get Top Services
 router.get("/topServices", auth, (req, res) => {
-    stats.getTopServices()
+    stats.getTopServices(req)
         .then((result) => {
             res.status(200).json(result);
         })
@@ -45,7 +45,7 @@ router.get("/topServices", auth, (req, res) => {
 });
 // Get Services per Category
 router.get("/servicesPerCategory", auth, (req, res) => {
-    stats.getServiceCountByCategory()
+    stats.getServiceCountByCategory(req)
       .then((result) => {
         res.status(200).json(result);
       })
