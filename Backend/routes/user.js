@@ -1,15 +1,22 @@
-import express from 'express'
-import User from '../models/user.js'
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { newUser, login, logout, getUser, updateUser } from "../controllers/user.js";
+import express from "express";
+import User from "../models/user.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import {
+  newUser,
+  login,
+  logout,
+  getUser,
+  updateUser,
+  forgotPassword,
+} from "../controllers/user.js";
 import { auth } from "../middlewares/auth.js";
 const router = express.Router();
 
 // -- POST
 // New User
 router.post("/register", newUser);
-// Login 
+// Login
 router.post("/login", login);
 // Logout
 router.post("/logout", auth, logout);
@@ -21,5 +28,7 @@ router.get("/info", auth, getUser);
 // -- UPDATE
 // EditUser
 router.put("/modify", auth, updateUser);
+// ForgotPassowrd
+router.put("/forgotPassword", forgotPassword);
 
 export default router;
