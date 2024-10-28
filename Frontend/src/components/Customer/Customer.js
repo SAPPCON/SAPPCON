@@ -32,8 +32,6 @@ const Customer = (props) => {
         <div className="mx-auto flex justify-between items-center w-4/6 ">
           <HomeNav></HomeNav>
           <div className="flex items-center space-x-4 ">
-            <BudgetNav></BudgetNav>
-            <BuildingNav></BuildingNav>
             <ServiceNav></ServiceNav>
             <div
               className=" rounded-md px-2 py-1   border-2 
@@ -41,6 +39,8 @@ const Customer = (props) => {
             >
               Clientes
             </div>
+            <BuildingNav></BuildingNav>
+            <BudgetNav></BudgetNav>
             <StatsNav></StatsNav>
             <ProfileNav></ProfileNav>
           </div>

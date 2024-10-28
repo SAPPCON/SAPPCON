@@ -19,6 +19,7 @@ const Password = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const newPasswordInputRef = useRef();
+  const repeatNewPasswordInputRef = useRef();
 
   const router = useRouter();
 
@@ -35,11 +36,22 @@ const Password = () => {
     event.preventDefault();
     setCorrectRequest(false);
     const enteredPassword = newPasswordInputRef.current.value;
+    const enteredRepeatPassword = repeatNewPasswordInputRef.current.value;
 
     if (!validatePassword(enteredPassword)) {
       setErrorRequest({
         message: "Hubo un problema",
         messageinfo: "Mínimo 8 caracteres y sin espacios en blanco.",
+      });
+      return;
+    } else {
+      setErrorRequest("");
+    }
+
+    if (enteredPassword != enteredRepeatPassword) {
+      setErrorRequest({
+        message: "Hubo un problema",
+        messageinfo: "Las contraseñas no coinciden.",
       });
       return;
     } else {
@@ -74,6 +86,7 @@ const Password = () => {
 
       setCorrectRequest(true);
       newPasswordInputRef.current.value = "";
+      repeatNewPasswordInputRef.current.value = "";
       setErrorRequest("");
 
       sessionStorage.setItem("reloadViaRouter", "true");
@@ -94,10 +107,10 @@ const Password = () => {
         <div className="mx-auto flex justify-between items-center w-4/6 ">
           <HomeNav></HomeNav>
           <div className="flex items-center space-x-4 ">
-            <BudgetNav></BudgetNav>
-            <BuildingNav></BuildingNav>
             <ServiceNav></ServiceNav>
             <CustomerNav></CustomerNav>
+            <BuildingNav></BuildingNav>
+            <BudgetNav></BudgetNav>
             <StatsNav></StatsNav>
             <div
               className=" rounded-md px-2 py-1   border-2 
@@ -160,10 +173,20 @@ const Password = () => {
                 <div className="pb-[2px] pl-[2px]  text-[13px] font-bold text-blackText">
                   Nueva contraseña
                 </div>
-                <div className="mb-[22px]">
+                <div className="mb-[10px]">
                   <input
                     className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
                     ref={newPasswordInputRef}
+                  ></input>
+                </div>
+
+                <div className="pb-[2px] pl-[2px]  text-[13px] font-bold text-blackText">
+                  Repetir contraseña
+                </div>
+                <div className="mb-[22px]">
+                  <input
+                    className="m-[1px] w-[154px] rounded-[3px] border border-solid border-gray-500 px-[7px] py-[3px] ring-blue5  focus:border focus:border-blue6 focus:outline-none focus:ring"
+                    ref={repeatNewPasswordInputRef}
                   ></input>
                 </div>
 

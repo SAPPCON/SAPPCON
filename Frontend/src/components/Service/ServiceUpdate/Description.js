@@ -104,15 +104,15 @@ const Description = ({ serviceId }) => {
         <div className="mx-auto flex justify-between items-center w-4/6 ">
           <HomeNav></HomeNav>
           <div className="flex items-center space-x-4 ">
-            <BudgetNav></BudgetNav>
-            <BuildingNav></BuildingNav>
             <div
               className=" rounded-md px-2 py-1   border-2 
-              bg-darkblue border-white text-white cursor-default  "
+                bg-darkblue border-white text-white cursor-default  "
             >
               Servicios
             </div>
             <CustomerNav></CustomerNav>
+            <BuildingNav></BuildingNav>
+            <BudgetNav></BudgetNav>
             <StatsNav></StatsNav>
             <ProfileNav></ProfileNav>
           </div>

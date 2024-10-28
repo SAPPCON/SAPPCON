@@ -105,16 +105,15 @@ const Name = ({ buildingId }) => {
         <div className="mx-auto flex justify-between items-center w-4/6 ">
           <HomeNav></HomeNav>
           <div className="flex items-center space-x-4 ">
-            <BudgetNav></BudgetNav>
-
+            <ServiceNav></ServiceNav>
+            <CustomerNav></CustomerNav>
             <div
               className=" rounded-md px-2 py-1   border-2 
-              bg-darkblue border-white text-white cursor-default  "
+                bg-darkblue border-white text-white cursor-default  "
             >
               Obras
             </div>
-            <ServiceNav></ServiceNav>
-            <CustomerNav></CustomerNav>
+            <BudgetNav></BudgetNav>
             <StatsNav></StatsNav>
             <ProfileNav></ProfileNav>
           </div>

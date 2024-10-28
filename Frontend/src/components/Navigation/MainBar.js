@@ -13,10 +13,10 @@ const MainBar = () => {
         <div className="mx-auto flex justify-between items-center w-4/6 ">
           <HomeNav></HomeNav>
           <div className="flex items-center space-x-4 ">
-            <BudgetNav></BudgetNav>
-            <BuildingNav></BuildingNav>
             <ServiceNav></ServiceNav>
             <CustomerNav></CustomerNav>
+            <BuildingNav></BuildingNav>
+            <BudgetNav></BudgetNav>
             <StatsNav></StatsNav>
             <ProfileNav></ProfileNav>
           </div>

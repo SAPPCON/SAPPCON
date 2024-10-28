@@ -121,10 +121,10 @@ const Stats = (props) => {
         <div className="mx-auto flex justify-between items-center w-4/6">
           <HomeNav />
           <div className="flex items-center space-x-4">
-            <BudgetNav />
-            <BuildingNav />
-            <ServiceNav />
-            <CustomerNav />
+            <ServiceNav></ServiceNav>
+            <CustomerNav></CustomerNav>
+            <BuildingNav></BuildingNav>
+            <BudgetNav></BudgetNav>
             <div className="rounded-md px-2 py-1 border-2 bg-darkblue border-white text-white cursor-default">
               Estadísticas
             </div>
