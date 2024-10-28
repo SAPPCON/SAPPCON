@@ -3,6 +3,7 @@ import { validateEmail, validatePassword } from "@/utils/validationFunctions";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import Loader from "../UI/Loader";
 import AuthenticationContext from "@/store/AuthenticationContext";
+import Link from "next/link";
 
 const LogInForm = (props) => {
   const [emailError, setEmailError] = useState("");
@@ -197,6 +198,14 @@ const LogInForm = (props) => {
             </div>
           )}
         </form>
+
+        <p
+          className="cursor-pointer font-sans text-blueText hover:text-orangeText hover:underline text-xs mt-4
+          "
+          onClick={props.onForgotPasswordClick}
+        >
+          ¿Has olvidado tu contraseña?
+        </p>
       </section>
     </div>
   );
