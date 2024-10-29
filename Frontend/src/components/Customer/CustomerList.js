@@ -66,7 +66,7 @@ const CustomerList = ({ filterText }) => {
 
   return (
     <div>
-      <ul className="h-[420px] overflow-y-auto font-sans text-blackText ">
+      <ul className="h-[420px] overflow-y-auto font-sans text-blackText">
         {customerCtx.isLoading && (
           <div className="justify-center items-center flex w-full h-full ">
             <Loader></Loader>
@@ -85,7 +85,7 @@ const CustomerList = ({ filterText }) => {
               <li
                 key={customer._id}
                 onClick={() => handleClick(customer)}
-                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 ${
+                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 w-full h-auto break-words overflow-wrap-anywhere ${
                   index !== Customers.length - 1
                     ? "border-b border-b-grayBorder"
                     : "border-b border-b-grayBorder"

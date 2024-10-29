@@ -119,7 +119,7 @@ const BudgetList = ({ filterText }) => {
                 <li
                   key={budget._id}
                   onClick={() => handleClick(budget)}
-                  className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 ${
+                  className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 w-full h-auto break-words overflow-wrap-anywhere ${
                     index !== filteredBudgets.length - 1
                       ? "border-b border-b-grayBorder"
                       : "border-b border-b-grayBorder"

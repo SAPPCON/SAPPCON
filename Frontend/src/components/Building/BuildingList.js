@@ -78,7 +78,7 @@ const BuildingList = ({ filterText }) => {
               <li
                 key={building._id}
                 onClick={() => handleClick(building)}
-                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 ${
+                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 w-full h-auto break-words overflow-wrap-anywhere ${
                   index !== Buildings.length - 1
                     ? "border-b border-b-grayBorder"
                     : "border-b border-b-grayBorder"

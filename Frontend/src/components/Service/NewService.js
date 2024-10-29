@@ -13,8 +13,12 @@ import {
 import Loader from "../UI/Loader";
 import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
+import ReactSelect from "react-select";
 
 const NewService = (props) => {
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedMeasureUnit, setSelectedMeasureUnit] = useState(null);
+
   const { serviceContext: serviceCtx } = useContext(ServiceContext);
   const { categoryContext: categoryCtx, dispatchCategoriesAction } =
     useContext(CategoryContext);
@@ -22,7 +26,27 @@ const NewService = (props) => {
     useContext(MeasureUnitContext);
 
   const Categories = categoryCtx.items;
+
+  const categoriesOptions = Categories.map((category) => ({
+    value: category._id,
+    label: category.name,
+  }));
+
+  const handleCategoryChange = (selectedOption) => {
+    setSelectedCategory(selectedOption);
+  };
+
   const measureUnits = measureUnitCtx.items;
+
+  const measureUnitOptions = measureUnits.map((measureUnit) => ({
+    value: measureUnit._id,
+    label: measureUnit.name,
+  }));
+
+  const handleMeasureUnitChange = (selectedOption) => {
+    setSelectedMeasureUnit(selectedOption);
+  };
+
   {
     /* ESTADOS Y REFERENCIAS DEL FORM */
   }
@@ -34,8 +58,6 @@ const NewService = (props) => {
   const [descriptionError, setDescriptionError] = useState("");
 
   const nameRef = useRef();
-  const categoryRef = useRef();
-  const measureUnitRef = useRef();
   const unitCostRef = useRef();
   const unitPriceRef = useRef();
   const descriptionRef = useRef();
@@ -51,8 +73,6 @@ const NewService = (props) => {
     event.preventDefault();
 
     const enteredName = nameRef.current.value;
-    const enteredCategory = categoryRef.current.value;
-    const enteredUnitOfMeasurement = measureUnitRef.current.value;
     const enteredUnitCost = unitCostRef.current.value;
     const enteredUnitPrice = unitPriceRef.current.value;
     const enteredDescription = descriptionRef.current.value;
@@ -66,14 +86,14 @@ const NewService = (props) => {
       setNameError("");
     }
 
-    if (enteredCategory === "") {
+    if (selectedCategory === null) {
       setCategoryError("Selecciona una categoria.");
       return;
     } else {
       setCategoryError("");
     }
 
-    if (enteredUnitOfMeasurement === "") {
+    if (selectedMeasureUnit === null) {
       setMeasureUnitError("Selecciona una unidad de medida.");
       return;
     } else {
@@ -107,8 +127,8 @@ const NewService = (props) => {
     //Si sale todo bien se agrega al contexto y tambien se debe cambiar el Z del div del formulario a 20 para hacerlo mas chico que el background y que se vea el boton de exito con aceptar que oculta todo (background y planilla )
 
     const newService = {
-      measure_unit_id: enteredUnitOfMeasurement,
-      category_id: enteredCategory,
+      measure_unit_id: selectedMeasureUnit.value,
+      category_id: selectedCategory.value,
       name: enteredName,
       description: enteredDescription,
       cost: parseFloat(enteredUnitCost),
@@ -266,17 +286,57 @@ const NewService = (props) => {
               )}
 
               {!categoryCtx.error && !categoryCtx.isLoading && (
-                <select
-                  id="category"
-                  ref={categoryRef}
-                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
-                >
-                  {Categories.map((category) => (
-                    <option key={category._id} value={category._id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+                <ReactSelect
+                  options={categoriesOptions}
+                  onChange={handleCategoryChange}
+                  value={selectedCategory}
+                  placeholder="Seleccione una opción"
+                  menuPlacement="auto"
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      width: "100%",
+                      border:
+                        categoryError !== ""
+                          ? "1px solid #fb1c0a"
+                          : state.isFocused
+                          ? "1px solid #0092f3"
+                          : "1px solid #6b7280",
+                      boxShadow:
+                        categoryError !== ""
+                          ? "0 0 0 3px rgba(253, 92, 60, 0.5)"
+                          : state.isFocused
+                          ? "0 0 0 3px #79c5f8"
+                          : null,
+                      "&:hover": {
+                        border:
+                          categoryError !== ""
+                            ? "1px solid #fb1c0a"
+                            : state.isFocused
+                            ? "1px solid #0092f3"
+                            : "1px solid #6b7280",
+                      },
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      maxWidth: "100%",
+                      wordWrap: "break-word",
+                      border: "1px solid #6b7280",
+                    }),
+                    option: (provided, state) => ({
+                      ...provided,
+                      whiteSpace: "normal",
+                      backgroundColor: state.isSelected ? "#0071bb" : "white",
+                      "&:hover": {
+                        backgroundColor: state.isFocused ? "#79c5f8" : "white",
+                      },
+                    }),
+                    singleValue: (provided, state) => ({
+                      ...provided,
+                      color: "#0F1111",
+                    }),
+                  }}
+                />
               )}
               {categoryError !== "" && (
                 <p className="text-xs text-red5 absolute">{categoryError}</p>
@@ -310,17 +370,57 @@ const NewService = (props) => {
               )}
 
               {!measureUnitCtx.error && !measureUnitCtx.isLoading && (
-                <select
-                  id="unitOfMeasurement"
-                  ref={measureUnitRef}
-                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
-                >
-                  {measureUnits.map((measureUnit) => (
-                    <option key={measureUnit._id} value={measureUnit._id}>
-                      {measureUnit.name}
-                    </option>
-                  ))}
-                </select>
+                <ReactSelect
+                  options={measureUnitOptions}
+                  onChange={handleMeasureUnitChange}
+                  value={selectedMeasureUnit}
+                  placeholder="Seleccione una opción"
+                  menuPlacement="auto"
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      width: "100%",
+                      border:
+                        measureUnitError !== ""
+                          ? "1px solid #fb1c0a"
+                          : state.isFocused
+                          ? "1px solid #0092f3"
+                          : "1px solid #6b7280",
+                      boxShadow:
+                        measureUnitError !== ""
+                          ? "0 0 0 3px rgba(253, 92, 60, 0.5)"
+                          : state.isFocused
+                          ? "0 0 0 3px #79c5f8"
+                          : null,
+                      "&:hover": {
+                        border:
+                          measureUnitError !== ""
+                            ? "1px solid #fb1c0a"
+                            : state.isFocused
+                            ? "1px solid #0092f3"
+                            : "1px solid #6b7280",
+                      },
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      maxWidth: "100%",
+                      wordWrap: "break-word",
+                      border: "1px solid #6b7280",
+                    }),
+                    option: (provided, state) => ({
+                      ...provided,
+                      whiteSpace: "normal",
+                      backgroundColor: state.isSelected ? "#0071bb" : "white",
+                      "&:hover": {
+                        backgroundColor: state.isFocused ? "#79c5f8" : "white",
+                      },
+                    }),
+                    singleValue: (provided, state) => ({
+                      ...provided,
+                      color: "#0F1111",
+                    }),
+                  }}
+                />
               )}
               {measureUnitError !== "" && (
                 <p className="mr-2  text-xs text-red5 absolute">

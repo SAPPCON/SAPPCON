@@ -193,13 +193,13 @@ const CustomerProfile = (props) => {
           )}
 
           <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
-            <div className="pl-6 mb-[12px] w-full truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Nombre</h1>
-              <h1>{props.clientData.name}</h1>
+              <h1 className="break-words">{props.clientData.name}</h1>
             </div>
             <Link
               href={`/customer/name/${props.clientData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -208,13 +208,13 @@ const CustomerProfile = (props) => {
           </li>
 
           <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4">
-            <div className="pl-6 mb-[12px] truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Apellido</h1>
-              <h1>{props.clientData.surname}</h1>
+              <h1 className="break-words">{props.clientData.surname}</h1>
             </div>
             <Link
               href={`/customer/lastname/${props.clientData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -223,13 +223,13 @@ const CustomerProfile = (props) => {
           </li>
 
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-            <div className="pl-6 mb-[12px] truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Alias</h1>
-              <h1>{props.clientData.alias}</h1>
+              <h1 className="break-words">{props.clientData.alias}</h1>
             </div>
             <Link
               href={`/customer/alias/${props.clientData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -239,13 +239,13 @@ const CustomerProfile = (props) => {
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-            <div className="pl-6 mb-[12px] truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Dirección</h1>
-              <h1>{props.clientData.address}</h1>
+              <h1 className="break-words">{props.clientData.address}</h1>
             </div>
             <Link
               href={`/customer/address/${props.clientData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -254,13 +254,13 @@ const CustomerProfile = (props) => {
           </li>
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-            <div className="pl-6 mb-[12px] truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Teléfono</h1>
-              <h1>{props.clientData.phone}</h1>
+              <h1 className="break-words">{props.clientData.phone}</h1>
             </div>
             <Link
               href={`/customer/phone/${props.clientData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -269,13 +269,13 @@ const CustomerProfile = (props) => {
           </li>
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
           <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-            <div className="pl-6 mb-[12px] truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Correo Electrónico</h1>
-              <h1>{props.clientData.email}</h1>
+              <h1 className="break-words">{props.clientData.email}</h1>
             </div>
             <Link
               href={`/customer/email/${props.clientData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar

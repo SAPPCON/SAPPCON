@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Loader from "@/components/UI/Loader";
 import { validatePassword } from "@/utils/validationFunctions";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const NewPassword = ({ token }) => {
   const [errorRequest, setErrorRequest] = useState("");
@@ -12,6 +13,8 @@ const NewPassword = ({ token }) => {
 
   const newPasswordInputRef = useRef();
   const repeatNewPasswordInputRef = useRef();
+
+  const router = useRouter();
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -69,6 +72,7 @@ const NewPassword = ({ token }) => {
       setCorrectRequest(true);
       newPasswordInputRef.current.value = "";
       repeatNewPasswordInputRef.current.value = "";
+      router.push("/auth");
     } catch (error) {
       setErrorRequest({
         message: error.message || "Error desconocido",

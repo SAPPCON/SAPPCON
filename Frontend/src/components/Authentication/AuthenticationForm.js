@@ -17,7 +17,6 @@ const AuthenticationForm = () => {
 
   const switchAuthModeHandler3 = () => {
     setIsForgotPassword((prevState) => !prevState);
-    console.log("FORGOT PASSWORD 2:", isForgotPassword);
   };
 
   //Si desde el LOGIN ponen usuario correcto (inexistente) y buena password, se abre el FORM de Registrarse, y le pasamos desde el padre (este) la password ingresada en el login para compararla en el signup y actualizamos el form

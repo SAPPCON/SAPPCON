@@ -6,6 +6,7 @@ import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 import BuildingContext from "@/store/BuildingContext";
 import CustomerContext from "@/store/CustomerContext";
 import Loader from "../UI/Loader";
+import ReactSelect from "react-select";
 
 const BuildingDetail = (props) => {
   const [showDelete, setShowDelete] = useState(false);
@@ -14,6 +15,15 @@ const BuildingDetail = (props) => {
   const { buildingContext: buildingCtx } = useContext(BuildingContext);
 
   const Customers = customerCtx.items;
+
+  const customerOptions = Customers.map((customer) => ({
+    value: customer._id,
+    label: customer.name,
+  }));
+
+  const defaultCustomer = customerOptions.find(
+    (option) => option.value === (props.buildingData.customer_id || null)
+  );
 
   const handleCustomerChange = (newCustomerId) => {
     buildingCtx.updateCustomer(props.buildingData, newCustomerId);
@@ -73,13 +83,13 @@ const BuildingDetail = (props) => {
 
         <ul className="flex flex-col  pt-3 pb-2 ">
           <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
-            <div className="pl-6 mb-[12px] w-full truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Nombre</h1>
-              <h1>{props.buildingData.name}</h1>
+              <h1 className="break-words">{props.buildingData.name}</h1>
             </div>
             <Link
               href={`/building/name/${props.buildingData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -105,32 +115,63 @@ const BuildingDetail = (props) => {
               )}
 
               {!customerCtx.error && !customerCtx.isLoading && (
-                <select
-                  id="client"
-                  defaultValue={props.buildingData.customer_id}
-                  onChange={(e) => handleCustomerChange(e.target.value)}
-                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer `}
-                  disabled={customerCtx.isLoadingUpdateCustomer}
-                >
-                  {Customers.map((customer) => (
-                    <option key={customer._id} value={customer._id}>
-                      {customer.name}
-                    </option>
-                  ))}
-                </select>
+                <ReactSelect
+                  options={customerOptions}
+                  defaultValue={defaultCustomer}
+                  onChange={(selectedOption) =>
+                    handleCustomerChange(selectedOption.value)
+                  }
+                  isDisabled={buildingCtx.isLoadingUpdateCustomer}
+                  menuPlacement="auto"
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      width: "100%",
+                      border: state.isFocused
+                        ? "1px solid #0092f3"
+                        : "1px solid #6b7280",
+                      boxShadow: state.isFocused ? "0 0 0 3px #79c5f8" : null,
+                      "&:hover": {
+                        border: state.isFocused
+                          ? "1px solid #0092f3"
+                          : "1px solid #6b7280",
+                      },
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      maxWidth: "100%",
+                      wordWrap: "break-word",
+                      border: "1px solid #6b7280",
+                    }),
+                    option: (provided, state) => ({
+                      ...provided,
+                      whiteSpace: "normal",
+                      backgroundColor: state.isSelected ? "#0071bb" : "white",
+                      "&:hover": {
+                        backgroundColor: state.isFocused
+                          ? "#79c5f8"
+                          : " #white",
+                      },
+                    }),
+                    singleValue: (provided, state) => ({
+                      ...provided,
+                      color: "#0F1111",
+                    }),
+                  }}
+                />
               )}
             </div>
           </li>
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
           <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
-            <div className="pl-6 mb-[12px] truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Dirección</h1>
-              <h1>{props.buildingData.address}</h1>
+              <h1 className="break-words">{props.buildingData.address}</h1>
             </div>
             <Link
               href={`/building/address/${props.buildingData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -140,13 +181,15 @@ const BuildingDetail = (props) => {
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
           <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
-            <div className="pl-6 mb-[12px] line-clamp-5 overflow-y-auto">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-5">
               <h1 className="mb-[4px] font-bold">Descripción</h1>
-              <h1 className="mr-1">{props.buildingData.description}</h1>
+              <h1 className="mr-1 break-words ">
+                {props.buildingData.description}
+              </h1>
             </div>
             <Link
               href={`/building/description/${props.buildingData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar

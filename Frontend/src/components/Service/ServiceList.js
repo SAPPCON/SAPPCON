@@ -79,7 +79,7 @@ const ServiceList = ({ filterText }) => {
               <li
                 key={service._id}
                 onClick={() => handleClick(service)}
-                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 ${
+                className={`py-2 px-2 cursor-pointer hover:bg-grayBg2 hover:bg-opacity-70 w-full h-auto break-words overflow-wrap-anywhere ${
                   index !== Services.length - 1
                     ? "border-b border-b-grayBorder"
                     : "border-b border-b-grayBorder"

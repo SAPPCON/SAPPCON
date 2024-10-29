@@ -244,11 +244,11 @@ const Profile = () => {
             )}
 
             <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
-              <div className="pl-6 mb-[12px] w-full truncate">
+              <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
                 <h1 className="mb-[4px] font-bold">Nombre</h1>
-                <h1>{profileCtx.name}</h1>
+                <h1 className="break-words">{profileCtx.name}</h1>
               </div>
-              <Link href="/profile/name" className="pr-6">
+              <Link href="/profile/name" className="pr-6 h-fit">
                 <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                   Editar
                 </button>
@@ -256,11 +256,11 @@ const Profile = () => {
             </li>
 
             <li className="flex w-[70%] justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
-              <div className="pl-6 mb-[12px] w-full truncate">
+              <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
                 <h1 className="mb-[4px] font-bold">Apellido</h1>
-                <h1>{profileCtx.surname}</h1>
+                <h1 className="break-words">{profileCtx.surname}</h1>
               </div>
-              <Link href="/profile/lastname" className="pr-6">
+              <Link href="/profile/lastname" className="pr-6 h-fit">
                 <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                   Editar
                 </button>
@@ -268,12 +268,14 @@ const Profile = () => {
             </li>
 
             <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-              <div className="pl-6 mb-[12px] truncate">
+              <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
                 <h1 className="mb-[4px] font-bold">Alias</h1>
-                <h1>{profileCtx.alias ? profileCtx.alias : "Sin definir"}</h1>
+                <h1 className="break-words">
+                  {profileCtx.alias ? profileCtx.alias : "Sin definir"}
+                </h1>
               </div>
 
-              <Link href="/profile/username" className="pr-6">
+              <Link href="/profile/username" className="pr-6 h-fit">
                 <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                   Editar
                 </button>
@@ -282,11 +284,11 @@ const Profile = () => {
             <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
             <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-              <div className="pl-6 mb-[12px] truncate">
+              <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
                 <h1 className="mb-[4px] font-bold">Contraseña</h1>
-                <h1>**********</h1>
+                <h1 className="break-words">**********</h1>
               </div>
-              <Link href="/profile/password" className="pr-6">
+              <Link href="/profile/password" className="pr-6 h-fit">
                 <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                   Editar
                 </button>
@@ -295,13 +297,13 @@ const Profile = () => {
             <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
             <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-              <div className="pl-6 mb-[12px] truncate">
+              <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
                 <h1 className="mb-[4px] font-bold">Dirección</h1>
-                <h1>
+                <h1 className="break-words">
                   {profileCtx.address ? profileCtx.address : "Sin definir"}
                 </h1>
               </div>
-              <Link href="/profile/address" className="pr-6">
+              <Link href="/profile/address" className="pr-6 h-fit">
                 <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                   Editar
                 </button>
@@ -310,11 +312,11 @@ const Profile = () => {
             <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
             <li className="flex w-[70%] justify-between text-blackText font-sans text-[14px]  ">
-              <div className="pl-6 mb-[12px] truncate">
+              <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
                 <h1 className="mb-[4px] font-bold">Correo Electrónico</h1>
-                <h1>{profileCtx.email}</h1>
+                <h1 className="break-words">{profileCtx.email}</h1>
               </div>
-              <Link href="/profile/email" className="pr-6">
+              <Link href="/profile/email" className="pr-6 h-fit">
                 <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                   Editar
                 </button>

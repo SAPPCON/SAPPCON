@@ -7,6 +7,7 @@ import ServiceContext from "@/store/ServiceContext";
 import CategoryContext from "@/store/CategoryContext";
 import MeasureUnitContext from "@/store/MeasureUnitContext";
 import Loader from "../UI/Loader";
+import ReactSelect from "react-select";
 
 const ServiceDetail = (props) => {
   const [showDelete, setShowDelete] = useState(false);
@@ -16,6 +17,24 @@ const ServiceDetail = (props) => {
   const { measureUnitContext: measureUnitCtx } = useContext(MeasureUnitContext);
   const Categories = categoryCtx.items;
   const measureUnits = measureUnitCtx.items;
+
+  const categoriesOptions = Categories.map((category) => ({
+    value: category._id,
+    label: category.name,
+  }));
+
+  const defaultCategory = categoriesOptions.find(
+    (option) => option.value === (props.serviceData.category_id || null)
+  );
+
+  const measureUnitsOptions = measureUnits.map((measureUnit) => ({
+    value: measureUnit._id,
+    label: measureUnit.name,
+  }));
+
+  const defaultMeasureUnit = measureUnitsOptions.find(
+    (option) => option.value === (props.serviceData.measure_unit_id || null)
+  );
 
   //Y en esta funcion se deberia mandar la request al back para cambiar este valor.
   const handleUnitChange = (newMeasureUnitId) => {
@@ -107,13 +126,13 @@ const ServiceDetail = (props) => {
 
         <ul className="flex flex-col  pt-3 pb-2 ">
           <li className="flex  justify-between border-b border-b-grayBorder text-blackText font-sans text-[14px] mb-4 ">
-            <div className="pl-6 mb-[12px] w-full truncate">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-4">
               <h1 className="mb-[4px] font-bold">Nombre</h1>
-              <h1>{props.serviceData.name}</h1>
+              <h1 className="break-words">{props.serviceData.name}</h1>
             </div>
             <Link
               href={`/service/name/${props.serviceData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -139,19 +158,50 @@ const ServiceDetail = (props) => {
               )}
 
               {!categoryCtx.error && !categoryCtx.isLoading && (
-                <select
-                  id="category"
-                  defaultValue={props.serviceData.category_id}
-                  onChange={(e) => handleCategoryChange(e.target.value)}
-                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
-                  disabled={categoryCtx.isLoadingUpdateCategory}
-                >
-                  {Categories.map((category) => (
-                    <option key={category._id} value={category._id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+                <ReactSelect
+                  options={categoriesOptions}
+                  defaultValue={defaultCategory}
+                  onChange={(selectedOption) =>
+                    handleCategoryChange(selectedOption.value)
+                  }
+                  isDisabled={serviceCtx.isLoadingUpdateCategory}
+                  menuPlacement="auto"
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      width: "100%",
+                      border: state.isFocused
+                        ? "1px solid #0092f3"
+                        : "1px solid #6b7280",
+                      boxShadow: state.isFocused ? "0 0 0 3px #79c5f8" : null,
+                      "&:hover": {
+                        border: state.isFocused
+                          ? "1px solid #0092f3"
+                          : "1px solid #6b7280",
+                      },
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      maxWidth: "100%",
+                      wordWrap: "break-word",
+                      border: "1px solid #6b7280",
+                    }),
+                    option: (provided, state) => ({
+                      ...provided,
+                      whiteSpace: "normal",
+                      backgroundColor: state.isSelected ? "#0071bb" : "white",
+                      "&:hover": {
+                        backgroundColor: state.isFocused
+                          ? "#79c5f8"
+                          : " #white",
+                      },
+                    }),
+                    singleValue: (provided, state) => ({
+                      ...provided,
+                      color: "#0F1111",
+                    }),
+                  }}
+                />
               )}
             </div>
 
@@ -173,19 +223,50 @@ const ServiceDetail = (props) => {
               )}
 
               {!measureUnitCtx.error && !measureUnitCtx.isLoading && (
-                <select
-                  id="unitOfMeasurement"
-                  defaultValue={props.serviceData.measure_unit_id}
-                  onChange={(e) => handleUnitChange(e.target.value)}
-                  className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
-                  disabled={measureUnitCtx.isLoadingUpdateMeasureUnit}
-                >
-                  {measureUnits.map((measureUnit) => (
-                    <option key={measureUnit._id} value={measureUnit._id}>
-                      {measureUnit.name}
-                    </option>
-                  ))}
-                </select>
+                <ReactSelect
+                  options={measureUnitsOptions}
+                  defaultValue={defaultMeasureUnit}
+                  onChange={(selectedOption) =>
+                    handleUnitChange(selectedOption.value)
+                  }
+                  isDisabled={serviceCtx.isLoadingUpdateMeasureUnit}
+                  menuPlacement="auto"
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      width: "100%",
+                      border: state.isFocused
+                        ? "1px solid #0092f3"
+                        : "1px solid #6b7280",
+                      boxShadow: state.isFocused ? "0 0 0 3px #79c5f8" : null,
+                      "&:hover": {
+                        border: state.isFocused
+                          ? "1px solid #0092f3"
+                          : "1px solid #6b7280",
+                      },
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      maxWidth: "100%",
+                      wordWrap: "break-word",
+                      border: "1px solid #6b7280",
+                    }),
+                    option: (provided, state) => ({
+                      ...provided,
+                      whiteSpace: "normal",
+                      backgroundColor: state.isSelected ? "#0071bb" : "white",
+                      "&:hover": {
+                        backgroundColor: state.isFocused
+                          ? "#79c5f8"
+                          : " #white",
+                      },
+                    }),
+                    singleValue: (provided, state) => ({
+                      ...provided,
+                      color: "#0F1111",
+                    }),
+                  }}
+                />
               )}
             </div>
           </li>
@@ -198,7 +279,7 @@ const ServiceDetail = (props) => {
             </div>
             <Link
               href={`/service/unitcost/${props.serviceData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -213,7 +294,7 @@ const ServiceDetail = (props) => {
             </div>
             <Link
               href={`/service/unitprice/${props.serviceData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar
@@ -223,13 +304,14 @@ const ServiceDetail = (props) => {
           <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
 
           <li className="flex  justify-between text-blackText font-sans text-[14px]  ">
-            <div className="pl-6 mb-[12px] line-clamp-5 overflow-y-auto">
+            <div className="pl-6 mb-[12px] w-full max-w-[87%] overflow-y-auto line-clamp-5">
               <h1 className="mb-[4px] font-bold">Descripción</h1>
-              <h1 className="mr-1">{props.serviceData.description}</h1>
+              <h1 className="break-words">{props.serviceData.description}</h1>
             </div>
+
             <Link
               href={`/service/description/${props.serviceData._id}`}
-              className="pr-6"
+              className="pr-6 h-fit"
             >
               <button className=" h-[29px] px-2 cursor-pointer rounded-[8px] border border-solid border-grayBorder bg-grayBg1 text-[13px] shadow-md ring-blue5 hover:bg-grayBg2 hover:bg-opacity-15 active:border active:border-blue6 active:outline-none active:ring">
                 Editar

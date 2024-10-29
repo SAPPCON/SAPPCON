@@ -7,7 +7,7 @@ import Loader from "../UI/Loader";
 import BudgetContext from "@/store/BudgetContext";
 import ServiceContext from "@/store/ServiceContext";
 import { FaTrashAlt } from "react-icons/fa";
-import MeasureUnitContext from "@/store/MeasureUnitContext";
+import ReactSelect from "react-select";
 
 const BudgetDetail = (props) => {
   //Cosas de Renderizar el detalle de presupuesto:
@@ -25,8 +25,34 @@ const BudgetDetail = (props) => {
   const { buildingContext: buildingCtx } = useContext(BuildingContext);
   const Buildings = buildingCtx.items;
 
+  const buildingOptions = Buildings.map((building) => ({
+    value: building._id,
+    label: building.name,
+  }));
+
+  const defaultBuilding = buildingOptions.find(
+    (option) => option.value === (budgetData?.budget?.building_id || null)
+  );
+
   const { serviceContext: serviceCtx } = useContext(ServiceContext);
   const Services = serviceCtx.items;
+
+  const serviceOptions = Services.map((service) => ({
+    value: service._id,
+    label: service.name,
+  }));
+
+  const stateOptions = [
+    { value: "Pendiente", label: "Pendiente" },
+    { value: "Aprobado", label: "Aprobado" },
+    { value: "Rechazado", label: "Rechazado" },
+    { value: "En Construcción", label: "En Construcción" },
+    { value: "Finalizado", label: "Finalizado" },
+  ];
+
+  const defaultStatus = stateOptions.find(
+    (option) => option.value === (budgetData?.budget?.status || null)
+  );
 
   const total = () => {
     return budgetLines.reduce((total, budgetline) => {
@@ -61,6 +87,7 @@ const BudgetDetail = (props) => {
 
         const data = await response.json();
         setBudgetData(data);
+        console.log(budgetData);
         setBudgetLines(data.budgetLines);
         setIsLoading(false);
         setErrorRequest("");
@@ -77,8 +104,6 @@ const BudgetDetail = (props) => {
     fetchBudgetData();
   }, []);
 
-  const buildingRef = useRef();
-  const stateRef = useRef();
   const dateRef = useRef();
 
   //Cosas de Eliminar Presupuesto:
@@ -87,6 +112,7 @@ const BudgetDetail = (props) => {
 
   const handleDelete = () => {
     setShowDelete(true);
+    console.log(budgetData);
   };
 
   const handleClickHideDelete = () => {
@@ -121,28 +147,29 @@ const BudgetDetail = (props) => {
   const [isLoadingUpdateLineService, setisLoadingUpdateLineService] =
     useState(false);
 
-  const addService = async (e) => {
-    //Obtengo el servicio en cuestion.
+  //Llama a la funcion addService
+  const handleSelectChange = (selectedOption) => {
+    addService(selectedOption);
+  };
+
+  const addService = async (selectedOption) => {
+    if (!selectedOption) return; // si no hay opción seleccionada, salimos
+
+    // Obtén el servicio seleccionado
     const selectedService = Services.find(
-      (service) => service._id === e.target.value
+      (service) => service._id === selectedOption.value
     );
 
-    //Si no encuentra ese servicio, no hay nada que agregar.
-    if (!selectedService) {
-      return;
-    }
-
-    //Segundo verifico que ese servicio no este ya agregado en el los servicios del presupuesto
+    // Verifica si el servicio ya está agregado en el arreglo de servicios
     const isServiceSelected = budgetLines.some(
-      (serviceBudgetLine) => serviceBudgetLine.service_id === e.target.value
+      (serviceBudgetLine) =>
+        serviceBudgetLine.service_id === selectedOption.value
     );
 
-    if (isServiceSelected) {
-      return;
-    }
+    if (!selectedService || isServiceSelected) return;
 
     const newBudgetLine = {
-      service_id: e.target.value,
+      service_id: selectedOption.value,
       quantity: 1,
       budget_id: budgetData.budget._id,
     };
@@ -321,13 +348,25 @@ const BudgetDetail = (props) => {
       // Convertir la respuesta a un Blob (representación binaria del PDF)
       const blob = await response.blob();
 
+      // Obtengo el nombre desde el encabezado Content-Disposition
+      const contentDisposition = response.headers.get("Content-Disposition");
+      console.log("CONTENT: ", contentDisposition);
+      let fileName = "budget.pdf"; // En caso que no este, le asigno uno x defecto.
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?(.+)"?/);
+        if (match && match[1]) {
+          fileName = match[1];
+        }
+      }
+
       // Crear un URL temporario para el Blob
       const url = window.URL.createObjectURL(blob);
 
       // Crear un enlace temporal para descargar el PDF
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "budget.pdf"); // Nombre del archivo
+      link.setAttribute("download", fileName); // Nombre del archivo
       document.body.appendChild(link);
       link.click();
 
@@ -493,47 +532,105 @@ const BudgetDetail = (props) => {
                   )}
 
                   {!buildingCtx.error && !buildingCtx.isLoading && (
-                    <select
-                      id="building"
-                      ref={buildingRef}
-                      className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer `}
-                      defaultValue={budgetData.budget.building_id}
-                      onChange={(e) => handleBuildingChange(e.target.value)}
-                    >
-                      {Buildings.map((building) => (
-                        <option key={building._id} value={building._id}>
-                          {building.name}
-                        </option>
-                      ))}
-                    </select>
+                    <ReactSelect
+                      options={buildingOptions}
+                      onChange={(selectedOption) =>
+                        handleBuildingChange(selectedOption.value)
+                      }
+                      defaultValue={defaultBuilding}
+                      menuPlacement="auto"
+                      isDisabled={budgetCtx.isLoadingUpdateBuilding}
+                      styles={{
+                        control: (provided, state) => ({
+                          ...provided,
+                          width: "100%", // Asegura que el select ocupe el ancho total del contenedor
+                          border: state.isFocused
+                            ? "1px solid #0092f3" // Borde azul al estar seleccionado
+                            : "1px solid #6b7280", // Borde gris por defecto
+                          boxShadow: state.isFocused
+                            ? "0 0 0 3px #79c5f8" // Ring azul personalizado al enfocar
+                            : null,
+                          "&:hover": {
+                            border: state.isFocused
+                              ? "1px solid #0092f3" // Mantiene el borde azul en hover si está enfocado
+                              : "1px solid #6b7280", // Gris claro en hover cuando no está enfocado
+                          },
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          maxWidth: "100%",
+                          wordWrap: "break-word", // Ajusta texto largo en las opciones
+                          border: "1px solid #6b7280",
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          whiteSpace: "normal",
+                          backgroundColor: state.isSelected
+                            ? "#0071bb"
+                            : "white",
+                          "&:hover": {
+                            backgroundColor: state.isFocused
+                              ? "#79c5f8"
+                              : " #white",
+                          },
+                        }),
+                        singleValue: (provided, state) => ({
+                          ...provided,
+                          color: "#0F1111",
+                        }),
+                      }}
+                    />
                   )}
                 </div>
                 <div className="mb-4 w-[49%]">
                   <label htmlFor="state" className="mb-[4px] font-bold">
                     Estado
                   </label>
-                  <select
-                    id="state"
-                    defaultValue={budgetData.budget.status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer`}
-                  >
-                    <option key={"Pendiente"} value="Pendiente">
-                      Pendiente
-                    </option>
-                    <option key={"Aprobado"} value="Aprobado">
-                      Aprobado
-                    </option>
-                    <option key={"Rechazado"} value="Rechazado">
-                      Rechazado
-                    </option>
-                    <option key={"En Construcción"} value="En Construcción">
-                      En Construcción
-                    </option>
-                    <option key={"Finalizado"} value="Finalizado">
-                      Finalizado
-                    </option>
-                  </select>
+
+                  <ReactSelect
+                    options={stateOptions}
+                    defaultValue={defaultStatus}
+                    onChange={(selectedOption) =>
+                      handleStatusChange(selectedOption.value)
+                    }
+                    menuPlacement="auto"
+                    isDisabled={budgetCtx.isLoadingUpdateBudgetStatus}
+                    styles={{
+                      control: (provided, state) => ({
+                        ...provided,
+                        width: "100%",
+                        border: state.isFocused
+                          ? "1px solid #0092f3"
+                          : "1px solid #6b7280",
+                        boxShadow: state.isFocused ? "0 0 0 3px #79c5f8" : null,
+                        "&:hover": {
+                          border: state.isFocused
+                            ? "1px solid #0092f3"
+                            : "1px solid #6b7280",
+                        },
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        maxWidth: "100%",
+                        wordWrap: "break-word",
+                        border: "1px solid #6b7280",
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        whiteSpace: "normal",
+                        backgroundColor: state.isSelected ? "#0071bb" : "white",
+                        "&:hover": {
+                          backgroundColor: state.isFocused
+                            ? "#79c5f8"
+                            : " #white",
+                        },
+                      }),
+                      singleValue: (provided, state) => ({
+                        ...provided,
+                        color: "#0F1111",
+                      }),
+                    }}
+                  />
                 </div>
               </li>
               <div className="h-[1px] bg-[#d5d9d9] w-full mb-[16px]"></div>
@@ -585,19 +682,51 @@ const BudgetDetail = (props) => {
                       )}
 
                       {!serviceCtx.error && !serviceCtx.isLoading && (
-                        <select
-                          id="addService"
-                          ref={stateRef}
-                          onChange={addService}
-                          className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer `}
-                        >
-                          <option value="">Seleccione una opción</option>
-                          {Services.map((service) => (
-                            <option key={service._id} value={service._id}>
-                              {service.name}
-                            </option>
-                          ))}
-                        </select>
+                        <ReactSelect
+                          options={serviceOptions}
+                          onChange={handleSelectChange}
+                          placeholder="Seleccione una opción"
+                          menuPlacement="auto"
+                          styles={{
+                            control: (provided, state) => ({
+                              ...provided,
+                              width: "100%",
+                              border: state.isFocused
+                                ? "1px solid #0092f3"
+                                : "1px solid #6b7280",
+                              boxShadow: state.isFocused
+                                ? "0 0 0 3px #79c5f8"
+                                : null,
+                              "&:hover": {
+                                border: state.isFocused
+                                  ? "1px solid #0092f3"
+                                  : "1px solid #6b7280",
+                              },
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              maxWidth: "100%",
+                              wordWrap: "break-word",
+                              border: "1px solid #6b7280",
+                            }),
+                            option: (provided, state) => ({
+                              ...provided,
+                              whiteSpace: "normal",
+                              backgroundColor: state.isSelected
+                                ? "#0071bb"
+                                : "white",
+                              "&:hover": {
+                                backgroundColor: state.isFocused
+                                  ? "#79c5f8"
+                                  : " #white",
+                              },
+                            }),
+                            singleValue: (provided, state) => ({
+                              ...provided,
+                              color: "#0F1111",
+                            }),
+                          }}
+                        />
                       )}
                     </div>
 
@@ -632,17 +761,17 @@ const BudgetDetail = (props) => {
                                     : ""
                                 }`}
                               >
-                                <span className="w-[35%] ">
+                                <span className="w-[35%]  h-auto break-words overflow-wrap-anywhere   ">
                                   {budgetLine.service_name}
                                 </span>
-                                <span className="w-[15%] ">
+                                <span className="w-[15%] h-auto break-words overflow-wrap-anywhere ">
                                   {budgetLine.measure_unit_name}
                                 </span>
-                                <span className="w-[15%] ">
+                                <span className="w-[15%] h-auto break-words overflow-wrap-anywhere">
                                   ${budgetLine.price}
                                 </span>
                                 {/* Contador para cantidad */}
-                                <div className="w-[15%] ">
+                                <div className="w-[15%] h-auto break-words overflow-wrap-anywhere">
                                   <input
                                     type="number"
                                     value={budgetLine.quantity || 1} //El value esta atado al valor q tenga en el estado. Si la actualizacion falla, se mantiene el vlaor q tiene el estado y no el q ingreso el ususario
@@ -663,7 +792,7 @@ const BudgetDetail = (props) => {
                                 </div>
 
                                 {/* Calcula el total dinámicamente */}
-                                <span className="w-[15%] ">
+                                <span className="w-[15%] h-auto break-words overflow-wrap-anywhere ">
                                   ${budgetLine.amount}
                                 </span>
 

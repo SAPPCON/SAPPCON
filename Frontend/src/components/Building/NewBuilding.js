@@ -8,18 +8,19 @@ import BuildingContext from "@/store/BuildingContext";
 import Loader from "../UI/Loader";
 import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
+import ReactSelect from "react-select";
 
 const NewBuilding = (props) => {
   const [nameError, setNameError] = useState("");
   const [aliasError, setAliasError] = useState("");
   const [clientError, setClientError] = useState("");
+  const [selectedClient, setSelectedClient] = useState(null);
   const [addressError, setAddressError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [zNewBuilding, setZNewBuilding] = useState("z-40");
 
   const nameRef = useRef();
   const aliasRef = useRef();
-  const clientRef = useRef();
   const addressRef = useRef();
   const descriptionRef = useRef();
 
@@ -27,11 +28,19 @@ const NewBuilding = (props) => {
   const { buildingContext: buildingCtx } = useContext(BuildingContext);
   const Customers = customerCtx.items;
 
+  const customerOptions = Customers.map((customer) => ({
+    value: customer._id,
+    label: customer.name,
+  }));
+
+  const handleClientChange = (selectedOption) => {
+    setSelectedClient(selectedOption); // Actualiza el estado local
+  };
+
   const submitHandler = (event) => {
     event.preventDefault();
     const enteredName = nameRef.current.value;
     const enteredAlias = aliasRef.current.value;
-    const enteredClient = clientRef.current.value;
     const enteredAddress = addressRef.current.value;
     const enteredDescription = descriptionRef.current.value;
 
@@ -49,7 +58,7 @@ const NewBuilding = (props) => {
       setAliasError("");
     }
 
-    if (enteredClient === "") {
+    if (selectedClient === null) {
       setClientError("Selecciona un cliente.");
       return;
     } else {
@@ -71,7 +80,7 @@ const NewBuilding = (props) => {
     }
 
     const newBuilding = {
-      customer_id: enteredClient,
+      customer_id: selectedClient.value,
       name: enteredName,
       alias: enteredAlias,
       address: enteredAddress,
@@ -154,17 +163,57 @@ const NewBuilding = (props) => {
             )}
 
             {!customerCtx.error && !customerCtx.isLoading && (
-              <select
-                id="category"
-                ref={clientRef}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer h-[31px]`}
-              >
-                {Customers.map((customer) => (
-                  <option key={customer._id} value={customer._id}>
-                    {customer.name}
-                  </option>
-                ))}
-              </select>
+              <ReactSelect
+                options={customerOptions}
+                onChange={handleClientChange}
+                value={selectedClient}
+                placeholder="Seleccione una opción"
+                menuPlacement="auto"
+                styles={{
+                  control: (provided, state) => ({
+                    ...provided,
+                    width: "100%",
+                    border:
+                      clientError !== ""
+                        ? "1px solid #fb1c0a"
+                        : state.isFocused
+                        ? "1px solid #0092f3"
+                        : "1px solid #6b7280",
+                    boxShadow:
+                      clientError !== ""
+                        ? "0 0 0 3px rgba(253, 92, 60, 0.5)"
+                        : state.isFocused
+                        ? "0 0 0 3px #79c5f8"
+                        : null,
+                    "&:hover": {
+                      border:
+                        clientError !== ""
+                          ? "1px solid #fb1c0a"
+                          : state.isFocused
+                          ? "1px solid #0092f3"
+                          : "1px solid #6b7280",
+                    },
+                  }),
+                  menu: (provided) => ({
+                    ...provided,
+                    maxWidth: "100%",
+                    wordWrap: "break-word",
+                    border: "1px solid #6b7280",
+                  }),
+                  option: (provided, state) => ({
+                    ...provided,
+                    whiteSpace: "normal",
+                    backgroundColor: state.isSelected ? "#0071bb" : "white",
+                    "&:hover": {
+                      backgroundColor: state.isFocused ? "#79c5f8" : "white",
+                    },
+                  }),
+                  singleValue: (provided, state) => ({
+                    ...provided,
+                    color: "#0F1111",
+                  }),
+                }}
+              />
             )}
             {clientError !== "" && (
               <p className="text-xs text-red5 absolute">{clientError}</p>

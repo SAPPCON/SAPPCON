@@ -8,7 +8,7 @@ import Address from "@/components/Building/BuildingUpdate/Address";
 function AddressPage() {
   const router = useRouter();
   const authenticationContext = useContext(AuthenticationContext);
-  const { token } = router.query;
+  const { id } = router.query;
 
   useEffect(() => {
     if (!authenticationContext.isLoading && !authenticationContext.isLoggedIn) {
@@ -53,7 +53,7 @@ function AddressPage() {
         <title>SAPPCON Cambiar Dirección de la Obra</title>
         <meta name="description" content="Edit your building's address" />
       </Head>
-      <Address token={token}></Address>
+      <Address buildingId={id}></Address>
     </Fragment>
   );
 }

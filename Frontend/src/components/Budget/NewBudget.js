@@ -11,6 +11,7 @@ import PopUpError from "../UI/PopUpError";
 import PopUpSuccess from "../UI/PopUpSuccess";
 import MeasureUnitContext from "@/store/MeasureUnitContext";
 import { IoAlertCircleSharp } from "react-icons/io5";
+import ReactSelect from "react-select";
 
 const NewBudget = (props) => {
   const [stateError, setStateError] = useState("");
@@ -21,9 +22,9 @@ const NewBudget = (props) => {
     useState("");
   const [zNewBuilding, setZNewBuilding] = useState("z-40");
   const [selectedServicies, setSelectedServicies] = useState([]);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedBuilding, setSelectedBuilding] = useState(null);
 
-  const stateRef = useRef();
-  const buildingRef = useRef();
   const dateRef = useRef();
 
   //Para mandar alguna request.
@@ -41,30 +42,26 @@ const NewBudget = (props) => {
   const { buildingContext: buildingCtx } = useContext(BuildingContext);
   const Buildings = buildingCtx.items;
 
-  //Como en el Select el campo value solo acepta string o number (HTML es asi) y no el objeto servicio, para poder trabajar con dicho objeto en el Select se convierte el objeto a cadena de texto con stringify.
-  //Luego, en esta funcion, lo convertimos nuevamente en objeto usando JSON.parse
-  const addService = (e) => {
-    //Obtengo el servicio en cuestion.
+  const handleSelectChange = (selectedOption) => {
+    addService(selectedOption); // pasa el objeto seleccionado completo
+  };
+
+  const addService = (selectedOption) => {
+    if (!selectedOption) return; // si no hay opción seleccionada, salimos
+
+    // Obtén el servicio seleccionado
     const selectedService = Services.find(
-      (service) => service._id === e.target.value
+      (service) => service._id === selectedOption.value
     );
 
-    //Si no encuentra ese servicio, no hay nada que agregar.
-    if (!selectedService) {
-      return;
-    }
-
-    //Segundo verifico que ese servicio no este ya agregado en el arreglo de servicios.
-    //some devuelve true si al menos un elemento del arreglo cumple con tener el mismo ID
+    // Verifica si el servicio ya está agregado en el arreglo de servicios
     const isServiceSelected = selectedServicies.some(
-      (service) => service._id === e.target.value
+      (service) => service._id === selectedOption.value
     );
 
-    if (isServiceSelected) {
-      return;
-    }
+    if (!selectedService || isServiceSelected) return;
 
-    // Buscar el nombre de la unidad de medida correspondiente al measure_unit_id del servicio
+    // Obtener el nombre de la unidad de medida correspondiente
     const measureUnit = measureUnits.find(
       (mu) => mu._id === selectedService.measure_unit_id
     );
@@ -72,7 +69,7 @@ const NewBudget = (props) => {
       ? measureUnit.name
       : "Unidad de medida no encontrada";
 
-    //Si existe el servicio y no esta ya seleccionado. Agregamos dicho servicio al arreglo de servicios seleccionados, donde se almacena los datos del servicio (para poder renderizarlo en el listado) y la cantidad que por defecto es 1 y el numero de linea.
+    // Agrega el servicio al arreglo de servicios seleccionados
     setSelectedServicies((prevState) => [
       ...prevState,
       {
@@ -97,8 +94,6 @@ const NewBudget = (props) => {
       return;
     }
 
-    console.log(newQuantity);
-
     // Actualizar la cantidad del servicio seleccionado
     setSelectedServicies((prevState) =>
       prevState.map((s) =>
@@ -122,25 +117,23 @@ const NewBudget = (props) => {
   const submitHandler = async (event) => {
     event.preventDefault();
     setErrorRequestAddServiceLines(""); //Por las dudas, por mas que no tenga servicios el presupuesto que se registre, para asegurarnos que salga la opcion de msg correcta, lo reseteo.
-    const enteredState = stateRef.current.value;
-    const enteredBuilding = buildingRef.current.value;
 
     //El valor que se obtiene desde el input de tipo date usando dateRef.current.value siempre está en formato ISO 8601 (YYYY-MM-DD), independientemente de cómo se muestre al usuario. Este formato es estándar en la web y en bases de datos como MongoDB
     //En cambio, la forma en que se renderiza la entrada en el INPUT tipo date puede ser MM-DD-YYYY si tu PC o Navegador esta en Ingles, pero a pesar de ingresarse asi, luego se formatea y se pone en el ISO.
     const enteredDate = dateRef.current.value;
 
-    if (enteredState === "") {
-      setStateError("Selecciona un estado.");
-      return;
-    } else {
-      setStateError("");
-    }
-
-    if (enteredBuilding === "") {
+    if (selectedBuilding === null) {
       setBuildingError("Selecciona una obra.");
       return;
     } else {
       setBuildingError("");
+    }
+
+    if (selectedState === null) {
+      setStateError("Selecciona un estado.");
+      return;
+    } else {
+      setStateError("");
     }
 
     if (enteredDate === "") {
@@ -152,8 +145,8 @@ const NewBudget = (props) => {
 
     // building_id, status, date estos 3 datos le tengo q mandar, el resto de los datos los obtiene el backend y nos lo retorna en el budget creado.
     const newBudget = {
-      building_id: enteredBuilding,
-      status: enteredState,
+      building_id: selectedBuilding.value,
+      status: selectedState.value,
       date: enteredDate,
     };
 
@@ -218,6 +211,33 @@ const NewBudget = (props) => {
     }
   };
 
+  //Personalizacion del Select
+  const serviceOptions = Services.map((service) => ({
+    value: service._id,
+    label: service.name,
+  }));
+
+  const handleStateChange = (selectedOption) => {
+    setSelectedState(selectedOption); // Actualiza el estado local
+  };
+
+  const stateOptions = [
+    { value: "Pendiente", label: "Pendiente" },
+    { value: "Aprobado", label: "Aprobado" },
+    { value: "Rechazado", label: "Rechazado" },
+    { value: "En Construcción", label: "En Construcción" },
+    { value: "Finalizado", label: "Finalizado" },
+  ];
+
+  const buildingOptions = Buildings.map((building) => ({
+    value: building._id,
+    label: building.name,
+  }));
+
+  const handleBuildingChange = (selectedOption) => {
+    setSelectedBuilding(selectedOption);
+  };
+
   return (
     <Fragment>
       <div
@@ -250,21 +270,57 @@ const NewBudget = (props) => {
             )}
 
             {!buildingCtx.error && !buildingCtx.isLoading && (
-              <select
-                id="building"
-                ref={buildingRef}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer ${
-                  buildingError !== ""
-                    ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                    : ""
-                }`}
-              >
-                {Buildings.map((building) => (
-                  <option key={building._id} value={building._id}>
-                    {building.name}
-                  </option>
-                ))}
-              </select>
+              <ReactSelect
+                options={buildingOptions}
+                onChange={handleBuildingChange}
+                value={selectedBuilding}
+                placeholder="Seleccione una opción"
+                menuPlacement="auto"
+                styles={{
+                  control: (provided, state) => ({
+                    ...provided,
+                    width: "100%", // Asegura que el select ocupe el ancho total del contenedor
+                    border:
+                      buildingError !== "" // Si hay un error, usa el color de error
+                        ? "1px solid #fb1c0a" // Borde rojo si hay error
+                        : state.isFocused
+                        ? "1px solid #0092f3" // Borde azul al estar seleccionado
+                        : "1px solid #6b7280", // Borde gris por defecto
+                    boxShadow:
+                      buildingError !== "" // Si hay un error, añade el ring de error
+                        ? "0 0 0 3px rgba(253, 92, 60, 0.5)" // Ring rojo personalizado al error
+                        : state.isFocused
+                        ? "0 0 0 3px #79c5f8" // Ring azul personalizado al enfocar
+                        : null,
+                    "&:hover": {
+                      border:
+                        buildingError !== "" // Mantiene el borde rojo en hover si hay error
+                          ? "1px solid #fb1c0a"
+                          : state.isFocused
+                          ? "1px solid #0092f3" // Mantiene el borde azul en hover si está enfocado
+                          : "1px solid #6b7280", // Gris claro en hover cuando no está enfocado
+                    },
+                  }),
+                  menu: (provided) => ({
+                    ...provided,
+                    maxWidth: "100%",
+                    wordWrap: "break-word", // Ajusta texto largo en las opciones
+                    border: "1px solid #6b7280",
+                  }),
+                  option: (provided, state) => ({
+                    ...provided,
+                    whiteSpace: "normal",
+                    backgroundColor: state.isSelected ? "#0071bb" : "white",
+                    "&:hover": {
+                      backgroundColor: state.isFocused ? "#79c5f8" : "white",
+                    },
+                  }),
+                  singleValue: (provided, state) => ({
+                    ...provided,
+                    color: "#0F1111",
+                  }),
+                }}
+              />
             )}
             {buildingError !== "" && (
               <p className="mr-2  text-xs text-red5 absolute">
@@ -277,21 +333,58 @@ const NewBudget = (props) => {
             <label htmlFor="initialState" className="text-sm font-bold block">
               Estado
             </label>
-            <select
-              id="initialState"
-              ref={stateRef}
-              className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer ${
-                stateError !== ""
-                  ? " border-red5 ring-red3  focus:border-red5 focus:bg-white "
-                  : ""
-              }`}
-            >
-              <option value="Pendiente">Pendiente</option>
-              <option value="Aprobado">Aprobado</option>
-              <option value="Rechazado">Rechazado</option>
-              <option value="En Construcción">En Construcción</option>
-              <option value="Finalizado">Finalizado</option>
-            </select>
+
+            <ReactSelect
+              options={stateOptions}
+              onChange={handleStateChange}
+              value={selectedState}
+              placeholder="Seleccione una opción"
+              menuPlacement="auto"
+              styles={{
+                control: (provided, state) => ({
+                  ...provided,
+                  width: "100%",
+                  border:
+                    stateError !== ""
+                      ? "1px solid #fb1c0a"
+                      : state.isFocused
+                      ? "1px solid #0092f3"
+                      : "1px solid #6b7280",
+                  boxShadow:
+                    stateError !== ""
+                      ? "0 0 0 3px rgba(253, 92, 60, 0.5)"
+                      : state.isFocused
+                      ? "0 0 0 3px #79c5f8"
+                      : null,
+                  "&:hover": {
+                    border:
+                      stateError !== ""
+                        ? "1px solid #fb1c0a"
+                        : state.isFocused
+                        ? "1px solid #0092f3"
+                        : "1px solid #6b7280",
+                  },
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  maxWidth: "100%",
+                  wordWrap: "break-word",
+                  border: "1px solid #6b7280",
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  whiteSpace: "normal",
+                  backgroundColor: state.isSelected ? "#0071bb" : "white",
+                  "&:hover": {
+                    backgroundColor: state.isFocused ? "#79c5f8" : "white",
+                  },
+                }),
+                singleValue: (provided, state) => ({
+                  ...provided,
+                  color: "#0F1111",
+                }),
+              }}
+            />
             {stateError !== "" && (
               <p className="mr-2  text-xs text-red5 absolute">{stateError}</p>
             )}
@@ -336,19 +429,45 @@ const NewBudget = (props) => {
             )}
 
             {!serviceCtx.error && !serviceCtx.isLoading && (
-              <select
-                id="addService"
-                //ref={stateRef}
-                onChange={addService}
-                className={`w-full p-1 border border-gray-500 rounded-md focus:ring ring-blue5 focus:border focus:border-blue6 focus:outline-none cursor-pointer `}
-              >
-                <option value="">Seleccione una opción</option>
-                {Services.map((service) => (
-                  <option key={service._id} value={service._id}>
-                    {service.name}
-                  </option>
-                ))}
-              </select>
+              <ReactSelect
+                options={serviceOptions}
+                onChange={handleSelectChange}
+                placeholder="Seleccione una opción"
+                menuPlacement="auto"
+                styles={{
+                  control: (provided, state) => ({
+                    ...provided,
+                    width: "100%",
+                    border: state.isFocused
+                      ? "1px solid #0092f3"
+                      : "1px solid #6b7280",
+                    boxShadow: state.isFocused ? "0 0 0 3px #79c5f8" : null,
+                    "&:hover": {
+                      border: state.isFocused
+                        ? "1px solid #0092f3"
+                        : "1px solid #6b7280",
+                    },
+                  }),
+                  menu: (provided) => ({
+                    ...provided,
+                    maxWidth: "100%",
+                    wordWrap: "break-word",
+                    border: "1px solid #6b7280",
+                  }),
+                  option: (provided, state) => ({
+                    ...provided,
+                    whiteSpace: "normal",
+                    backgroundColor: state.isSelected ? "#0071bb" : "white",
+                    "&:hover": {
+                      backgroundColor: state.isFocused ? "#79c5f8" : " #white",
+                    },
+                  }),
+                  singleValue: (provided, state) => ({
+                    ...provided,
+                    color: "#0F1111",
+                  }),
+                }}
+              />
             )}
           </div>
 
@@ -381,11 +500,17 @@ const NewBudget = (props) => {
                         : ""
                     }`}
                   >
-                    <span className="w-[35%] ">{service.name}</span>
-                    <span className="w-[15%] ">{service.measureUnitName}</span>
-                    <span className="w-[15%] ">${service.price}</span>
+                    <span className="w-[35%] h-auto break-words overflow-wrap-anywhere ">
+                      {service.name}
+                    </span>
+                    <span className="w-[15%] h-auto break-words overflow-wrap-anywhere ">
+                      {service.measureUnitName}
+                    </span>
+                    <span className="w-[15%] h-auto break-words overflow-wrap-anywhere ">
+                      ${service.price}
+                    </span>
                     {/* Contador para cantidad */}
-                    <div className="w-[15%] ">
+                    <div className="w-[15%] h-auto break-words overflow-wrap-anywhere ">
                       <input
                         type="number"
                         value={service.quantity || 1}
@@ -403,7 +528,7 @@ const NewBudget = (props) => {
                     </div>
 
                     {/* Calcula el total dinámicamente */}
-                    <span className="w-[15%] ">
+                    <span className="w-[15%] h-auto break-words overflow-wrap-anywhere ">
                       ${service.price * (service.quantity || 1)}
                     </span>
 
