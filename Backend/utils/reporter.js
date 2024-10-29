@@ -123,7 +123,10 @@ function generateInvoiceTable(doc, dataLines) {
             generateTableRow(doc, position, line.line_no, line.service_name, line.measure_unit_name, line.quantity, formatCurrency(line.price), formatCurrency(line.amount), 10);
             
             // Calculate the position for the next line
-            lineHeight = doc.heightOfString(line.service_name, { width: 105 });
+            lineHeight = Math.max(
+              doc.heightOfString(line.service_name, { width: 105 }),
+              doc.heightOfString(line.measure_unit_name, { width: 105 })
+            );
             position += lineHeight;
             generateHr(doc, position, 1);
             position += 5;
