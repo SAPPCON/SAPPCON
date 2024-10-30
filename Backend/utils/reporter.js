@@ -125,7 +125,7 @@ function generateInvoiceTable(doc, dataLines) {
             // Calculate the position for the next line
             lineHeight = Math.max(
               doc.heightOfString(line.service_name, { width: 105 }),
-              doc.heightOfString(line.measure_unit_name, { width: 105 })
+              doc.heightOfString(line.measure_unit_name, { width: 65 })
             );
             position += lineHeight;
             generateHr(doc, position, 1);
