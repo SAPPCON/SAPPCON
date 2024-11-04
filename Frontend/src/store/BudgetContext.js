@@ -393,6 +393,12 @@ const budgetsReducer = (state, action) => {
         isLoadingUpdateBuilding: false,
         errorUpdateBuilding: "",
         successUpdateBuilding: false,
+        isLoadingUpdateBudgetStatus: false,
+        errorUpdateBudgetStatus: "",
+        successUpdateBudgetStatus: false,
+        isLoadingUpdateBudgetDate: false,
+        errorUpdateBudgetDate: "",
+        successUpdateBudgetDate: false,
       };
 
     case "UPDATE_BUDGET_STATUS":
@@ -405,6 +411,12 @@ const budgetsReducer = (state, action) => {
         isLoadingUpdateBudgetStatus: false,
         errorUpdateBudgetStatus: "",
         successUpdateBudgetStatus: false,
+        isLoadingUpdateBuilding: false,
+        errorUpdateBuilding: "",
+        successUpdateBuilding: false,
+        isLoadingUpdateBudgetDate: false,
+        errorUpdateBudgetDate: "",
+        successUpdateBudgetDate: false,
       };
     case "UPDATE_BUDGET_DATE":
       const updatedBudgetItemsDate = state.items.map((item) =>
@@ -416,6 +428,12 @@ const budgetsReducer = (state, action) => {
         isLoadingUpdateBudgetDate: false,
         errorUpdateBudgetDate: "",
         successUpdateBudgetDate: false,
+        isLoadingUpdateBuilding: false,
+        errorUpdateBuilding: "",
+        successUpdateBuilding: false,
+        isLoadingUpdateBudgetStatus: false,
+        errorUpdateBudgetStatus: "",
+        successUpdateBudgetStatus: false,
       };
     case "SET_RESTART_ALL_NEW_ITEM":
       return {

@@ -112,7 +112,6 @@ const BudgetDetail = (props) => {
 
   const handleDelete = () => {
     setShowDelete(true);
-    console.log(budgetData);
   };
 
   const handleClickHideDelete = () => {
@@ -391,7 +390,7 @@ const BudgetDetail = (props) => {
            "
           >
             <FaCheckCircle className="mr-1.5  align-top text-[18px] text-greenText"></FaCheckCircle>
-            Cliente actualizado.
+            Obra actualizada.
           </div>
         )}
 

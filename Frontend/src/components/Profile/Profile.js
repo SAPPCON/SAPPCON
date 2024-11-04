@@ -29,7 +29,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      //const token = localStorage.getItem("sadasdasd12312");
+      ///const token = localStorage.getItem("sadasdasd12312");
       const response = await fetch(process.env.NEXT_PUBLIC_LOGOUT_URL, {
         method: "POST",
         headers: {
